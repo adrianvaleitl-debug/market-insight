@@ -896,7 +896,7 @@ class MarketInsightApp(ctk.CTk):
             issue.pack(fill="x", padx=5, pady=6)
             ctk.CTkLabel(issue, text="Stocks we couldn't check", font=ctk.CTkFont(size=12, weight="bold"),
                          text_color=("#A34D4D", "#E6A0A0")).pack(anchor="w", padx=12, pady=(8, 2))
-            error_text = ctk.CTkLabel(issue, text="\\n".join(errors[:12]), justify="left",
+            error_text = ctk.CTkLabel(issue, text="\n".join(errors[:12]), justify="left",
                                       text_color=("#8B5555", "#E6A5A5"))
             error_text.pack(anchor="w", fill="x", padx=12, pady=(0, 10))
             self._fit_label_wrap(error_text, issue, 28)
