@@ -46,7 +46,7 @@ jobs:
       - name: Build standalone Windows application
         shell: pwsh
         run: |
-          pyinstaller --noconfirm --clean --windowed --onedir --name "Market Insight" --icon market_insight.ico --collect-all customtkinter --collect-all keyring --collect-all yfinance --collect-all pandas --collect-all certifi --collect-all curl_cffi --collect-all requests market_insight.py
+          pyinstaller --noconfirm --clean --windowed --onedir --name "Market Insight" --icon market_insight.ico --add-data "market_insight.ico;." --collect-all customtkinter --collect-all keyring --collect-all yfinance --collect-all pandas --collect-all certifi --collect-all curl_cffi --collect-all requests market_insight.py
           if (!(Test-Path "dist/Market Insight/Market Insight.exe")) { throw "The packaged application executable was not created." }
 
       - name: Install Inno Setup
@@ -56,21 +56,21 @@ jobs:
         shell: pwsh
         run: |
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
-          if (!(Test-Path "installer-output/Market_Insight_Setup_v1.2.21.exe")) { throw "The Windows installer was not created." }
+          if (!(Test-Path "installer-output/Market_Insight_Setup_v1.2.22.exe")) { throw "The Windows installer was not created." }
 
       - name: Assemble source ZIP for existing users
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path Market_Insight | Out-Null
           Copy-Item market_insight.py, requirements.txt, SETUP_AND_START.bat, Start_Market_Insight.vbs, market_insight.ico, START_IN_DIAGNOSTIC_MODE.bat, Create_Desktop_Shortcut.ps1, README.md -Destination Market_Insight
-          Compress-Archive -Path Market_Insight -DestinationPath Market_Insight_v1.2.21.zip -Force
+          Compress-Archive -Path Market_Insight -DestinationPath Market_Insight_v1.2.22.zip -Force
 
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: pwsh
         run: |
-          gh release create v1.2.21 "installer-output/Market_Insight_Setup_v1.2.21.exe" "Market_Insight_v1.2.21.zip" --title "Market Insight v1.2.21" --notes @"
+          gh release create v1.2.22 "installer-output/Market_Insight_Setup_v1.2.21.exe" "Market_Insight_v1.2.21.zip" --title "Market Insight v1.2.22" --notes @"
           ## Market Insight v1.2.21
 
           - Added a single-file Windows installer.
