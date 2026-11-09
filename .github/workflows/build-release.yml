@@ -52,6 +52,9 @@ jobs:
         run: |
           pyinstaller --noconfirm --clean --windowed --onedir --name "Market Insight" --icon market_insight.ico --add-data "market_insight.ico;." --collect-all customtkinter --collect-all keyring --collect-all yfinance --collect-all pandas --collect-all certifi --collect-all curl_cffi --collect-all requests market_insight.py
           if (!(Test-Path "dist/Market Insight/Market Insight.exe")) { throw "The packaged application executable was not created." }
+          $bundledIcon = Get-ChildItem -Path "dist/Market Insight" -Filter "market_insight.ico" -File -Recurse | Select-Object -First 1
+          if (!$bundledIcon) { throw "The current application icon was not bundled into the packaged application." }
+          Write-Host "Bundled taskbar icon: $($bundledIcon.FullName)"
 
       - name: Install Inno Setup
         run: choco install innosetup --yes --no-progress
@@ -60,24 +63,25 @@ jobs:
         shell: pwsh
         run: |
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
-          if (!(Test-Path "installer-output/Market_Insight_Setup_v1.2.23.exe")) { throw "The Windows installer was not created." }
+          if (!(Test-Path "installer-output/Market_Insight_Setup_v1.2.24.exe")) { throw "The Windows installer was not created." }
 
       - name: Assemble source ZIP for existing users
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path Market_Insight | Out-Null
           Copy-Item market_insight.py, requirements.txt, SETUP_AND_START.bat, Start_Market_Insight.vbs, market_insight.ico, START_IN_DIAGNOSTIC_MODE.bat, Create_Desktop_Shortcut.ps1, README.md -Destination Market_Insight
-          Compress-Archive -Path Market_Insight -DestinationPath Market_Insight_v1.2.23.zip -Force
+          Compress-Archive -Path Market_Insight -DestinationPath Market_Insight_v1.2.24.zip -Force
 
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: pwsh
         run: |
-          gh release create v1.2.23 "installer-output/Market_Insight_Setup_v1.2.23.exe" "Market_Insight_v1.2.23.zip" --title "Market Insight v1.2.23" --notes @"
-          ## Market Insight v1.2.23
+          gh release create v1.2.24 "installer-output/Market_Insight_Setup_v1.2.24.exe" "Market_Insight_v1.2.24.zip" --title "Market Insight v1.2.24" --notes @"
+          ## Market Insight v1.2.24
 
-          - Added a single-file Windows installer.
+          - Increased text sizes throughout the interface for improved readability.
+          - Fixed packaged icon lookup so the silver M icon is used instead of the obsolete fallback.
           - The installer places the complete application and its bundled Python dependencies in your user Programs folder.
           - No separate Python installation, ZIP extraction, or manual package setup is required.
           - Creates Start Menu and optional desktop shortcuts, then offers to launch Market Insight.
