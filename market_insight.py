@@ -525,9 +525,49 @@ class MarketInsightApp(ctk.CTk):
                                 command=lambda name=label: self.show_page(name))
             btn.pack(fill="x", padx=12, pady=4)
             self.nav_buttons[label] = btn
-        ctk.CTkLabel(self.sidebar, text="Live prices when connected\nFor research and learning only.",
-                     font=ctk.CTkFont(size=10), text_color=("#75827B", "#87958E"),
-                     justify="left").pack(side="bottom", anchor="w", padx=20, pady=20)
+        side_info = ctk.CTkScrollableFrame(
+            self.sidebar, width=174, corner_radius=16,
+            fg_color=("#E1E0D9", "#2B2D29"),
+            scrollbar_button_color=("#B9BDB4", "#555A53")
+        )
+        side_info.pack(fill="both", expand=True, padx=10, pady=(18, 10))
+        ctk.CTkLabel(side_info, text="ACCOUNT CONNECTION",
+                     font=ctk.CTkFont(size=9, weight="bold"),
+                     text_color=("#777D75", "#AEB1A8")).pack(anchor="w", padx=8, pady=(10, 4))
+        saved_key, saved_secret = get_alpaca_credentials()
+        connected = bool(saved_key and saved_secret)
+        ctk.CTkLabel(side_info, text="●  Alpaca connected" if connected else "○  Alpaca not connected",
+                     font=ctk.CTkFont(size=10, weight="bold"),
+                     text_color=("#647B68", "#B4C4B1") if connected else ("#947B75", "#C5AAA4"),
+                     justify="left").pack(anchor="w", padx=8, pady=3)
+        key_hint = ("Key ID: ••••" + saved_key[-4:]) if connected else "API keys not saved"
+        ctk.CTkLabel(side_info, text=key_hint, font=ctk.CTkFont(size=9),
+                     text_color=("#777D75", "#A7AAA1")).pack(anchor="w", padx=8, pady=(0, 10))
+        ctk.CTkLabel(side_info, text="YOUR TRADING PLATFORM",
+                     font=ctk.CTkFont(size=9, weight="bold"),
+                     text_color=("#777D75", "#AEB1A8")).pack(anchor="w", padx=8, pady=(8, 4))
+        ctk.CTkLabel(side_info, text=self.settings.get("selected_platform") or "Not selected",
+                     font=ctk.CTkFont(size=10, weight="bold"),
+                     text_color=("#4A514B", "#D8DDD7")).pack(anchor="w", padx=8, pady=(0, 10))
+        ctk.CTkLabel(side_info, text="QUICK LINKS",
+                     font=ctk.CTkFont(size=9, weight="bold"),
+                     text_color=("#777D75", "#AEB1A8")).pack(anchor="w", padx=8, pady=(8, 4))
+        for link_name, link_url in [
+            ("Alpaca dashboard ↗", "https://app.alpaca.markets/"),
+            ("TradingView ↗", "https://www.tradingview.com/"),
+            ("Yahoo Finance ↗", "https://finance.yahoo.com/"),
+            ("Alpaca market data ↗", "https://docs.alpaca.markets/docs/about-market-data-api"),
+        ]:
+            ctk.CTkButton(side_info, text=link_name, anchor="w", height=30,
+                          corner_radius=12, fg_color="transparent",
+                          text_color=("#58645B", "#C0C5BC"),
+                          hover_color=("#D1D2C9", "#3A3D37"),
+                          font=ctk.CTkFont(size=9),
+                          command=lambda url=link_url: webbrowser.open(url)
+                          ).pack(fill="x", padx=4, pady=2)
+        ctk.CTkLabel(self.sidebar, text="Market Insight  •  Research only",
+                     font=ctk.CTkFont(size=9), text_color=("#75827B", "#87958E"),
+                     justify="left").pack(side="bottom", anchor="w", padx=14, pady=10)
 
         self.main = ctk.CTkFrame(self, corner_radius=0, fg_color="transparent")
         self.main.grid(row=0, column=1, sticky="nsew", padx=24, pady=22)
@@ -668,7 +708,7 @@ class MarketInsightApp(ctk.CTk):
         card = self.card(page, "App appearance", "Choose Light, Dark or match your Windows setting.")
         self.appearance_menu = ctk.CTkOptionMenu(card, values=["System", "Dark", "Light"], command=self.change_appearance)
         self.appearance_menu.set(self.settings["appearance"])
-        self.appearance_menu.pack(anchor="w", padx=18, pady=(8, 16))
+        self.appearance_menu.pack(anchor="center", pady=(8, 16))
 
         card = self.card(page, "Desktop shortcut", "Choose whether to keep a Market Insight icon on your desktop. You can change this whenever you like.")
         self.shortcut_var = ctk.BooleanVar(value=self.settings.get("create_desktop_shortcut", False))
@@ -681,12 +721,12 @@ class MarketInsightApp(ctk.CTk):
                         command=self.save_general_settings).pack(anchor="w", padx=18, pady=8)
         self.interval_menu = ctk.CTkOptionMenu(card, values=["5", "15", "30", "60"])
         self.interval_menu.set(str(self.settings["scan_interval"]))
-        self.interval_menu.pack(anchor="w", padx=18, pady=(4, 16))
+        self.interval_menu.pack(anchor="center", pady=(4, 16))
 
         ctk.CTkLabel(card, text="Your trading platform", text_color=("#646D64", "#C0C5BC")).pack(anchor="w", padx=18, pady=(8, 4))
         self.platform_menu = ctk.CTkOptionMenu(card, values=["TradingView", "MetaTrader 5", "Interactive Brokers", "Robinhood", "eToro", "Other"], command=self.change_platform)
         self.platform_menu.set(self.settings.get("selected_platform") or "TradingView")
-        self.platform_menu.pack(anchor="w", padx=18, pady=(0, 8))
+        self.platform_menu.pack(anchor="center", pady=(0, 8))
         self.custom_platform_entry = ctk.CTkEntry(card, placeholder_text="Your platform's stock link (put {symbol} where the ticker goes)")
         self.custom_platform_entry.insert(0, self.settings.get("custom_platform_url", ""))
         self.custom_platform_entry.pack(fill="x", padx=18, pady=6)
@@ -695,7 +735,7 @@ class MarketInsightApp(ctk.CTk):
                         variable=self.auto_platform_var, command=self.save_general_settings).pack(anchor="w", padx=18, pady=8)
         self.threshold_menu = ctk.CTkOptionMenu(card, values=["60", "70", "80", "90"])
         self.threshold_menu.set(str(self.settings["threshold"]))
-        self.threshold_menu.pack(anchor="w", padx=18, pady=(4, 16))
+        self.threshold_menu.pack(anchor="center", pady=(4, 16))
         ctk.CTkButton(card, text="Save scan settings", command=self.save_general_settings).pack(anchor="e", padx=18, pady=(0, 14))
 
         card = self.card(page, "Live prices — Alpaca", "Add your Alpaca API Key ID and Secret Access Key to use live price data. Your keys are stored securely in Windows Credential Manager.")
@@ -717,6 +757,39 @@ class MarketInsightApp(ctk.CTk):
         price_note.pack(anchor="w", fill="x", padx=18, pady=(0, 14))
         self._fit_text_to_width(price_note, card, 40)
 
+        guidance = self.card(page, "Understanding your settings",
+                             "A few notes to help you choose settings that suit your workflow.")
+        setting_notes = [
+            ("Scan interval", "Automatic scans refresh your watchlist at the interval you choose. More frequent scans do not guarantee better prices or signals."),
+            ("Score threshold", "The threshold controls when the app may automatically open a top-scoring stock on your selected platform. It does not mean the stock is likely to rise."),
+            ("Trading platform", "Choose where stock links should open. If you select Other, add a URL containing {symbol} where the ticker should be inserted."),
+            ("Appearance", "System follows your Windows appearance setting. Light and Dark override it inside Market Insight."),
+            ("Alpaca credentials", "Your API Key ID and Secret Access Key are stored in Windows Credential Manager. The secret is never shown back on screen.")
+        ]
+        for heading, description in setting_notes:
+            ctk.CTkLabel(guidance, text=heading, font=ctk.CTkFont(size=10, weight="bold"),
+                         text_color=("#4A514B", "#D8DDD7")).pack(anchor="w", padx=18, pady=(7, 1))
+            note = ctk.CTkLabel(guidance, text=description, font=ctk.CTkFont(size=10),
+                                justify="left", anchor="w",
+                                text_color=("#777D75", "#A7AAA1"))
+            note.pack(fill="x", padx=18, pady=(0, 5))
+            self._fit_text_to_width(note, guidance, 40)
+
+        resources = self.card(page, "Trading and data resources",
+                              "These links open in your web browser.")
+        for label, url in [
+            ("Manage Alpaca API keys", "https://app.alpaca.markets/"),
+            ("Alpaca market data guide", "https://docs.alpaca.markets/docs/about-market-data-api"),
+            ("Yahoo Finance market overview", "https://finance.yahoo.com/"),
+            ("TradingView charts", "https://www.tradingview.com/")
+        ]:
+            ctk.CTkButton(resources, text=label + "  ↗", corner_radius=16,
+                          fg_color=("#D8DAD4", "#414841"),
+                          hover_color=("#C8CBC2", "#50564F"),
+                          text_color=("#414841", "#E5E4DE"),
+                          command=lambda target=url: webbrowser.open(target)
+                          ).pack(anchor="center", pady=4)
+
     def _build_about(self):
         page = self.pages["About"]
         card = self.card(page, "About Market Insight")
@@ -735,8 +808,61 @@ class MarketInsightApp(ctk.CTk):
                                   text_color=("#947B75", "#C5AAA4"))
         disclaimer.pack(anchor="w", fill="x", padx=18, pady=5)
         self._fit_text_to_width(disclaimer, card, 40)
-        ctk.CTkLabel(card, text="Created by Adrian Vale",
+        ctk.CTkLabel(card, text="Created by Adrian Vale  •  Market Insight",
                      font=ctk.CTkFont(size=12, weight="bold"), text_color=("#646D64", "#C0C5BC")).pack(anchor="w", padx=18, pady=(14, 18))
+
+        indicators = self.card(page, "What the scanner looks at",
+                               "A quick guide to the figures shown on each stock.")
+        guide_items = [
+            ("EMA 20 / 50", "Moving averages that help show short- and medium-term price direction."),
+            ("RSI", "A momentum measure from 0 to 100. High or low readings can suggest stretched momentum, not an automatic trade signal."),
+            ("MACD", "Compares moving averages to help highlight changes in momentum."),
+            ("ATR", "Estimates typical price movement. The position calculator uses it to help estimate a stop distance."),
+            ("Volume ratio", "Compares recent trading volume with its average to highlight unusual activity."),
+            ("Market score", "A combined technical research score. It is a screening aid, not a probability or price target.")
+        ]
+        for name, description in guide_items:
+            row = ctk.CTkFrame(indicators, fg_color="transparent")
+            row.pack(fill="x", padx=18, pady=5)
+            ctk.CTkLabel(row, text=name, width=105, anchor="w",
+                         font=ctk.CTkFont(size=10, weight="bold"),
+                         text_color=("#4A514B", "#D8DDD7")).pack(side="left", anchor="nw")
+            detail = ctk.CTkLabel(row, text=description, font=ctk.CTkFont(size=10),
+                                  justify="left", anchor="w",
+                                  text_color=("#777D75", "#A7AAA1"))
+            detail.pack(side="left", fill="x", expand=True)
+            self._fit_text_to_width(detail, indicators, 150)
+
+        workflow = self.card(page, "A sensible research routine",
+                             "Use the scanner as one part of a wider decision process.")
+        routine = [
+            "1. Check the wider market pulse and upcoming news.",
+            "2. Review the stock's trend, momentum and trading volume.",
+            "3. Read any caution flags before considering a setup.",
+            "4. Decide your invalidation level before calculating size.",
+            "5. Check that the possible reward justifies the risk.",
+            "6. Re-check prices and conditions before acting."
+        ]
+        for item in routine:
+            ctk.CTkLabel(workflow, text=item, font=ctk.CTkFont(size=10),
+                         justify="left", anchor="w",
+                         text_color=("#646D64", "#C0C5BC")).pack(fill="x", padx=18, pady=4)
+
+        sources = self.card(page, "Data sources and useful websites",
+                            "Open the services Market Insight uses or the platform you selected.")
+        for label, url in [
+            ("Alpaca dashboard", "https://app.alpaca.markets/"),
+            ("Alpaca market data documentation", "https://docs.alpaca.markets/docs/about-market-data-api"),
+            ("Yahoo Finance", "https://finance.yahoo.com/"),
+            ("TradingView charts", "https://www.tradingview.com/")
+        ]:
+            ctk.CTkButton(sources, text=label + "  ↗", corner_radius=16,
+                          fg_color=("#D8DAD4", "#414841"),
+                          hover_color=("#C8CBC2", "#50564F"),
+                          text_color=("#414841", "#E5E4DE"),
+                          command=lambda target=url: webbrowser.open(target)
+                          ).pack(anchor="center", pady=4)
+
 
     def show_page(self, name):
         for frame in self.pages.values():
