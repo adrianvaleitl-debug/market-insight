@@ -435,12 +435,16 @@ class MarketInsightApp(ctk.CTk):
         self.interval_menu.set(str(self.settings["scan_interval"]))
         self.interval_menu.pack(anchor="w", padx=18, pady=(4, 16))
 
-        self.auto_tv_var = ctk.BooleanVar(value=self.settings["auto_open_tradingview"])
-        ctk.CTkCheckBox(card, text="Automatically open new top result in TradingView",
-                        variable=self.auto_tv_var, command=self.save_general_settings).pack(anchor="w", padx=18, pady=8)
-        self.confirm_tv_var = ctk.BooleanVar(value=self.settings["confirm_tradingview"])
-        ctk.CTkCheckBox(card, text="Ask before opening TradingView",
-                        variable=self.confirm_tv_var, command=self.save_general_settings).pack(anchor="w", padx=18, pady=8)
+        ctk.CTkLabel(card, text="Trading platform", text_color=("#53635A", "#C5D3CB")).pack(anchor="w", padx=18, pady=(8, 4))
+        self.platform_menu = ctk.CTkOptionMenu(card, values=["TradingView", "MetaTrader 5", "Interactive Brokers", "Robinhood", "eToro", "Other"], command=self.change_platform)
+        self.platform_menu.set(self.settings.get("selected_platform") or "TradingView")
+        self.platform_menu.pack(anchor="w", padx=18, pady=(0, 8))
+        self.custom_platform_entry = ctk.CTkEntry(card, placeholder_text="Custom URL template (use {symbol})")
+        self.custom_platform_entry.insert(0, self.settings.get("custom_platform_url", ""))
+        self.custom_platform_entry.pack(fill="x", padx=18, pady=6)
+        self.auto_platform_var = ctk.BooleanVar(value=self.settings.get("auto_open_platform", False))
+        ctk.CTkCheckBox(card, text="Automatically open the top result in my selected platform",
+                        variable=self.auto_platform_var, command=self.save_general_settings).pack(anchor="w", padx=18, pady=8)
         self.threshold_menu = ctk.CTkOptionMenu(card, values=["60", "70", "80", "90"])
         self.threshold_menu.set(str(self.settings["threshold"]))
         self.threshold_menu.pack(anchor="w", padx=18, pady=(4, 16))
@@ -516,11 +520,17 @@ class MarketInsightApp(ctk.CTk):
         ctk.set_appearance_mode(value.lower())
         save_settings(self.settings)
 
+    def change_platform(self, value):
+        self.settings["selected_platform"] = value
+        save_settings(self.settings)
+        self.status.configure(text="Platform set to " + value)
+
     def save_general_settings(self):
         self.settings["auto_scan"] = bool(self.auto_scan_var.get())
         self.settings["scan_interval"] = int(self.interval_menu.get())
-        self.settings["auto_open_tradingview"] = bool(self.auto_tv_var.get())
-        self.settings["confirm_tradingview"] = bool(self.confirm_tv_var.get())
+        self.settings["selected_platform"] = self.platform_menu.get()
+        self.settings["custom_platform_url"] = self.custom_platform_entry.get().strip()
+        self.settings["auto_open_platform"] = bool(self.auto_platform_var.get())
         self.settings["threshold"] = int(self.threshold_menu.get())
         save_settings(self.settings)
         self.status.configure(text="Settings saved")
