@@ -38,11 +38,11 @@ It is a research aid, not an automated trading system.
 
 ## Installation
 
-1. Download the latest release ZIP and extract the folder.
-2. Double-click **SETUP_AND_START.bat** once.
-3. The setup automatically installs the required packages, prepares the logo, creates a desktop shortcut, and starts Market Insight.
+1. Download the latest release ZIP and extract the **Market_Insight** folder.
+2. Double-click **SETUP_AND_START.bat**. This is the only file you need to run for setup.
+3. It installs the required packages and opens Market Insight without leaving a command window running.
 
-After setup, open Market Insight from the desktop shortcut. You do not need to run the setup again unless you reinstall or update the app. The normal app launch runs without a command window.
+The first time the app opens, it asks whether you want a desktop shortcut. Your answer is remembered, so it will not ask again. You can turn the shortcut on or off later in **Settings → Desktop shortcut**.
 
 Python 3 must be installed on the computer. If setup cannot find it, install Python from https://www.python.org/downloads/ and run the setup again.
 
@@ -56,7 +56,7 @@ If Windows displays a security prompt, check that you downloaded the ZIP from th
 4. After successful validation, choose the trading platform you use.
 5. The main scanner opens after the setup steps are complete.
 
-Your Alpaca credentials are stored using Windows Credential Manager via the Python `keyring` package. Do not share your API keys or include them in screenshots, support messages, or public posts.
+Your Alpaca credentials are stored using Windows Credential Manager via the Python `keyring` package. App preferences and diagnostic logs are stored in your Windows user AppData folder, separately from the program files. The app icon is loaded automatically when the Python file starts and is generated if it is missing. Do not share your API keys or include them in screenshots, support messages, or public posts.
 
 ## Using the scanner
 
