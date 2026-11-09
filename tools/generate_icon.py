@@ -15,10 +15,10 @@ def make_icon():
     im = Image.new("RGBA", (n, n), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
 
-    # Dark charcoal tile with the original soft rounded-square silhouette.
-    d.rounded_rectangle(
+    # Full 360-degree charcoal circle. The corners stay transparent so the
+    # icon is genuinely circular in Windows shortcuts and the taskbar.
+    d.ellipse(
         (0, 0, n - 1, n - 1),
-        radius=145 * SUPERSAMPLE,
         fill=(45, 46, 45, 255),
     )
 
