@@ -11,6 +11,7 @@ on:
       - "Start_Market_Insight.vbs"
       - "tools/generate_icon.py"
       - "Create_Desktop_Shortcut.ps1"
+      - "installer.iss"
       - "tools/DEBUG_START.bat"
       - "README.md"
       - "index.html"
@@ -22,7 +23,7 @@ permissions:
 
 jobs:
   build-and-release:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -32,53 +33,51 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install icon generator dependency
-        run: python -m pip install Pillow
+      - name: Install application dependencies and packaging tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt pyinstaller
 
-      - name: Generate app icon and check Python syntax
+      - name: Generate icon and check Python syntax
         run: |
           python tools/generate_icon.py
           python -m py_compile market_insight.py tools/generate_icon.py
 
-      - name: Assemble a clean download folder
+      - name: Build standalone Windows application
+        shell: pwsh
         run: |
-          mkdir -p Market_Insight
-          cp market_insight.py requirements.txt SETUP_AND_START.bat \
-            Start_Market_Insight.vbs market_insight.ico \
-            START_IN_DIAGNOSTIC_MODE.bat Create_Desktop_Shortcut.ps1 README.md Market_Insight/
-          zip -r Market_Insight_v1.2.20.zip Market_Insight
+          pyinstaller --noconfirm --clean --windowed --onedir --name "Market Insight" --icon market_insight.ico --collect-all customtkinter --collect-all keyring --collect-all yfinance --collect-all pandas --collect-all certifi --collect-all curl_cffi --collect-all requests market_insight.py
+          if (!(Test-Path "dist/Market Insight/Market Insight.exe")) { throw "The packaged application executable was not created." }
+
+      - name: Install Inno Setup
+        run: choco install innosetup --yes --no-progress
+
+      - name: Build single-file installer
+        shell: pwsh
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
+          if (!(Test-Path "installer-output/Market_Insight_Setup_v1.2.21.exe")) { throw "The Windows installer was not created." }
+
+      - name: Assemble source ZIP for existing users
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path Market_Insight | Out-Null
+          Copy-Item market_insight.py, requirements.txt, SETUP_AND_START.bat, Start_Market_Insight.vbs, market_insight.ico, START_IN_DIAGNOSTIC_MODE.bat, Create_Desktop_Shortcut.ps1, README.md -Destination Market_Insight
+          Compress-Archive -Path Market_Insight -DestinationPath Market_Insight_v1.2.21.zip -Force
 
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
         run: |
-          gh release create v1.2.20 Market_Insight_v1.2.20.zip \
-            --title "Market Insight v1.2.20" \
-            --notes "## Market Insight v1.2.20
+          gh release create v1.2.21 "installer-output/Market_Insight_Setup_v1.2.21.exe" "Market_Insight_v1.2.21.zip" --title "Market Insight v1.2.21" --notes @"
+          ## Market Insight v1.2.21
 
-          - Test release to verify the in-app GitHub update check and download prompt; no functional changes
-          - This release intentionally contains no new app features.
+          - Added a single-file Windows installer.
+          - The installer places the complete application and its bundled Python dependencies in your user Programs folder.
+          - No separate Python installation, ZIP extraction, or manual package setup is required.
+          - Creates Start Menu and optional desktop shortcuts, then offers to launch Market Insight.
+          - Existing scanner features and saved settings are preserved.
 
-          - Added a full creator credits section at the bottom of Settings with TikTok, website and GitHub links
-          - Added an Overview footer showing Adrian Vale and the TikTok profile link
-          - Added Adrian Vale to the bottom of the left sidebar
-          - Set Maximised as the default startup mode, with options for Maximised, Full screen or Windowed
-          - Fixed display-mode settings so they save independently without triggering unrelated settings controls
-          - Added F11 to toggle Full screen and Escape to leave it; keyboard shortcuts work while child controls have focus
-          - Rendered stock result cards in small batches to reduce interface pauses and redraw lag
-          - Reduced progress-label updates during large watchlist scans
-          - Added a Windows startup setting to open Market Insight when you sign in
-          - Prevented multiple copies of Market Insight from running at the same time
-          - Added automatic and manual GitHub update checks with a confirmed ZIP download
-          - Added clear Create desktop shortcut and Remove desktop shortcut buttons in Settings
-          - Moved useful website and creator links to the top of the Settings help and credits section
-          - Combined the Settings page into three larger sections for easier navigation
-          - Replaced bright green interface accents with a softer grey-sage palette
-          - Centered the dropdown options in Settings for a cleaner, more balanced layout
-          - Expanded Settings with clear explanations of scan intervals, score thresholds, platform links, appearance and credential storage
-          - Expanded About with plain-English explanations of the scanner indicators, a practical research routine and source links
-          - Added a sidebar account summary with Alpaca connection status, a masked API Key ID, selected trading platform and useful quick links
-          - Kept the Alpaca Secret Access Key hidden; credentials remain stored in Windows Credential Manager
-          - Preserved existing scanning, market pulse, position calculator, watchlist and platform features
-
-          Python 3 is still required. Educational research software only; not financial advice."
+          The installer is for 64-bit Windows 10 and Windows 11. Educational research software only; not financial advice.
+          "@
