@@ -73,7 +73,7 @@ STOCK_NAMES = {
 
 DEFAULTS = {
     "appearance": "Dark",
-    "startup_window_mode": "Full screen",
+    "startup_window_mode": "Maximised",
     "auto_scan": True,
     "scan_interval": 5,
     "auto_open_tradingview": False,
@@ -455,7 +455,7 @@ class MarketInsightApp(ctk.CTk):
             self.after(900, self.start_scan)
 
     def apply_startup_window_mode(self):
-        """Apply the user's saved startup display mode after the window is visible."""
+        """Apply the saved display mode after the main window has been mapped."""
         mode = self.settings.get("startup_window_mode", "Maximised")
         try:
             self.attributes("-fullscreen", False)
@@ -467,11 +467,44 @@ class MarketInsightApp(ctk.CTk):
             else:
                 self.state("zoomed")
         except Exception:
-            # Some window managers do not support every state; keep a usable window.
             try:
-                self.state("zoomed" if mode != "Windowed" else "normal")
+                self.attributes("-fullscreen", False)
+                self.state("normal" if mode == "Windowed" else "zoomed")
             except Exception:
                 pass
+
+    def change_startup_window_mode(self, value):
+        """Save the display preference without calling the general settings form."""
+        if value not in ("Maximised", "Full screen", "Windowed"):
+            value = "Maximised"
+        self.settings["startup_window_mode"] = value
+        try:
+            save_settings(self.settings)
+            self.status.configure(
+                text="Startup display mode saved. It will apply the next time you open Market Insight."
+            )
+        except Exception as exc:
+            from tkinter import messagebox
+            messagebox.showerror(
+                APP_NAME,
+                "Couldn't save the display setting. Please try again.\\n\\n{}".format(exc),
+                parent=self
+            )
+
+    def _toggle_fullscreen(self, event=None):
+        try:
+            if self.attributes("-fullscreen"):
+                self.attributes("-fullscreen", False)
+                self.state("zoomed")
+            else:
+                self.attributes("-fullscreen", True)
+        except Exception:
+            try:
+                self.attributes("-fullscreen", False)
+                self.state("zoomed")
+            except Exception:
+                pass
+        return "break"
 
     def _exit_fullscreen(self, event=None):
         try:
@@ -480,6 +513,7 @@ class MarketInsightApp(ctk.CTk):
                 self.state("zoomed")
         except Exception:
             pass
+        return "break"
 
     def _maybe_prompt_shortcut(self):
         if self.settings.get("shortcut_prompted"):
@@ -638,7 +672,9 @@ class MarketInsightApp(ctk.CTk):
         self._build_settings()
         self._build_about()
         self.show_page("Overview")
-        self.bind("<Escape>", self._exit_fullscreen)
+        # Global bindings work even when a child control has keyboard focus.
+        self.bind_all("<F11>", self._toggle_fullscreen)
+        self.bind_all("<Escape>", self._exit_fullscreen)
 
     def card(self, parent, title, subtitle=None, wraplength=None):
         frame = ctk.CTkFrame(parent, corner_radius=22, fg_color=("#EFEEE8", "#30332F"))
@@ -785,13 +821,13 @@ class MarketInsightApp(ctk.CTk):
                      text_color=("#555D54", "#C0C5BC")).pack(anchor="w", padx=18, pady=(4, 3))
         self.startup_mode_menu = ctk.CTkOptionMenu(
             preferences, values=["Maximised", "Full screen", "Windowed"],
-            command=self.save_general_settings
+            command=self.change_startup_window_mode
         )
         self.startup_mode_menu.set(self.settings.get("startup_window_mode", "Maximised"))
         self.startup_mode_menu.pack(anchor="w", padx=18, pady=(0, 5))
         mode_note = ctk.CTkLabel(
             preferences,
-            text="Maximised fills the screen but keeps the Windows title bar and taskbar. Full screen hides them. Press Escape to leave full screen.",
+            text="Maximised fills the screen but keeps the Windows title bar and taskbar. Full screen hides them. Press F11 or Escape to leave full screen.",
             font=ctk.CTkFont(size=10), justify="left", anchor="w",
             text_color=("#777D75", "#A7AAA1")
         )
