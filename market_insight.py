@@ -416,10 +416,10 @@ class MarketInsightApp(ctk.CTk):
         win.grab_set()
         panel = ctk.CTkFrame(win, corner_radius=24, fg_color=("#F8F7F3", "#30332F"))
         panel.pack(fill="both", expand=True, padx=22, pady=22)
-        ctk.CTkLabel(panel, text="MARKET INSIGHT", font=ctk.CTkFont(size=15, weight="bold")).pack(anchor="w", padx=30, pady=(25, 8))
-        ctk.CTkLabel(panel, text=title, font=ctk.CTkFont(size=27, weight="bold"),
+        ctk.CTkLabel(panel, text="MARKET INSIGHT", font=ctk.CTkFont(size=16, weight="bold")).pack(anchor="w", padx=30, pady=(25, 8))
+        ctk.CTkLabel(panel, text=title, font=ctk.CTkFont(size=28, weight="bold"),
                      wraplength=540, justify="left").pack(anchor="w", fill="x", padx=30)
-        setup_description = ctk.CTkLabel(panel, text=subtitle, font=ctk.CTkFont(size=13),
+        setup_description = ctk.CTkLabel(panel, text=subtitle, font=ctk.CTkFont(size=14),
                                          justify="left")
         setup_description.pack(anchor="w", fill="x", padx=30, pady=(8, 18))
         self._fit_text_to_width(setup_description, panel, 60)
@@ -437,7 +437,7 @@ class MarketInsightApp(ctk.CTk):
                       text_color=("#647B68", "#B8C2B5"),
                       command=lambda: webbrowser.open("https://app.alpaca.markets/")).pack(anchor="w", padx=25, pady=12)
         self.setup_status = ctk.CTkLabel(panel, text="Your keys are saved securely in Windows Credential Manager on this computer.",
-                                         font=ctk.CTkFont(size=12), justify="left")
+                                         font=ctk.CTkFont(size=13), justify="left")
         self.setup_status.pack(anchor="w", fill="x", padx=30, pady=8)
         self._fit_text_to_width(self.setup_status, panel, 60)
         ctk.CTkButton(panel, text="Check keys and continue", height=45, command=self._validate_setup_keys).pack(fill="x", padx=30, pady=18)
@@ -480,7 +480,7 @@ class MarketInsightApp(ctk.CTk):
             row = ctk.CTkFrame(panel, corner_radius=12, fg_color=("#ECEBE5", "#30332F"))
             row.pack(fill="x", padx=30, pady=3)
             ctk.CTkRadioButton(row, text=name, value=name, variable=self.setup_platform_var).pack(anchor="w", padx=14, pady=(7, 0))
-            ctk.CTkLabel(row, text=detail, font=ctk.CTkFont(size=12)).pack(anchor="w", padx=39, pady=(0, 6))
+            ctk.CTkLabel(row, text=detail, font=ctk.CTkFont(size=13)).pack(anchor="w", padx=39, pady=(0, 6))
         ctk.CTkButton(panel, text="Save choice and continue", height=44, command=self._finish_first_run).pack(fill="x", padx=30, pady=16)
         win.focus_force()
 
@@ -652,7 +652,7 @@ class MarketInsightApp(ctk.CTk):
         self.sidebar = ctk.CTkFrame(self, width=205, corner_radius=0, fg_color=("#E8E7E1", "#252724"))
         self.sidebar.grid(row=0, column=0, sticky="nsew")
         self.sidebar.grid_propagate(False)
-        ctk.CTkLabel(self.sidebar, text="MARKET\nINSIGHT", font=ctk.CTkFont(size=24, weight="bold"),
+        ctk.CTkLabel(self.sidebar, text="MARKET\nINSIGHT", font=ctk.CTkFont(size=25, weight="bold"),
                      text_color=("#3C453F", "#D4D8D2"), justify="left").pack(anchor="w", padx=22, pady=(28, 30))
         self.nav_buttons = {}
         for label in ["Overview", "Watchlist", "Settings", "About"]:
@@ -669,25 +669,25 @@ class MarketInsightApp(ctk.CTk):
         )
         side_info.pack(fill="both", expand=True, padx=10, pady=(18, 10))
         ctk.CTkLabel(side_info, text="ACCOUNT CONNECTION",
-                     font=ctk.CTkFont(size=11, weight="bold"),
+                     font=ctk.CTkFont(size=12, weight="bold"),
                      text_color=("#777D75", "#AEB1A8")).pack(anchor="w", padx=8, pady=(10, 4))
         saved_key, saved_secret = get_alpaca_credentials()
         connected = bool(saved_key and saved_secret)
         ctk.CTkLabel(side_info, text="●  Alpaca connected" if connected else "○  Alpaca not connected",
-                     font=ctk.CTkFont(size=12, weight="bold"),
+                     font=ctk.CTkFont(size=13, weight="bold"),
                      text_color=("#647B68", "#B4C4B1") if connected else ("#947B75", "#C5AAA4"),
                      justify="left").pack(anchor="w", padx=8, pady=3)
         key_hint = ("Key ID: ••••" + saved_key[-4:]) if connected else "API keys not saved"
-        ctk.CTkLabel(side_info, text=key_hint, font=ctk.CTkFont(size=11),
+        ctk.CTkLabel(side_info, text=key_hint, font=ctk.CTkFont(size=12),
                      text_color=("#777D75", "#A7AAA1")).pack(anchor="w", padx=8, pady=(0, 10))
         ctk.CTkLabel(side_info, text="YOUR TRADING PLATFORM",
-                     font=ctk.CTkFont(size=11, weight="bold"),
+                     font=ctk.CTkFont(size=12, weight="bold"),
                      text_color=("#777D75", "#AEB1A8")).pack(anchor="w", padx=8, pady=(8, 4))
         ctk.CTkLabel(side_info, text=self.settings.get("selected_platform") or "Not selected",
-                     font=ctk.CTkFont(size=12, weight="bold"),
+                     font=ctk.CTkFont(size=13, weight="bold"),
                      text_color=("#4A514B", "#D8DDD7")).pack(anchor="w", padx=8, pady=(0, 10))
         ctk.CTkLabel(side_info, text="QUICK LINKS",
-                     font=ctk.CTkFont(size=11, weight="bold"),
+                     font=ctk.CTkFont(size=12, weight="bold"),
                      text_color=("#777D75", "#AEB1A8")).pack(anchor="w", padx=8, pady=(8, 4))
         for link_name, link_url in [
             ("Alpaca dashboard ↗", "https://app.alpaca.markets/"),
@@ -699,11 +699,11 @@ class MarketInsightApp(ctk.CTk):
                           corner_radius=12, fg_color="transparent",
                           text_color=("#58645B", "#C0C5BC"),
                           hover_color=("#D1D2C9", "#3A3D37"),
-                          font=ctk.CTkFont(size=11),
+                          font=ctk.CTkFont(size=12),
                           command=lambda url=link_url: webbrowser.open(url)
                           ).pack(fill="x", padx=4, pady=2)
         ctk.CTkLabel(self.sidebar, text="Market Insight  •  Research only  •  Adrian Vale",
-                     font=ctk.CTkFont(size=11), text_color=("#75827B", "#87958E"),
+                     font=ctk.CTkFont(size=12), text_color=("#75827B", "#87958E"),
                      justify="left").pack(side="bottom", anchor="w", padx=14, pady=10)
 
         self.main = ctk.CTkFrame(self, corner_radius=0, fg_color="transparent")
@@ -714,7 +714,7 @@ class MarketInsightApp(ctk.CTk):
         header = ctk.CTkFrame(self.main, fg_color="transparent")
         header.grid(row=0, column=0, sticky="ew", pady=(0, 18))
         header.grid_columnconfigure(0, weight=1)
-        self.page_title = ctk.CTkLabel(header, text="Market overview", font=ctk.CTkFont(size=28, weight="bold"),
+        self.page_title = ctk.CTkLabel(header, text="Market overview", font=ctk.CTkFont(size=29, weight="bold"),
                                        text_color=("#26342D", "#E5EEE9"))
         self.page_title.grid(row=0, column=0, sticky="w")
         self.status = ctk.CTkLabel(header, text="Ready", corner_radius=16, padx=14, pady=8,
@@ -738,12 +738,12 @@ class MarketInsightApp(ctk.CTk):
     def card(self, parent, title, subtitle=None, wraplength=None):
         frame = ctk.CTkFrame(parent, corner_radius=22, fg_color=("#EFEEE8", "#30332F"))
         frame.pack(fill="x", padx=14, pady=10)
-        heading = ctk.CTkLabel(frame, text=title, font=ctk.CTkFont(size=18, weight="bold"),
+        heading = ctk.CTkLabel(frame, text=title, font=ctk.CTkFont(size=19, weight="bold"),
                                text_color=("#414841", "#D8DDD7"), justify="left")
         heading.pack(anchor="w", fill="x", padx=18, pady=(14, 3))
         self._fit_text_to_width(heading, frame, 40)
         if subtitle:
-            description = ctk.CTkLabel(frame, text=subtitle, font=ctk.CTkFont(size=12),
+            description = ctk.CTkLabel(frame, text=subtitle, font=ctk.CTkFont(size=13),
                                        text_color=("#777D75", "#A7AAA1"), justify="left")
             description.pack(anchor="w", fill="x", padx=18, pady=(0, 9))
             self._fit_text_to_width(description, frame, 40)
@@ -760,7 +760,7 @@ class MarketInsightApp(ctk.CTk):
                       command=self.open_top_result).pack(side="left", padx=8)
         self.scan_info = ctk.CTkLabel(
             actions, text="50 stocks included",
-            font=ctk.CTkFont(size=14, weight="bold"),
+            font=ctk.CTkFont(size=15, weight="bold"),
             text_color=("#E5E4DE", "#E5E4DE"),
             fg_color=("#555A55", "#3B3E3A"),
             corner_radius=18, padx=16, pady=9
@@ -778,11 +778,11 @@ class MarketInsightApp(ctk.CTk):
 
         top = self.card(left_column, "Highest market score", "The stock with the highest score in your latest scan")
         self.top_symbol = ctk.CTkLabel(top, text="No scan has been run yet",
-                                       font=ctk.CTkFont(size=30, weight="bold"))
+                                       font=ctk.CTkFont(size=31, weight="bold"))
         self.top_symbol.pack(anchor="w", fill="x", padx=18, pady=(6, 0))
         self._fit_text_to_width(self.top_symbol, top, 40)
         self.top_details = ctk.CTkLabel(top, text="Connect Alpaca in Settings, then scan your watchlist to see available live prices.",
-                                        font=ctk.CTkFont(size=12),
+                                        font=ctk.CTkFont(size=13),
                                         text_color=("#777D75", "#A6B3AC"), justify="left")
         self.top_details.pack(anchor="w", fill="x", padx=18, pady=(2, 16))
         self._fit_text_to_width(self.top_details, top, 40)
@@ -800,16 +800,16 @@ class MarketInsightApp(ctk.CTk):
         for symbol, name in [("SPY", "S&P 500"), ("QQQ", "Nasdaq 100"), ("DIA", "Dow Jones"), ("IWM", "Russell 2000"), ("^VIX", "Volatility (VIX)")]:
             line = ctk.CTkFrame(pulse, fg_color="transparent")
             line.pack(fill="x", padx=14, pady=3)
-            ctk.CTkLabel(line, text=name, font=ctk.CTkFont(size=12), text_color=("#646D64", "#B8BDB4")).pack(side="left")
-            value = ctk.CTkLabel(line, text="Waiting for scan", font=ctk.CTkFont(size=12, weight="bold"), text_color=("#646D64", "#C0C5BC"))
+            ctk.CTkLabel(line, text=name, font=ctk.CTkFont(size=13), text_color=("#646D64", "#B8BDB4")).pack(side="left")
+            value = ctk.CTkLabel(line, text="Waiting for scan", font=ctk.CTkFont(size=13, weight="bold"), text_color=("#646D64", "#C0C5BC"))
             value.pack(side="right")
             self.market_pulse_labels[symbol] = value
-        self.market_breadth = ctk.CTkLabel(pulse, text="Watchlist breadth: waiting for scan", font=ctk.CTkFont(size=12, weight="bold"), text_color=("#646D64", "#C0C5BC"), justify="left")
+        self.market_breadth = ctk.CTkLabel(pulse, text="Watchlist breadth: waiting for scan", font=ctk.CTkFont(size=13, weight="bold"), text_color=("#646D64", "#C0C5BC"), justify="left")
         self.market_breadth.pack(anchor="w", padx=14, pady=(8, 12))
         checklist = self.card(right_column, "Before you trade", "A quick discipline check")
         checklist_items = ["Is there a clear reason for this trade?", "Have I checked the wider market trend?", "Is my stop level defined before entry?", "Does the position fit my risk limit?", "Is the potential reward worth the risk?", "Am I avoiding an emotional decision?"]
         for item in checklist_items:
-            ctk.CTkLabel(checklist, text="•  " + item, font=ctk.CTkFont(size=11), text_color=("#646D64", "#B8BDB4"), justify="left", wraplength=260).pack(anchor="w", padx=14, pady=3)
+            ctk.CTkLabel(checklist, text="•  " + item, font=ctk.CTkFont(size=12), text_color=("#646D64", "#B8BDB4"), justify="left", wraplength=260).pack(anchor="w", padx=14, pady=3)
         calculator = self.card(right_column, "Position size calculator",
                                "Estimate how many shares may fit your balance and risk limit. This is a guide only; it does not place trades.",
                                wraplength=270)
@@ -828,7 +828,7 @@ class MarketInsightApp(ctk.CTk):
         self.calc_output = ctk.CTkLabel(
             calculator,
             text="Run a scan to see example position size and price levels for the highest-scoring stock.",
-            font=ctk.CTkFont(size=12), text_color=("#777D75", "#A7AAA1"), justify="left"
+            font=ctk.CTkFont(size=13), text_color=("#777D75", "#A7AAA1"), justify="left"
         )
         self.calc_output.pack(anchor="w", fill="x", padx=14, pady=(0, 16))
         self._fit_text_to_width(self.calc_output, calculator, 32)
@@ -837,7 +837,7 @@ class MarketInsightApp(ctk.CTk):
         footer.pack(fill="x", padx=18, pady=(2, 10))
         ctk.CTkLabel(
             footer, text="ADRIAN VALE  ·  MARKET INSIGHT",
-            font=ctk.CTkFont(size=12, weight="bold"),
+            font=ctk.CTkFont(size=13, weight="bold"),
             text_color=("#646D64", "#C0C5BC")
         ).pack(side="left")
         ctk.CTkButton(
@@ -867,7 +867,7 @@ class MarketInsightApp(ctk.CTk):
             "Choose how Market Insight looks, opens and keeps your watchlist up to date."
         )
         ctk.CTkLabel(preferences, text="Appearance",
-                     font=ctk.CTkFont(size=13, weight="bold"),
+                     font=ctk.CTkFont(size=14, weight="bold"),
                      text_color=("#555D54", "#C0C5BC")).pack(anchor="w", padx=18, pady=(10, 3))
         self.appearance_menu = ctk.CTkOptionMenu(
             preferences, values=["System", "Dark", "Light"], command=self.change_appearance
@@ -876,7 +876,7 @@ class MarketInsightApp(ctk.CTk):
         self.appearance_menu.pack(anchor="w", padx=18, pady=(0, 12))
 
         ctk.CTkLabel(preferences, text="How the program opens",
-                     font=ctk.CTkFont(size=13, weight="bold"),
+                     font=ctk.CTkFont(size=14, weight="bold"),
                      text_color=("#555D54", "#C0C5BC")).pack(anchor="w", padx=18, pady=(4, 3))
         self.startup_mode_menu = ctk.CTkOptionMenu(
             preferences, values=["Maximised", "Full screen", "Windowed"],
@@ -887,7 +887,7 @@ class MarketInsightApp(ctk.CTk):
         mode_note = ctk.CTkLabel(
             preferences,
             text="Maximised fills the screen but keeps the Windows title bar and taskbar. Full screen hides them. Press F11 or Escape to leave full screen.",
-            font=ctk.CTkFont(size=12), justify="left", anchor="w",
+            font=ctk.CTkFont(size=13), justify="left", anchor="w",
             text_color=("#777D75", "#A7AAA1")
         )
         mode_note.pack(fill="x", padx=18, pady=(0, 12))
@@ -901,7 +901,7 @@ class MarketInsightApp(ctk.CTk):
 
         ctk.CTkLabel(
             preferences, text="Desktop shortcut",
-            font=ctk.CTkFont(size=13, weight="bold"),
+            font=ctk.CTkFont(size=14, weight="bold"),
             text_color=("#555D54", "#C0C5BC")
         ).pack(anchor="w", padx=18, pady=(8, 3))
         shortcut_actions = ctk.CTkFrame(preferences, fg_color="transparent")
@@ -923,14 +923,14 @@ class MarketInsightApp(ctk.CTk):
             variable=self.auto_scan_var, command=self.save_general_settings
         ).pack(anchor="w", padx=18, pady=(4, 7))
         ctk.CTkLabel(preferences, text="Automatic scan interval (minutes)",
-                     font=ctk.CTkFont(size=12),
+                     font=ctk.CTkFont(size=13),
                      text_color=("#777D75", "#A7AAA1")).pack(anchor="w", padx=18, pady=(0, 3))
         self.interval_menu = ctk.CTkOptionMenu(preferences, values=["5", "15", "30", "60"])
         self.interval_menu.set(str(self.settings["scan_interval"]))
         self.interval_menu.pack(anchor="w", padx=18, pady=(0, 12))
 
         ctk.CTkLabel(preferences, text="Your trading platform",
-                     font=ctk.CTkFont(size=13, weight="bold"),
+                     font=ctk.CTkFont(size=14, weight="bold"),
                      text_color=("#555D54", "#C0C5BC")).pack(anchor="w", padx=18, pady=(4, 3))
         self.platform_menu = ctk.CTkOptionMenu(
             preferences, values=["TradingView", "MetaTrader 5", "Interactive Brokers", "Robinhood", "eToro", "Other"],
@@ -950,7 +950,7 @@ class MarketInsightApp(ctk.CTk):
             variable=self.auto_platform_var, command=self.save_general_settings
         ).pack(anchor="w", padx=18, pady=(8, 7))
         ctk.CTkLabel(preferences, text="Minimum score for automatic opening",
-                     font=ctk.CTkFont(size=12),
+                     font=ctk.CTkFont(size=13),
                      text_color=("#777D75", "#A7AAA1")).pack(anchor="w", padx=18, pady=(0, 3))
         self.threshold_menu = ctk.CTkOptionMenu(preferences, values=["60", "70", "80", "90"])
         self.threshold_menu.set(str(self.settings["threshold"]))
@@ -965,7 +965,7 @@ class MarketInsightApp(ctk.CTk):
         )
         self.update_status = ctk.CTkLabel(
             updates, text="Current version: v{}".format(APP_VERSION),
-            font=ctk.CTkFont(size=12), text_color=("#777D75", "#A7AAA1"), justify="left"
+            font=ctk.CTkFont(size=13), text_color=("#777D75", "#A7AAA1"), justify="left"
         )
         self.update_status.pack(anchor="w", padx=18, pady=(8, 5))
         self.auto_update_check_var = ctk.BooleanVar(value=self.settings.get("check_for_updates", True))
@@ -1002,7 +1002,7 @@ class MarketInsightApp(ctk.CTk):
         price_note = ctk.CTkLabel(
             connection,
             text="Price data comes from IEX, which does not cover every US market trade. Live prices are available only when the market is open and an IEX trade is available. Past-price indicators come from Yahoo Finance. If Alpaca can't provide a live price, the app will show an error rather than silently using delayed data.",
-            justify="left", font=ctk.CTkFont(size=12),
+            justify="left", font=ctk.CTkFont(size=13),
             text_color=("#8C8067", "#BDB19A")
         )
         price_note.pack(anchor="w", fill="x", padx=18, pady=(0, 14))
@@ -1042,11 +1042,11 @@ class MarketInsightApp(ctk.CTk):
         ]
         for heading, description in setting_notes:
             ctk.CTkLabel(
-                extras, text=heading, font=ctk.CTkFont(size=12, weight="bold"),
+                extras, text=heading, font=ctk.CTkFont(size=13, weight="bold"),
                 text_color=("#555D54", "#D8DDD7")
             ).pack(anchor="w", padx=18, pady=(7, 1))
             note = ctk.CTkLabel(
-                extras, text=description, font=ctk.CTkFont(size=12),
+                extras, text=description, font=ctk.CTkFont(size=13),
                 justify="left", anchor="w", text_color=("#777D75", "#A7AAA1")
             )
             note.pack(fill="x", padx=18, pady=(0, 5))
@@ -1054,7 +1054,7 @@ class MarketInsightApp(ctk.CTk):
 
         ctk.CTkLabel(
             extras, text="Created by Adrian Vale  ·  Market Insight",
-            font=ctk.CTkFont(size=14, weight="bold"),
+            font=ctk.CTkFont(size=15, weight="bold"),
             text_color=("#646D64", "#C0C5BC")
         ).pack(anchor="center", pady=(10, 14))
 
@@ -1062,22 +1062,22 @@ class MarketInsightApp(ctk.CTk):
         page = self.pages["About"]
         card = self.card(page, "About Market Insight")
         intro = ctk.CTkLabel(card, text="A straightforward tool for researching stocks and keeping track of the ones you're interested in.",
-                             font=ctk.CTkFont(size=16, weight="bold"),
+                             font=ctk.CTkFont(size=17, weight="bold"),
                              text_color=("#646D64", "#C0C5BC"), justify="left")
         intro.pack(anchor="w", fill="x", padx=18, pady=(6, 8))
         self._fit_text_to_width(intro, card, 40)
         data_note = ctk.CTkLabel(card, text="When connected, live prices come from Alpaca's IEX data feed. Stock indicators are calculated using past daily prices from Yahoo Finance. IEX does not include every US market trade, so some prices may not be available.",
-                                 font=ctk.CTkFont(size=12), justify="left",
+                                 font=ctk.CTkFont(size=13), justify="left",
                                  text_color=("#777D75", "#A7AAA1"))
         data_note.pack(anchor="w", fill="x", padx=18, pady=5)
         self._fit_text_to_width(data_note, card, 40)
         disclaimer = ctk.CTkLabel(card, text="For education and research only. Scores and indicators are estimates, not financial advice or a guarantee of future results. Market Insight does not connect to your broker and cannot place trades.",
-                                  font=ctk.CTkFont(size=12), justify="left",
+                                  font=ctk.CTkFont(size=13), justify="left",
                                   text_color=("#947B75", "#C5AAA4"))
         disclaimer.pack(anchor="w", fill="x", padx=18, pady=5)
         self._fit_text_to_width(disclaimer, card, 40)
         ctk.CTkLabel(card, text="Created by Adrian Vale  •  Market Insight",
-                     font=ctk.CTkFont(size=14, weight="bold"), text_color=("#646D64", "#C0C5BC")).pack(anchor="w", padx=18, pady=(14, 18))
+                     font=ctk.CTkFont(size=15, weight="bold"), text_color=("#646D64", "#C0C5BC")).pack(anchor="w", padx=18, pady=(14, 18))
 
         indicators = self.card(page, "What the scanner looks at",
                                "A quick guide to the figures shown on each stock.")
@@ -1093,9 +1093,9 @@ class MarketInsightApp(ctk.CTk):
             row = ctk.CTkFrame(indicators, fg_color="transparent")
             row.pack(fill="x", padx=18, pady=5)
             ctk.CTkLabel(row, text=name, width=105, anchor="w",
-                         font=ctk.CTkFont(size=12, weight="bold"),
+                         font=ctk.CTkFont(size=13, weight="bold"),
                          text_color=("#4A514B", "#D8DDD7")).pack(side="left", anchor="nw")
-            detail = ctk.CTkLabel(row, text=description, font=ctk.CTkFont(size=12),
+            detail = ctk.CTkLabel(row, text=description, font=ctk.CTkFont(size=13),
                                   justify="left", anchor="w",
                                   text_color=("#777D75", "#A7AAA1"))
             detail.pack(side="left", fill="x", expand=True)
@@ -1112,7 +1112,7 @@ class MarketInsightApp(ctk.CTk):
             "6. Re-check prices and conditions before acting."
         ]
         for item in routine:
-            ctk.CTkLabel(workflow, text=item, font=ctk.CTkFont(size=12),
+            ctk.CTkLabel(workflow, text=item, font=ctk.CTkFont(size=13),
                          justify="left", anchor="w",
                          text_color=("#646D64", "#C0C5BC")).pack(fill="x", padx=18, pady=4)
 
@@ -1374,19 +1374,19 @@ class MarketInsightApp(ctk.CTk):
                 title_area.pack(side="left", fill="x", expand=True)
                 company_name = ctk.CTkLabel(
                     title_area, text=STOCK_NAMES.get(symbol, symbol),
-                    font=ctk.CTkFont(size=14, weight="bold"), justify="left"
+                    font=ctk.CTkFont(size=15, weight="bold"), justify="left"
                 )
                 company_name.pack(anchor="w", fill="x")
                 self._fit_text_to_width(company_name, title_area, 12)
                 ctk.CTkLabel(
-                    title_area, text=symbol, font=ctk.CTkFont(size=12, weight="bold"),
+                    title_area, text=symbol, font=ctk.CTkFont(size=13, weight="bold"),
                     text_color=("#777D75", "#AEB1A8")
                 ).pack(anchor="w")
 
                 if caution:
                     warning_text = ctk.CTkLabel(
                         tile, text=", ".join(data.get("warnings", [])) or "Needs a closer look",
-                        font=ctk.CTkFont(size=12), text_color=("#A87975", "#C5AAA4"),
+                        font=ctk.CTkFont(size=13), text_color=("#A87975", "#C5AAA4"),
                         justify="left"
                     )
                     warning_text.pack(anchor="w", fill="x", padx=13, pady=(2, 9))
@@ -1397,22 +1397,22 @@ class MarketInsightApp(ctk.CTk):
                     info.pack(fill="x", padx=13, pady=(5, 10))
                     ctk.CTkLabel(
                         info, text="USD {:.2f}".format(data["price"]),
-                        font=ctk.CTkFont(size=16, weight="bold")
+                        font=ctk.CTkFont(size=17, weight="bold")
                     ).pack(side="left")
                     ctk.CTkLabel(
                         info, text="{:+.2f}%".format(data["day_change"]),
-                        font=ctk.CTkFont(size=13, weight="bold"), text_color=tone
+                        font=ctk.CTkFont(size=14, weight="bold"), text_color=tone
                     ).pack(side="left", padx=(10, 0))
                     ctk.CTkLabel(
                         info, text="Score: {}/100 · RSI: {:.0f} · Vol: {:.1f}x".format(
                             data["score"], data["rsi"], data["volume_ratio"]
                         ),
-                        font=ctk.CTkFont(size=11, weight="bold"),
+                        font=ctk.CTkFont(size=12, weight="bold"),
                         text_color=("#747A72", "#B8BDB4")
                     ).pack(side="left", padx=(10, 0))
                     ctk.CTkButton(
                         info, text="View on {} ↗".format(self.settings.get("selected_platform", "platform")),
-                        width=145, height=28, corner_radius=9, font=ctk.CTkFont(size=12),
+                        width=145, height=28, corner_radius=9, font=ctk.CTkFont(size=13),
                         command=lambda sym=symbol: self.open_selected_platform(sym, ask=True)
                     ).pack(side="right")
 
@@ -1456,10 +1456,10 @@ class MarketInsightApp(ctk.CTk):
         if errors:
             issue = ctk.CTkFrame(self.results_text, corner_radius=12, fg_color=("#EEE8E4", "#393331"))
             issue.pack(fill="x", padx=5, pady=6)
-            ctk.CTkLabel(issue, text="Stocks we couldn't check", font=ctk.CTkFont(size=14, weight="bold"),
+            ctk.CTkLabel(issue, text="Stocks we couldn't check", font=ctk.CTkFont(size=15, weight="bold"),
                          text_color=("#A87975", "#C5AAA4")).pack(anchor="w", padx=12, pady=(8, 2))
             error_details = ctk.CTkLabel(issue, text="\\n".join(errors[:12]),
-                                         font=ctk.CTkFont(size=12), justify="left",
+                                         font=ctk.CTkFont(size=13), justify="left",
                                          text_color=("#947B75", "#C5AAA4"))
             error_details.pack(anchor="w", fill="x", padx=12, pady=(0, 10))
             self._fit_text_to_width(error_details, issue, 28)
