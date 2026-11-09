@@ -532,17 +532,28 @@ class MarketInsightApp(ctk.CTk):
             subtitle_label.pack(anchor="w", padx=18, pady=(0, 8))
 
         last_wrap = [None]
+        wrap_job = [None]
 
         def fit_card_text(event=None):
-            # Only update labels when the card's actual width changes. Reconfiguring
-            # CTk labels on every Configure event creates a costly resize feedback loop.
+            # Delay text reflow until the user pauses resizing. Reflowing every
+            # card continuously while the window edge moves makes Windows stutter.
             available = max(120, (event.width if event is not None else frame.winfo_width()) - 44)
             if available == last_wrap[0]:
                 return
             last_wrap[0] = available
-            title_label.configure(wraplength=available)
-            if subtitle_label is not None:
-                subtitle_label.configure(wraplength=available)
+            if wrap_job[0] is not None:
+                try:
+                    self.after_cancel(wrap_job[0])
+                except Exception:
+                    pass
+
+            def apply_wrap():
+                wrap_job[0] = None
+                title_label.configure(wraplength=available)
+                if subtitle_label is not None:
+                    subtitle_label.configure(wraplength=available)
+
+            wrap_job[0] = self.after(120, apply_wrap)
 
         frame.bind("<Configure>", fit_card_text)
         return frame
@@ -550,18 +561,12 @@ class MarketInsightApp(ctk.CTk):
     def _resize_overview(self, event=None):
         if not hasattr(self, "overview_content"):
             return
-        # Debounce the layout switch while the user is dragging the window edge.
+        # Only the column arrangement depends on width. Ignore height-only
+        # resize events and switch once when crossing the compact breakpoint.
         width = event.width if event is not None else self.overview_content.winfo_width()
-        self._pending_overview_width = width
-        pending = getattr(self, "_overview_resize_after", None)
-        if pending:
-            try:
-                self.after_cancel(pending)
-            except Exception:
-                pass
-        self._overview_resize_after = self.after(
-            70, lambda: self._apply_overview_layout(self._pending_overview_width)
-        )
+        compact = width < 820
+        if compact != self._overview_compact:
+            self._apply_overview_layout(width)
 
     def _apply_overview_layout(self, width):
         compact = width < 820
@@ -592,7 +597,13 @@ class MarketInsightApp(ctk.CTk):
         ctk.CTkButton(actions, text="Open highest-rated stock", height=40, corner_radius=12,
                       fg_color=("#E8F0EB", "#35443C"), text_color=("#315B43", "#D6E8DC"),
                       command=self.open_top_result).pack(side="left", padx=8)
-        self.scan_info = ctk.CTkLabel(actions, text="50 stocks included", text_color=("#738078", "#9BAAA2"))
+        self.scan_info = ctk.CTkLabel(
+            actions, text="50 STOCKS IN WATCHLIST",
+            font=ctk.CTkFont(size=12, weight="bold"),
+            text_color=("#FFFFFF", "#FFFFFF"),
+            fg_color=("#26734A", "#26734A"),
+            corner_radius=10, padx=13, pady=8
+        )
         self.scan_info.pack(side="right", padx=8)
 
         # Responsive overview: show two columns when there is room, otherwise
@@ -820,7 +831,9 @@ class MarketInsightApp(ctk.CTk):
             return
         self.scanning = True
         self.status.configure(text="Automatic scanning…")
-        self.scan_info.configure(text="Getting recent stock price data…")
+        total = len(self.settings.get("watchlist", DEFAULT_TICKERS))
+        self.scan_info.configure(text=f"SCANNING · 0 / {total}", fg_color=("#A86A18", "#A86A18"))
+        self.scan_info.configure(text_color=("#FFFFFF", "#FFFFFF"))
         threading.Thread(target=self._scan_worker, daemon=True).start()
 
     def _scan_worker(self):
@@ -832,7 +845,7 @@ class MarketInsightApp(ctk.CTk):
                 output[symbol] = scan_symbol(symbol, api_key, secret_key)
             except Exception as exc:
                 output[symbol] = {"error": str(exc)}
-            self.after(0, lambda n=i+1, total=len(symbols): self.scan_info.configure(text=f"Scanned {n}/{total}"))
+            self.after(0, lambda n=i+1, total=len(symbols): self.scan_info.configure(text=f"SCANNING · {n} / {total}"))
         self.after(0, lambda: self._finish_scan(output))
 
     def _render_stock_cards(self, parent, rows, limit=None, caution=False):
@@ -894,7 +907,13 @@ class MarketInsightApp(ctk.CTk):
             ctk.CTkLabel(issue, text="\\n".join(errors[:12]), justify="left", wraplength=700,
                          text_color=("#8B5555", "#E6A5A5")).pack(anchor="w", padx=12, pady=(0, 10))
         self.status.configure(text=f"Scan complete · {len(valid)} symbols")
-        self.scan_info.configure(text=f"Last scan: {datetime.now().strftime('%H:%M')}")
+        attempted = len(output)
+        total = len(self.settings.get("watchlist", DEFAULT_TICKERS))
+        self.scan_info.configure(
+            text=f"SCAN COMPLETE · {attempted} / {total}",
+            fg_color=("#26734A", "#26734A"),
+            text_color=("#FFFFFF", "#FFFFFF")
+        )
         if valid:
             self._update_calculator(valid[0][0], valid[0][1])
             if self.settings.get("auto_open_platform") and valid[0][1]["score"] >= self.settings.get("threshold", 70):
