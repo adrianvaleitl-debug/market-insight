@@ -1,0 +1,50 @@
+name: Build and publish Market Insight release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "market_insight.py"
+      - "requirements.txt"
+      - ".github/workflows/build-release.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Check Python syntax
+        run: python -m py_compile market_insight.py
+
+      - name: Package Windows app
+        run: |
+          zip -j Market_Insight_v1.1.0.zip \
+            market_insight.py requirements.txt SETUP_AND_START.bat \
+            Start_Market_Insight.vbs Create_Desktop_Shortcut.bat \
+            Create_Desktop_Shortcut.ps1 HOW_TO_USE.txt README.md README.txt
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create v1.1.0 Market_Insight_v1.1.0.zip \
+            --title "Market Insight v1.1.0" \
+            --notes "## Market Insight v1.1.0
+
+          - First-run Alpaca API credential setup with live market-data validation
+          - Secure storage through Windows Credential Manager
+          - Trading platform selection: TradingView, MetaTrader 5, Interactive Brokers, Robinhood, eToro, or Other
+          - Stock cards redesigned with company names, prices, movement, scores and indicators
+          - Stock links use the user's selected platform; automatic opening is opt-in
+
+          Educational research software only. Not financial advice."
