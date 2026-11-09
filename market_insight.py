@@ -206,7 +206,6 @@ def styled_settings_dropdown(parent, values, command=None):
         width=230,
         height=36,
         corner_radius=10,
-        button_corner_radius=9,
         fg_color=(palette_color("#E7E9E1"), palette_color("#343A33")),
         button_color=(palette_color("#D2D8CC"), palette_color("#465044")),
         button_hover_color=(palette_color("#C5CEBF"), palette_color("#53604F")),
