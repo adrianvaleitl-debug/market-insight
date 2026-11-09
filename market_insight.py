@@ -801,6 +801,22 @@ class MarketInsightApp(ctk.CTk):
             self.after_id = self.after(int(self.settings["scan_interval"]) * 60 * 1000, self.start_scan)
 
 if __name__ == "__main__":
+    # If Windows opened this file with console Python, hand off to pythonw.exe.
+    # This keeps direct .py launches windowless as well as setup/desktop launches.
+    if (os.name == "nt"
+            and not os.environ.get("MARKET_INSIGHT_WINDOWLESS")
+            and not os.environ.get("MARKET_INSIGHT_DEBUG")
+            and Path(sys.executable).name.lower() in ("python.exe", "python3.exe")):
+        pythonw = Path(sys.executable).with_name("pythonw.exe")
+        if pythonw.exists():
+            child_env = os.environ.copy()
+            child_env["MARKET_INSIGHT_WINDOWLESS"] = "1"
+            subprocess.Popen(
+                [str(pythonw), str(Path(__file__).resolve()), *sys.argv[1:]],
+                cwd=str(APP_DIR), env=child_env, close_fds=True
+            )
+            raise SystemExit
+
     try:
         app = MarketInsightApp()
         app.mainloop()
