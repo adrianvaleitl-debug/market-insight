@@ -46,20 +46,21 @@ jobs:
           cp market_insight.py requirements.txt SETUP_AND_START.bat \
             Start_Market_Insight.vbs market_insight.ico \
             START_IN_DIAGNOSTIC_MODE.bat Create_Desktop_Shortcut.ps1 README.md Market_Insight/
-          zip -r Market_Insight_v1.2.11.zip Market_Insight
+          zip -r Market_Insight_v1.2.12.zip Market_Insight
 
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create v1.2.11 Market_Insight_v1.2.11.zip \
-            --title "Market Insight v1.2.11" \
-            --notes "## Market Insight v1.2.11
+          gh release create v1.2.12 Market_Insight_v1.2.12.zip \
+            --title "Market Insight v1.2.12" \
+            --notes "## Market Insight v1.2.12
 
-          - Added a market pulse panel for the S&P 500, Nasdaq 100, Dow Jones, Russell 2000 and VIX using Yahoo Finance daily data
-          - Added watchlist breadth showing how many scanned stocks are up, down or unchanged
-          - Filled the overview's unused space with a practical pre-trade discipline checklist
-          - Refined the interface with softer neutral colours and more rounded cards, buttons and panels
-          - Preserved the existing scanner, position calculator, watchlist, settings and platform features
+          - Centered the dropdown options in Settings for a cleaner, more balanced layout
+          - Expanded Settings with clear explanations of scan intervals, score thresholds, platform links, appearance and credential storage
+          - Expanded About with plain-English explanations of the scanner indicators, a practical research routine and source links
+          - Added a sidebar account summary with Alpaca connection status, a masked API Key ID, selected trading platform and useful quick links
+          - Kept the Alpaca Secret Access Key hidden; credentials remain stored in Windows Credential Manager
+          - Preserved existing scanning, market pulse, position calculator, watchlist and platform features
 
           Python 3 is still required. Educational research software only; not financial advice."
