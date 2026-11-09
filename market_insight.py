@@ -18,8 +18,8 @@ import ctypes
 import winreg
 
 APP_NAME = "Market Insight"
-APP_VERSION = "1.2.22"
-# v1.2.22 refines settings dropdown styling and bundles the current app icon.
+APP_VERSION = "1.2.23"
+# v1.2.23 applies the current icon explicitly to the Windows taskbar window.
 GITHUB_RELEASES_API = "https://api.github.com/repos/adrianvaleitl-debug/market-insight/releases/latest"
 GITHUB_RELEASES_PAGE = "https://github.com/adrianvaleitl-debug/market-insight/releases/latest"
 _SINGLE_INSTANCE_MUTEX = None
@@ -324,6 +324,11 @@ def scan_symbol(symbol, api_key, secret_key):
 
 class MarketInsightApp(ctk.CTk):
     def __init__(self):
+        # Set the Windows taskbar identity before creating the Tk window.
+        try:
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("AdrianVale.MarketInsight")
+        except Exception:
+            pass
         super().__init__()
         ensure_app_icon()
         self.settings = load_settings()
@@ -344,14 +349,10 @@ class MarketInsightApp(ctk.CTk):
             if widget_name in theme:
                 theme[widget_name].update(values)
         self.title(APP_NAME)
-        try:
-            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("AdrianVale.MarketInsight")
-        except Exception:
-            pass
         icon_path = APP_DIR / "market_insight.ico"
         if icon_path.exists():
             try:
-                self.iconbitmap(default=str(icon_path))
+                self.iconbitmap(str(icon_path))
             except Exception:
                 pass
         self.geometry("1180x760")
@@ -415,7 +416,7 @@ class MarketInsightApp(ctk.CTk):
         icon_path = APP_DIR / "market_insight.ico"
         if icon_path.exists():
             try:
-                win.iconbitmap(default=str(icon_path))
+                win.iconbitmap(str(icon_path))
             except Exception:
                 pass
         win.geometry("650x590")
