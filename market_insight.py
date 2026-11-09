@@ -223,7 +223,7 @@ class MarketInsightApp(ctk.CTk):
         win.geometry("650x590")
         win.minsize(560, 520)
         win.configure(fg_color=("#F4F7F5", "#171D1A"))
-        win.protocol("WM_DELETE_WINDOW", lambda: None)
+        win.protocol("WM_DELETE_WINDOW", self.destroy)
         win.grab_set()
         panel = ctk.CTkFrame(win, corner_radius=24, fg_color=("#FFFFFF", "#222B26"))
         panel.pack(fill="both", expand=True, padx=22, pady=22)
