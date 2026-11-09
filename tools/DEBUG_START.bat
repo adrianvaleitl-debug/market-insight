@@ -15,6 +15,7 @@ echo.
 echo Starting Market Insight. Any error will appear below.
 echo Close the app window normally to return here.
 echo.
+set MARKET_INSIGHT_DEBUG=1
 py -3 -u market_insight.py
 echo.
 echo Market Insight has stopped. If an error appeared above, copy it or take a screenshot.
