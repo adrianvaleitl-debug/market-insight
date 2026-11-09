@@ -37,7 +37,7 @@ def write_diagnostic(details):
 
 def show_startup_error(details):
     path = write_diagnostic(details)
-    message = "Market Insight encountered an error."
+    message = "Market Insight couldn't start because something went wrong."
     if path:
         message += "\n\nA diagnostic report was saved to:\n" + str(path)
     else:
@@ -141,7 +141,7 @@ def safe_num(value, default=0.0):
 def calculate_indicators(df):
     df = df.copy().dropna()
     if len(df) < 55:
-        raise ValueError("Not enough price history")
+        raise ValueError("There isn't enough past price data to analyse this stock.")
     close = df["Close"].astype(float)
     high = df["High"].astype(float)
     low = df["Low"].astype(float)
@@ -181,12 +181,12 @@ def calculate_indicators(df):
     score = max(0, min(100, int(score)))
 
     warnings = []
-    if score < 40: warnings.append("Low score")
-    if rsi_now > 75: warnings.append("Overbought RSI")
-    if rsi_now < 30: warnings.append("Oversold RSI")
-    if vol_ratio > 2.5: warnings.append("Unusual volume")
-    if day_change <= -3: warnings.append("Sharp daily fall")
-    if change20 <= -8: warnings.append("Weak 20-day trend")
+    if score < 40: warnings.append("Low market score")
+    if rsi_now > 75: warnings.append("RSI is high (the stock may have risen too quickly)")
+    if rsi_now < 30: warnings.append("RSI is low (the stock may have fallen too quickly)")
+    if vol_ratio > 2.5: warnings.append("Unusually high trading volume")
+    if day_change <= -3: warnings.append("Large price drop today")
+    if change20 <= -8: warnings.append("Price has fallen over the past 20 trading days")
 
     return {
         "price": price, "score": score, "rsi": rsi_now, "macd": macd_now,
@@ -211,16 +211,16 @@ def get_alpaca_snapshot(symbol, api_key, secret_key):
         "APCA-API-SECRET-KEY": secret_key,
     }, params={"feed": "iex"}, timeout=15)
     if response.status_code in (401, 403):
-        raise ValueError("Alpaca rejected the API keys. Check your Key ID and Secret Key.")
+        raise ValueError("Alpaca couldn't verify these details. Check that your API Key ID and Secret Access Key are correct.")
     if response.status_code == 404:
-        raise ValueError("Alpaca returned no snapshot for this symbol.")
+        raise ValueError("Alpaca couldn't find live price data for this stock.")
     response.raise_for_status()
     payload = response.json()
     trade = payload.get("latestTrade") or {}
     previous = payload.get("prevDailyBar") or {}
     live_price = safe_num(trade.get("p"))
     if live_price <= 0:
-        raise ValueError("Alpaca did not return a latest IEX trade for this symbol.")
+        raise ValueError("There isn't a recent IEX trade available for this stock right now.")
     previous_close = safe_num(previous.get("c"))
     day_change = ((live_price / previous_close) - 1) * 100 if previous_close > 0 else None
     return {"price": live_price, "day_change": day_change, "trade_time": trade.get("t", "Unknown"), "feed": "IEX"}
@@ -228,10 +228,10 @@ def get_alpaca_snapshot(symbol, api_key, secret_key):
 
 def scan_symbol(symbol, api_key, secret_key):
     if not api_key or not secret_key:
-        raise ValueError("Add your Alpaca API Key ID and Secret Key in Settings → Live market data.")
+        raise ValueError("Add your Alpaca API Key ID and Secret Access Key in Settings under Live market data.")
     data = yf.download(symbol, period="6mo", interval="1d", auto_adjust=True, progress=False, threads=False)
     if data is None or data.empty:
-        raise ValueError("No historical indicator data returned by Yahoo Finance.")
+        raise ValueError("Yahoo Finance didn't provide enough past price data to analyse this stock.")
     if isinstance(data.columns, pd.MultiIndex):
         data.columns = data.columns.get_level_values(0)
     indicators = calculate_indicators(data)
@@ -285,7 +285,7 @@ class MarketInsightApp(ctk.CTk):
         path = write_diagnostic("Tkinter callback error:\n" + details)
         try:
             from tkinter import messagebox
-            message = "A Market Insight action failed."
+            message = "That action didn't work. Please try again."
             if path:
                 message += "\n\nDetails saved to:\n" + str(path)
             messagebox.showerror(APP_NAME, message, parent=self)
@@ -300,10 +300,10 @@ class MarketInsightApp(ctk.CTk):
             if response.status_code == 200:
                 return True, ""
             if response.status_code in (401, 403):
-                return False, "Alpaca rejected these keys. Check the Key ID and Secret Key."
-            return False, "Alpaca returned HTTP {}. Please try again.".format(response.status_code)
+                return False, "Alpaca rejected these keys. Check the Key ID and Secret Access Key."
+            return False, "Alpaca returned an error (HTTP {}). Please try again.".format(response.status_code)
         except requests.RequestException:
-            return False, "Could not reach Alpaca. Check your internet connection and try again."
+            return False, "Couldn't connect to Alpaca. Check your internet connection and try again."
 
     def _setup_window(self, title, subtitle):
         win = ctk.CTkToplevel(self)
@@ -328,28 +328,28 @@ class MarketInsightApp(ctk.CTk):
         return win, panel
 
     def _show_alpaca_setup(self):
-        win, panel = self._setup_window("Connect your Alpaca account", "First, enter your API credentials. Market Insight validates them before you can continue.")
+        win, panel = self._setup_window("Connect your Alpaca account", "To get live market prices, connect your Alpaca account. Enter your API details below and we'll check that they work before continuing.")
         ctk.CTkLabel(panel, text="API Key ID").pack(anchor="w", padx=30, pady=(0, 5))
-        self.setup_key_entry = ctk.CTkEntry(panel, height=44, placeholder_text="Paste your Alpaca Key ID")
+        self.setup_key_entry = ctk.CTkEntry(panel, height=44, placeholder_text="Paste your Alpaca API Key ID here")
         self.setup_key_entry.pack(fill="x", padx=30, pady=(0, 13))
-        ctk.CTkLabel(panel, text="Secret Key").pack(anchor="w", padx=30, pady=(0, 5))
-        self.setup_secret_entry = ctk.CTkEntry(panel, height=44, show="•", placeholder_text="Paste your Alpaca Secret Key")
+        ctk.CTkLabel(panel, text="Secret Access Key").pack(anchor="w", padx=30, pady=(0, 5))
+        self.setup_secret_entry = ctk.CTkEntry(panel, height=44, show="•", placeholder_text="Paste your Alpaca Secret Access Key")
         self.setup_secret_entry.pack(fill="x", padx=30)
         ctk.CTkButton(panel, text="Get your API keys from Alpaca ↗", fg_color="transparent",
                       text_color=("#367653", "#A9D9B9"),
                       command=lambda: webbrowser.open("https://app.alpaca.markets/")).pack(anchor="w", padx=25, pady=12)
-        self.setup_status = ctk.CTkLabel(panel, text="Credentials are stored in Windows Credential Manager.", wraplength=520, justify="left")
+        self.setup_status = ctk.CTkLabel(panel, text="Your keys are saved securely in Windows Credential Manager on this computer.", wraplength=520, justify="left")
         self.setup_status.pack(anchor="w", padx=30, pady=8)
-        ctk.CTkButton(panel, text="Validate and continue", height=45, command=self._validate_setup_keys).pack(fill="x", padx=30, pady=18)
+        ctk.CTkButton(panel, text="Check keys and continue", height=45, command=self._validate_setup_keys).pack(fill="x", padx=30, pady=18)
         win.focus_force()
 
     def _validate_setup_keys(self):
         api_key = self.setup_key_entry.get().strip()
         secret_key = self.setup_secret_entry.get().strip()
         if not api_key or not secret_key:
-            self.setup_status.configure(text="Enter both the API Key ID and Secret Key.")
+            self.setup_status.configure(text="Enter both the API Key ID and Secret Access Key.")
             return
-        self.setup_status.configure(text="Checking credentials with Alpaca…")
+        self.setup_status.configure(text="Checking your details with Alpaca…")
         self.update_idletasks()
         valid, message = self._validate_alpaca_credentials(api_key, secret_key)
         if not valid:
@@ -359,29 +359,29 @@ class MarketInsightApp(ctk.CTk):
             keyring.set_password("Market Insight", "alpaca_api_key", api_key)
             keyring.set_password("Market Insight", "alpaca_secret_key", secret_key)
         except Exception as exc:
-            self.setup_status.configure(text="Could not securely store credentials: {}".format(exc))
+            self.setup_status.configure(text="We couldn't save your keys securely: {}".format(exc))
             return
         self.setup_window.grab_release()
         self.setup_window.destroy()
         self._show_platform_setup()
 
     def _show_platform_setup(self):
-        win, panel = self._setup_window("Where do you trade?", "Choose the platform you actually use. Stock links will follow this choice.")
+        win, panel = self._setup_window("Choose your trading platform", "Choose the platform you use. When you open a stock, Market Insight will take you to this platform.")
         self.setup_platform_var = ctk.StringVar(value=self.settings.get("selected_platform") or "TradingView")
         choices = [
-            ("TradingView", "Charts and technical analysis"),
-            ("MetaTrader 5", "Desktop trading terminal"),
-            ("Interactive Brokers", "IBKR trading platform"),
-            ("Robinhood", "Stocks and investing"),
-            ("eToro", "Multi-asset investing platform"),
-            ("Other", "Add your own stock link in Settings"),
+            ("TradingView", "Charts and stock analysis"),
+            ("MetaTrader 5", "Your trading platform for desktop"),
+            ("Interactive Brokers", "Your trading platform and investing"),
+            ("Robinhood", "Stock trading and investing"),
+            ("eToro", "Investing in different types of assets"),
+            ("Other", "Use your own platform link (you can add it in Settings)"),
         ]
         for name, detail in choices:
             row = ctk.CTkFrame(panel, corner_radius=12, fg_color=("#F3F7F4", "#2A342E"))
             row.pack(fill="x", padx=30, pady=3)
             ctk.CTkRadioButton(row, text=name, value=name, variable=self.setup_platform_var).pack(anchor="w", padx=14, pady=(7, 0))
             ctk.CTkLabel(row, text=detail, font=ctk.CTkFont(size=10)).pack(anchor="w", padx=39, pady=(0, 6))
-        ctk.CTkButton(panel, text="Save platform and continue", height=44, command=self._finish_first_run).pack(fill="x", padx=30, pady=16)
+        ctk.CTkButton(panel, text="Save choice and continue", height=44, command=self._finish_first_run).pack(fill="x", padx=30, pady=16)
         win.focus_force()
 
     def _finish_first_run(self):
@@ -406,7 +406,7 @@ class MarketInsightApp(ctk.CTk):
         self.settings["shortcut_prompted"] = True
         wants_shortcut = messagebox.askyesno(
             "Desktop shortcut",
-            "Would you like Market Insight to create a shortcut on your desktop?\n\nYou can change this later in Settings."
+            "Would you like a Market Insight shortcut on your desktop?\n\nThis makes the app easier to open. You can change this later in Settings."
         )
         self.settings["create_desktop_shortcut"] = bool(wants_shortcut)
         save_settings(self.settings)
@@ -421,7 +421,7 @@ class MarketInsightApp(ctk.CTk):
         script = APP_DIR / "Create_Desktop_Shortcut.ps1"
         if not script.exists():
             if show_feedback and hasattr(self, "status"):
-                self.status.configure(text="Shortcut helper was not found")
+                self.status.configure(text="Couldn't find the desktop shortcut tool.")
             return False
         command = ["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(script)]
         if not enabled:
@@ -433,7 +433,7 @@ class MarketInsightApp(ctk.CTk):
         except Exception:
             success = False
         if show_feedback and hasattr(self, "status"):
-            self.status.configure(text="Desktop shortcut updated" if success else "Could not update desktop shortcut")
+            self.status.configure(text="Desktop shortcut preference updated." if success else "Couldn't update the desktop shortcut. Please try again.")
         return success
 
     def save_shortcut_preference(self):
@@ -462,11 +462,11 @@ class MarketInsightApp(ctk.CTk):
     def open_selected_platform(self, symbol, ask=True):
         url = self._platform_url(symbol)
         if not url:
-            self.status.configure(text="Add a custom URL template in Settings using {symbol}.")
+            self.status.configure(text="To use your own platform, add a custom link in Settings. Include {symbol} where the stock ticker should go.")
             return
         if ask:
             from tkinter import messagebox
-            if not messagebox.askyesno("Open stock", "Open {} using {}?".format(symbol, self.settings.get("selected_platform"))):
+            if not messagebox.askyesno("Open stock on your platform", "Would you like to open {} on {}?".format(symbol, self.settings.get("selected_platform"))):
                 return
         webbrowser.open(url)
 
@@ -487,7 +487,7 @@ class MarketInsightApp(ctk.CTk):
                                 command=lambda name=label: self.show_page(name))
             btn.pack(fill="x", padx=12, pady=4)
             self.nav_buttons[label] = btn
-        ctk.CTkLabel(self.sidebar, text="Live IEX prices when connected\n· Educational use only.",
+        ctk.CTkLabel(self.sidebar, text="Live prices when connected\nFor research and learning only.",
                      font=ctk.CTkFont(size=11), text_color=("#75827B", "#87958E"),
                      justify="left").pack(side="bottom", anchor="w", padx=20, pady=20)
 
@@ -531,113 +531,113 @@ class MarketInsightApp(ctk.CTk):
         page = self.pages["Overview"]
         actions = ctk.CTkFrame(page, fg_color="transparent")
         actions.pack(fill="x", padx=14, pady=(12, 0))
-        ctk.CTkButton(actions, text="Scan markets now", height=40, corner_radius=12,
+        ctk.CTkButton(actions, text="Scan watchlist", height=40, corner_radius=12,
                       command=self.start_scan).pack(side="left")
-        ctk.CTkButton(actions, text="Open top result in selected platform", height=40, corner_radius=12,
+        ctk.CTkButton(actions, text="Open highest-rated stock", height=40, corner_radius=12,
                       fg_color=("#E8F0EB", "#35443C"), text_color=("#315B43", "#D6E8DC"),
                       command=self.open_top_result).pack(side="left", padx=8)
-        self.scan_info = ctk.CTkLabel(actions, text="50 starter symbols", text_color=("#738078", "#9BAAA2"))
+        self.scan_info = ctk.CTkLabel(actions, text="50 stocks included", text_color=("#738078", "#9BAAA2"))
         self.scan_info.pack(side="right", padx=8)
 
-        top = self.card(page, "Top watchlist result", "The highest scoring symbol from your latest scan")
-        self.top_symbol = ctk.CTkLabel(top, text="No scan yet", font=ctk.CTkFont(size=30, weight="bold"))
+        top = self.card(page, "Highest market score", "The stock with the highest score in your latest scan")
+        self.top_symbol = ctk.CTkLabel(top, text="No scan has been run yet", font=ctk.CTkFont(size=30, weight="bold"))
         self.top_symbol.pack(anchor="w", padx=18, pady=(6, 0))
-        self.top_details = ctk.CTkLabel(top, text="Connect Alpaca in Settings, then run a scan to view live IEX prices.",
+        self.top_details = ctk.CTkLabel(top, text="Connect Alpaca in Settings, then scan your watchlist to see available live prices.",
                                         text_color=("#718078", "#A6B3AC"))
         self.top_details.pack(anchor="w", padx=18, pady=(2, 16))
 
-        self.watch_card = self.card(page, "Watchlist snapshot", "A quick look at the strongest scan results")
+        self.watch_card = self.card(page, "Watchlist highlights", "The highest-scoring stocks from your latest scan")
         self.watch_table = ctk.CTkScrollableFrame(self.watch_card, height=260, corner_radius=12, fg_color=("#FFFFFF", "#202624"))
         self.watch_table.pack(fill="x", padx=16, pady=(8, 16))
 
-        caution = self.card(page, "Caution list", "Symbols with two or more warning signs. This is not a sell instruction.")
+        caution = self.card(page, "Stocks to review", "Stocks showing two or more warning signs. These are prompts to take a closer look, not instructions to buy or sell.")
         self.caution_text = ctk.CTkScrollableFrame(caution, height=170, corner_radius=12, fg_color=("#FFFFFF", "#202624"))
         self.caution_text.pack(fill="x", padx=16, pady=(8, 16))
 
     def _build_watchlist(self):
         page = self.pages["Watchlist"]
-        card = self.card(page, "Edit watchlist", "Enter ticker symbols separated by commas. Up to 100 symbols.")
+        card = self.card(page, "Your watchlist", "Add the stock ticker symbols you want to track. Separate each symbol with a comma. You can add up to 100.")
         self.watch_input = ctk.CTkTextbox(card, height=120, corner_radius=10)
         self.watch_input.pack(fill="x", padx=16, pady=8)
         ctk.CTkButton(card, text="Save watchlist", command=self.save_watchlist).pack(anchor="e", padx=16, pady=(0, 14))
-        results = self.card(page, "Latest scan results")
+        results = self.card(page, "Results from your latest scan")
         self.results_text = ctk.CTkScrollableFrame(results, height=520, corner_radius=12, fg_color=("#FFFFFF", "#202624"))
         self.results_text.pack(fill="x", padx=16, pady=(8, 16))
 
     def _build_settings(self):
         page = self.pages["Settings"]
-        card = self.card(page, "Appearance", "Choose how the app looks.")
+        card = self.card(page, "App appearance", "Choose Light, Dark or match your Windows setting.")
         self.appearance_menu = ctk.CTkOptionMenu(card, values=["System", "Dark", "Light"], command=self.change_appearance)
         self.appearance_menu.set(self.settings["appearance"])
         self.appearance_menu.pack(anchor="w", padx=18, pady=(8, 16))
 
-        card = self.card(page, "Desktop shortcut", "Choose whether Market Insight has an icon on your Windows desktop. You can change this at any time.")
+        card = self.card(page, "Desktop shortcut", "Choose whether to keep a Market Insight icon on your desktop. You can change this whenever you like.")
         self.shortcut_var = ctk.BooleanVar(value=self.settings.get("create_desktop_shortcut", False))
-        ctk.CTkCheckBox(card, text="Keep a Market Insight desktop shortcut", variable=self.shortcut_var,
+        ctk.CTkCheckBox(card, text="Show a Market Insight shortcut on my desktop", variable=self.shortcut_var,
                         command=self.save_shortcut_preference).pack(anchor="w", padx=18, pady=(8, 14))
 
-        card = self.card(page, "Scanning", "Live latest-trade snapshots from Alpaca IEX; technical indicators use Yahoo Finance daily history.")
+        card = self.card(page, "Automatic scanning", "Market Insight gets the latest available prices from Alpaca IEX. It uses Yahoo Finance past prices to calculate stock indicators.")
         self.auto_scan_var = ctk.BooleanVar(value=self.settings["auto_scan"])
-        ctk.CTkCheckBox(card, text="Scan automatically", variable=self.auto_scan_var,
+        ctk.CTkCheckBox(card, text="Scan my watchlist automatically", variable=self.auto_scan_var,
                         command=self.save_general_settings).pack(anchor="w", padx=18, pady=8)
         self.interval_menu = ctk.CTkOptionMenu(card, values=["5", "15", "30", "60"])
         self.interval_menu.set(str(self.settings["scan_interval"]))
         self.interval_menu.pack(anchor="w", padx=18, pady=(4, 16))
 
-        ctk.CTkLabel(card, text="Trading platform", text_color=("#53635A", "#C5D3CB")).pack(anchor="w", padx=18, pady=(8, 4))
+        ctk.CTkLabel(card, text="Your trading platform", text_color=("#53635A", "#C5D3CB")).pack(anchor="w", padx=18, pady=(8, 4))
         self.platform_menu = ctk.CTkOptionMenu(card, values=["TradingView", "MetaTrader 5", "Interactive Brokers", "Robinhood", "eToro", "Other"], command=self.change_platform)
         self.platform_menu.set(self.settings.get("selected_platform") or "TradingView")
         self.platform_menu.pack(anchor="w", padx=18, pady=(0, 8))
-        self.custom_platform_entry = ctk.CTkEntry(card, placeholder_text="Custom URL template (use {symbol})")
+        self.custom_platform_entry = ctk.CTkEntry(card, placeholder_text="Your platform's stock link (put {symbol} where the ticker goes)")
         self.custom_platform_entry.insert(0, self.settings.get("custom_platform_url", ""))
         self.custom_platform_entry.pack(fill="x", padx=18, pady=6)
         self.auto_platform_var = ctk.BooleanVar(value=self.settings.get("auto_open_platform", False))
-        ctk.CTkCheckBox(card, text="Automatically open the top result in my selected platform",
+        ctk.CTkCheckBox(card, text="Automatically open the highest-scoring stock on my platform",
                         variable=self.auto_platform_var, command=self.save_general_settings).pack(anchor="w", padx=18, pady=8)
         self.threshold_menu = ctk.CTkOptionMenu(card, values=["60", "70", "80", "90"])
         self.threshold_menu.set(str(self.settings["threshold"]))
         self.threshold_menu.pack(anchor="w", padx=18, pady=(4, 16))
-        ctk.CTkButton(card, text="Save scanning settings", command=self.save_general_settings).pack(anchor="e", padx=18, pady=(0, 14))
+        ctk.CTkButton(card, text="Save scan settings", command=self.save_general_settings).pack(anchor="e", padx=18, pady=(0, 14))
 
-        card = self.card(page, "Live market data — Alpaca", "Enter your Alpaca API credentials. Keys are stored in Windows Credential Manager.")
+        card = self.card(page, "Live prices — Alpaca", "Add your Alpaca API Key ID and Secret Access Key to use live price data. Your keys are stored securely in Windows Credential Manager.")
         self.alpaca_key_entry = ctk.CTkEntry(card, placeholder_text="Alpaca API Key ID", show="•")
         self.alpaca_key_entry.pack(fill="x", padx=18, pady=(8, 6))
-        self.alpaca_secret_entry = ctk.CTkEntry(card, placeholder_text="Alpaca Secret Key", show="•")
+        self.alpaca_secret_entry = ctk.CTkEntry(card, placeholder_text="Alpaca Secret Access Key", show="•")
         self.alpaca_secret_entry.pack(fill="x", padx=18, pady=6)
-        key_status = "Credentials are saved." if all(get_alpaca_credentials()) else "No Alpaca credentials saved yet."
+        key_status = "Your Alpaca keys are saved securely." if all(get_alpaca_credentials()) else "No Alpaca keys have been saved yet."
         self.alpaca_status = ctk.CTkLabel(card, text=key_status, text_color=("#397653", "#A9D9B9"))
         self.alpaca_status.pack(anchor="w", padx=18, pady=(4, 4))
         alpaca_actions = ctk.CTkFrame(card, fg_color="transparent")
         alpaca_actions.pack(fill="x", padx=18, pady=(4, 8))
-        ctk.CTkButton(alpaca_actions, text="Save Alpaca keys securely", command=self.save_alpaca_keys).pack(side="left")
+        ctk.CTkButton(alpaca_actions, text="Save Alpaca keys", command=self.save_alpaca_keys).pack(side="left")
         ctk.CTkButton(alpaca_actions, text="Remove saved keys", fg_color=("#E9E2E2", "#493333"),
                       text_color=("#8B4545", "#F0CACA"), command=self.remove_alpaca_keys).pack(side="left", padx=8)
-        ctk.CTkLabel(card, text="Feed: IEX (not the full consolidated US market). Live prices require an active market session and available IEX trades. Historical indicators still come from Yahoo Finance. No delayed-price fallback is used if Alpaca fails.",
+        ctk.CTkLabel(card, text="Price data comes from IEX, which does not cover every US market trade. Live prices are available only when the market is open and an IEX trade is available. Past-price indicators come from Yahoo Finance. If Alpaca can't provide a live price, the app will show an error rather than silently using delayed data.",
                      wraplength=760, justify="left", font=ctk.CTkFont(size=11),
                      text_color=("#8A6B42", "#D7B98B")).pack(anchor="w", padx=18, pady=(0, 14))
 
-        card = self.card(page, "Position calculator", "Illustrative sizing using ATR. This does not place trades.")
-        self.balance_entry = ctk.CTkEntry(card, placeholder_text="Account balance (USD)")
+        card = self.card(page, "Position size calculator", "Estimate a possible position size using your account balance and chosen risk. This is for planning only — it will not place a trade.")
+        self.balance_entry = ctk.CTkEntry(card, placeholder_text="Your account balance (USD)")
         self.balance_entry.insert(0, str(self.settings["balance"]))
         self.balance_entry.pack(fill="x", padx=18, pady=(8, 6))
-        self.risk_entry = ctk.CTkEntry(card, placeholder_text="Risk per trade (%)")
+        self.risk_entry = ctk.CTkEntry(card, placeholder_text="Amount to risk per trade (%)")
         self.risk_entry.insert(0, str(self.settings["risk_percent"]))
         self.risk_entry.pack(fill="x", padx=18, pady=6)
         ctk.CTkButton(card, text="Save calculator settings", command=self.save_calculator_settings).pack(anchor="e", padx=18, pady=8)
-        self.calc_output = ctk.CTkLabel(card, text="Scan a symbol, then select it in the results to view its example levels.",
+        self.calc_output = ctk.CTkLabel(card, text="Run a scan and select a stock to see example stop-loss, target and position-size levels.",
                                         text_color=("#718078", "#9BAAA2"), justify="left")
         self.calc_output.pack(anchor="w", padx=18, pady=(0, 16))
 
     def _build_about(self):
         page = self.pages["About"]
         card = self.card(page, "About Market Insight")
-        ctk.CTkLabel(card, text="A simple market research and watchlist tool.",
+        ctk.CTkLabel(card, text="A straightforward tool for researching stocks and keeping track of the ones you're interested in.",
                      font=ctk.CTkFont(size=15), text_color=("#53635A", "#C5D3CB")).pack(anchor="w", padx=18, pady=(6, 8))
-        ctk.CTkLabel(card, text="Latest prices use Alpaca IEX snapshots when credentials are connected. Historical technical indicators use Yahoo Finance daily history. IEX coverage is not the full consolidated US market; availability and timing can vary.",
+        ctk.CTkLabel(card, text="When connected, live prices come from Alpaca's IEX data feed. Stock indicators are calculated using past daily prices from Yahoo Finance. IEX does not include every US market trade, so some prices may not be available.",
                      wraplength=700, justify="left", text_color=("#718078", "#9BAAA2")).pack(anchor="w", padx=18, pady=5)
-        ctk.CTkLabel(card, text="Educational information only. Scores and indicators are estimates, not financial advice. The app does not connect to a broker or execute trades.",
+        ctk.CTkLabel(card, text="For education and research only. Scores and indicators are estimates, not financial advice or a guarantee of future results. Market Insight does not connect to your broker and cannot place trades.",
                      wraplength=700, justify="left", text_color=("#9B6868", "#E0A6A6")).pack(anchor="w", padx=18, pady=5)
-        ctk.CTkLabel(card, text="Credits: Created by Adrian Vale",
+        ctk.CTkLabel(card, text="Created by Adrian Vale",
                      font=ctk.CTkFont(size=12, weight="bold"), text_color=("#53635A", "#C5D3CB")).pack(anchor="w", padx=18, pady=(14, 18))
 
     def show_page(self, name):
@@ -657,12 +657,12 @@ class MarketInsightApp(ctk.CTk):
         symbols = [s.strip().upper() for s in self.watch_input.get("1.0", "end").replace("\n", ",").split(",") if s.strip()]
         symbols = list(dict.fromkeys(symbols))[:100]
         if not symbols:
-            self.status.configure(text="Enter at least one symbol")
+            self.status.configure(text="Please add at least one stock ticker to your watchlist.")
             return
         self.settings["watchlist"] = symbols
         save_settings(self.settings)
         self.scan_info.configure(text=f"{len(symbols)} symbols in watchlist")
-        self.status.configure(text="Watchlist saved")
+        self.status.configure(text="Your watchlist has been saved.")
 
     def change_appearance(self, value):
         self.settings["appearance"] = value
@@ -672,7 +672,7 @@ class MarketInsightApp(ctk.CTk):
     def change_platform(self, value):
         self.settings["selected_platform"] = value
         save_settings(self.settings)
-        self.status.configure(text="Platform set to " + value)
+        self.status.configure(text="Your platform is set to " + value)
 
     def save_general_settings(self):
         self.settings["auto_scan"] = bool(self.auto_scan_var.get())
@@ -682,22 +682,22 @@ class MarketInsightApp(ctk.CTk):
         self.settings["auto_open_platform"] = bool(self.auto_platform_var.get())
         self.settings["threshold"] = int(self.threshold_menu.get())
         save_settings(self.settings)
-        self.status.configure(text="Settings saved")
+        self.status.configure(text="Your settings have been saved.")
         self.schedule_next_scan()
 
     def save_alpaca_keys(self):
         api_key = self.alpaca_key_entry.get().strip()
         secret_key = self.alpaca_secret_entry.get().strip()
         if not api_key or not secret_key:
-            self.alpaca_status.configure(text="Enter both the API Key ID and Secret Key.")
+            self.alpaca_status.configure(text="Enter both the API Key ID and Secret Access Key.")
             return
         try:
             keyring.set_password("Market Insight", "alpaca_api_key", api_key)
             keyring.set_password("Market Insight", "alpaca_secret_key", secret_key)
             self.alpaca_key_entry.delete(0, "end")
             self.alpaca_secret_entry.delete(0, "end")
-            self.alpaca_status.configure(text="Alpaca credentials saved securely in Windows Credential Manager.")
-            self.status.configure(text="Live data credentials saved")
+            self.alpaca_status.configure(text="Your Alpaca keys have been saved securely in Windows Credential Manager.")
+            self.status.configure(text="Your live price data keys have been saved.")
         except Exception as exc:
             self.alpaca_status.configure(text=f"Could not save credentials securely: {exc}")
 
@@ -707,26 +707,26 @@ class MarketInsightApp(ctk.CTk):
                 keyring.delete_password("Market Insight", account)
             except Exception:
                 pass
-        self.alpaca_status.configure(text="Saved Alpaca credentials removed.")
-        self.status.configure(text="Alpaca keys removed")
+        self.alpaca_status.configure(text="Your saved Alpaca keys have been removed.")
+        self.status.configure(text="Your Alpaca keys have been removed.")
 
     def save_calculator_settings(self):
         balance = safe_num(self.balance_entry.get(), 1000)
         risk = safe_num(self.risk_entry.get(), 1)
         if balance <= 0 or not 0 < risk <= 5:
-            self.status.configure(text="Use balance > 0 and risk up to 5%")
+            self.status.configure(text="Enter an account balance above 0 and a risk amount between 0% and 5%.")
             return
         self.settings["balance"] = balance
         self.settings["risk_percent"] = risk
         save_settings(self.settings)
-        self.status.configure(text="Calculator settings saved")
+        self.status.configure(text="Your calculator settings have been saved.")
 
     def start_scan(self):
         if self.scanning:
             return
         self.scanning = True
-        self.status.configure(text="Scanning…")
-        self.scan_info.configure(text="Downloading daily market data…")
+        self.status.configure(text="Automatic scanning…")
+        self.scan_info.configure(text="Getting recent stock price data…")
         threading.Thread(target=self._scan_worker, daemon=True).start()
 
     def _scan_worker(self):
@@ -746,7 +746,7 @@ class MarketInsightApp(ctk.CTk):
             child.destroy()
         rows = rows if limit is None else rows[:limit]
         if not rows:
-            ctk.CTkLabel(parent, text="No matching stocks yet.", text_color=("#78857D", "#A2B0A7")).pack(anchor="w", padx=12, pady=14)
+            ctk.CTkLabel(parent, text="No stocks to show yet. Run a scan to see results here.", text_color=("#78857D", "#A2B0A7")).pack(anchor="w", padx=12, pady=14)
             return
         for symbol, data in rows:
             tile = ctk.CTkFrame(parent, corner_radius=14, fg_color=("#F5F8F6", "#29332E"))
@@ -759,7 +759,7 @@ class MarketInsightApp(ctk.CTk):
             ctk.CTkLabel(title_area, text=symbol, font=ctk.CTkFont(size=10, weight="bold"),
                          text_color=("#718078", "#A2B0A8")).pack(anchor="w")
             if caution:
-                ctk.CTkLabel(tile, text=", ".join(data.get("warnings", [])) or "Caution flag",
+                ctk.CTkLabel(tile, text=", ".join(data.get("warnings", [])) or "Needs a closer look",
                              font=ctk.CTkFont(size=10), text_color=("#A45B5B", "#E4A4A4"),
                              wraplength=650, justify="left").pack(anchor="w", padx=13, pady=(2, 9))
             else:
@@ -769,9 +769,9 @@ class MarketInsightApp(ctk.CTk):
                 ctk.CTkLabel(info, text="USD {:.2f}".format(data["price"]), font=ctk.CTkFont(size=14, weight="bold")).pack(side="left")
                 ctk.CTkLabel(info, text="{:+.2f}%".format(data["day_change"]), font=ctk.CTkFont(size=11, weight="bold"),
                              text_color=tone).pack(side="left", padx=(10, 0))
-                ctk.CTkLabel(info, text="Score {}/100  ·  RSI {:.0f}  ·  Vol {:.1f}x".format(data["score"], data["rsi"], data["volume_ratio"]),
+                ctk.CTkLabel(info, text="Market score: {}/100  ·  RSI: {:.0f}  ·  Volume: {:.1f}x".format(data["score"], data["rsi"], data["volume_ratio"]),
                              font=ctk.CTkFont(size=10), text_color=("#78857D", "#A2B0A8")).pack(side="left", padx=(12, 0))
-                ctk.CTkButton(info, text="Open in {} ↗".format(self.settings.get("selected_platform", "platform")),
+                ctk.CTkButton(info, text="View on {} ↗".format(self.settings.get("selected_platform", "platform")),
                               width=145, height=28, corner_radius=9, font=ctk.CTkFont(size=10),
                               command=lambda sym=symbol: self.open_selected_platform(sym, ask=True)).pack(side="right")
 
@@ -785,8 +785,8 @@ class MarketInsightApp(ctk.CTk):
             self.top_symbol.configure(text=f"{symbol}  ·  {data['score']}/100")
             self.top_details.configure(text=f"${data['price']:.2f}   |   Day {data['day_change']:+.2f}%   |   RSI {data['rsi']:.1f}   |   Live IEX · {data['trade_time']}")
         else:
-            self.top_symbol.configure(text="No results available")
-            self.top_details.configure(text="Check your internet connection or ticker symbols.")
+            self.top_symbol.configure(text="No results to show")
+            self.top_details.configure(text="Check your internet connection and make sure your watchlist contains valid stock tickers.")
         self._render_stock_cards(self.watch_table, valid, limit=12)
         caution_rows = [(symbol, data) for symbol, data in valid if len(data.get("warnings", [])) >= 2]
         self._render_stock_cards(self.caution_text, caution_rows[:8], caution=True)
@@ -795,7 +795,7 @@ class MarketInsightApp(ctk.CTk):
         if errors:
             issue = ctk.CTkFrame(self.results_text, corner_radius=12, fg_color=("#F8EEEE", "#3B2D2D"))
             issue.pack(fill="x", padx=5, pady=6)
-            ctk.CTkLabel(issue, text="Data issues", font=ctk.CTkFont(size=12, weight="bold"),
+            ctk.CTkLabel(issue, text="Stocks we couldn't check", font=ctk.CTkFont(size=12, weight="bold"),
                          text_color=("#A34D4D", "#E6A0A0")).pack(anchor="w", padx=12, pady=(8, 2))
             ctk.CTkLabel(issue, text="\\n".join(errors[:12]), justify="left", wraplength=700,
                          text_color=("#8B5555", "#E6A5A5")).pack(anchor="w", padx=12, pady=(0, 10))
@@ -824,12 +824,12 @@ class MarketInsightApp(ctk.CTk):
         risk_pct = safe_num(self.settings["risk_percent"], 1)
         risk_cash = balance * risk_pct / 100
         shares = min(risk_cash / stop_distance, balance / price)
-        self.calc_output.configure(text=f"{symbol} example levels\nStop loss: ${stop:.2f}  |  Take profit: ${target:.2f}\nApprox. shares: {math.floor(shares)}  |  Risk budget: ${risk_cash:.2f}\nUses 1.5 × ATR stop and 2:1 potential reward-to-risk.")
+        self.calc_output.configure(text=f"{symbol} example levels\nStop loss: ${stop:.2f}  |  Take profit: ${target:.2f}\nApprox. shares: {math.floor(shares)}  |  Risk budget: ${risk_cash:.2f}\nBased on a stop distance of 1.5 × ATR and a potential 2:1 reward-to-risk ratio.")
 
     def open_top_result(self):
         valid = [(s, d) for s, d in self.results.items() if "error" not in d]
         if not valid:
-            self.status.configure(text="Run a scan first")
+            self.status.configure(text="Run a scan before opening a stock.")
             return
         symbol, _ = max(valid, key=lambda item: item[1]["score"])
         self.open_selected_platform(symbol, ask=True)
