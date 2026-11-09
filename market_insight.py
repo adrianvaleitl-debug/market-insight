@@ -178,10 +178,15 @@ class MarketInsightApp(ctk.CTk):
         self.results = {}
         self.scanning = False
         self.after_id = None
-        self._build_ui()
-        self._refresh_watchlist_text()
-        if self.settings.get("auto_scan"):
-            self.after(900, self.start_scan)
+        self.withdraw()
+        api_key, secret_key = get_alpaca_credentials()
+        valid = self._validate_alpaca_credentials(api_key, secret_key)[0] if api_key and secret_key else False
+        if valid and self.settings.get("selected_platform"):
+            self._launch_main_ui()
+        elif valid:
+            self._show_platform_setup()
+        else:
+            self._show_alpaca_setup()
 
     def _build_ui(self):
         self.grid_columnconfigure(1, weight=1)
