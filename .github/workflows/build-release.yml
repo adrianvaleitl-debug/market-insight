@@ -77,19 +77,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: pwsh
         run: |
-          gh release create V1.1 "installer-output/Market_Insight_Setup_V1.1.exe" "Market_Insight_V1.1.zip" --title "Market Insight V1.1" --notes @"
-          ## Market Insight V1.1
-
-          - Added five selectable pastel colour palettes: Sage, Lavender, Ocean, Rose and Sand.
-          - Colour themes apply across the interface in both Light and Dark appearance modes and are saved between launches.
-          - Changing the palette updates the interface immediately without requiring an app restart.
-          - Increased interface text sizes slightly further for improved readability.
-          - Reworked the silver M with a bolder, larger shape for clearer Windows taskbar and shortcut display.
-          - Fixed packaged icon lookup so the silver M icon is used instead of the obsolete fallback.
-          - The installer places the complete application and its bundled Python dependencies in your user Programs folder.
-          - No separate Python installation, ZIP extraction, or manual package setup is required.
-          - Creates Start Menu and optional desktop shortcuts, then offers to launch Market Insight.
-          - Existing scanner features and saved settings are preserved.
-
-          The installer is for 64-bit Windows 10 and Windows 11. Educational research software only; not financial advice.
-          "@
+          gh release upload V1.1 "installer-output/Market_Insight_Setup_V1.1.exe" "Market_Insight_V1.1.zip" --clobber
