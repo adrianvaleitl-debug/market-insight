@@ -1,31 +1,25 @@
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 from pathlib import Path
 
 OUT = Path(__file__).resolve().parent.parent / "market_insight.ico"
-SIZE = 256
+SIZE = 512
+SCALE = 4
 
 def make_icon():
-    # Minimal charcoal tile with a single matte-silver M.
-    im = Image.new("RGB", (SIZE, SIZE), (42, 42, 42))
+    n = SIZE * SCALE
+    im = Image.new("RGBA", (n, n), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
-    font_paths = [
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-        "/usr/share/fonts/truetype/liberation2/LiberationSans-Bold.ttf",
-        "C:/Windows/Fonts/arialbd.ttf",
+    # Rounded charcoal tile, matching the supplied Market Insight artwork.
+    d.rounded_rectangle((0, 0, n - 1, n - 1), radius=145 * SCALE, fill=(45, 46, 45, 255))
+    # Custom angular M, preserving the proportions and broad strokes of the reference.
+    points = [
+        (334, 406), (439, 406), (624, 598), (810, 406),
+        (914, 406), (914, 830), (800, 830), (800, 570),
+        (624, 752), (448, 570), (448, 830), (334, 830)
     ]
-    font = None
-    for path in font_paths:
-        try:
-            font = ImageFont.truetype(path, 174)
-            break
-        except OSError:
-            continue
-    if font is None:
-        font = ImageFont.load_default()
-    box = d.textbbox((0, 0), "M", font=font, stroke_width=0)
-    x = (SIZE - (box[2] - box[0])) / 2 - box[0]
-    y = (SIZE - (box[3] - box[1])) / 2 - box[1] - 5
-    d.text((x, y), "M", font=font, fill=(190, 190, 190))
+    points = [(int(x * n / 1254), int(y * n / 1254)) for x, y in points]
+    d.polygon(points, fill=(174, 175, 177, 255))
+    im = im.resize((SIZE, SIZE), Image.Resampling.LANCZOS)
     im.save(OUT, format="ICO", sizes=[(16,16),(24,24),(32,32),(48,48),(64,64),(128,128),(256,256)])
     return OUT
 
