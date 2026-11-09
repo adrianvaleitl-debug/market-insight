@@ -18,7 +18,7 @@ import ctypes
 import winreg
 
 APP_NAME = "Market Insight"
-APP_VERSION = "1.2.25"
+APP_VERSION = "V1.0"
 # v1.2.24 resolves the bundled icon from PyInstaller's runtime resource folder.
 GITHUB_RELEASES_API = "https://api.github.com/repos/adrianvaleitl-debug/market-insight/releases/latest"
 GITHUB_RELEASES_PAGE = "https://github.com/adrianvaleitl-debug/market-insight/releases/latest"
@@ -964,7 +964,7 @@ class MarketInsightApp(ctk.CTk):
             "Check GitHub for a newer version and download the official release when one is available."
         )
         self.update_status = ctk.CTkLabel(
-            updates, text="Current version: v{}".format(APP_VERSION),
+            updates, text="Current version: {}".format(APP_VERSION),
             font=ctk.CTkFont(size=13), text_color=("#777D75", "#A7AAA1"), justify="left"
         )
         self.update_status.pack(anchor="w", padx=18, pady=(8, 5))
@@ -1193,7 +1193,7 @@ class MarketInsightApp(ctk.CTk):
             release = response.json()
             latest_tag = str(release.get("tag_name", "")).strip()
             if version_tuple(latest_tag) <= version_tuple(APP_VERSION):
-                self.after(0, lambda: self._show_update_status("You're up to date · v{}".format(APP_VERSION)))
+                self.after(0, lambda: self._show_update_status("You're up to date · {}".format(APP_VERSION)))
                 return
             assets = release.get("assets") or []
             asset = next((item for item in assets if str(item.get("name", "")).endswith(".zip")), None)
@@ -1214,7 +1214,7 @@ class MarketInsightApp(ctk.CTk):
         from tkinter import messagebox
         if not messagebox.askyesno(
             "Market Insight update available",
-            "A newer version is available: {}\n\nYou have: v{}\n\nDownload the official update ZIP now?".format(tag, APP_VERSION),
+            "A newer version is available: {}\n\nYou have: {}\n\nDownload the official update ZIP now?".format(tag, APP_VERSION),
             parent=self
         ):
             self._show_update_status("Update {} is available on GitHub.".format(tag))
