@@ -35,6 +35,9 @@ DEFAULTS = {
     "watchlist": DEFAULT_TICKERS,
     "balance": 1000.0,
     "risk_percent": 1.0,
+    "selected_platform": "",
+    "custom_platform_url": "",
+    "auto_open_platform": False,
 }
 
 def load_settings():
