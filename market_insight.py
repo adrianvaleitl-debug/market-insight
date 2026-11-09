@@ -551,13 +551,17 @@ class MarketInsightApp(ctk.CTk):
         if compact:
             self.overview_left.grid_configure(row=0, column=0, sticky="ew")
             self.overview_right.grid_configure(row=1, column=0, sticky="ew")
+            self.overview_right.grid_propagate(True)
+            self.overview_right.configure(width=0)
             self.overview_content.grid_columnconfigure(0, weight=1)
-            self.overview_content.grid_columnconfigure(1, weight=0)
+            self.overview_content.grid_columnconfigure(1, weight=0, minsize=0)
         else:
             self.overview_left.grid_configure(row=0, column=0, sticky="nsew")
             self.overview_right.grid_configure(row=0, column=1, sticky="nsew")
+            self.overview_right.configure(width=300)
+            self.overview_right.grid_propagate(False)
             self.overview_content.grid_columnconfigure(0, weight=1)
-            self.overview_content.grid_columnconfigure(1, weight=0)
+            self.overview_content.grid_columnconfigure(1, weight=0, minsize=300)
 
     def _build_overview(self):
         page = self.pages["Overview"]
@@ -581,8 +585,9 @@ class MarketInsightApp(ctk.CTk):
         left_column = ctk.CTkFrame(content, fg_color="transparent")
         left_column.grid(row=0, column=0, sticky="nsew")
         self.overview_left = left_column
-        right_column = ctk.CTkFrame(content, fg_color="transparent")
+        right_column = ctk.CTkFrame(content, width=300, fg_color="transparent")
         right_column.grid(row=0, column=1, sticky="nsew")
+        right_column.grid_propagate(False)
         self.overview_right = right_column
         content.bind("<Configure>", self._resize_overview)
 
