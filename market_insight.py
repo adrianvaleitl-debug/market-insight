@@ -693,6 +693,21 @@ class MarketInsightApp(ctk.CTk):
         self.calc_output.pack(anchor="w", fill="x", padx=14, pady=(0, 16))
         self._fit_text_to_width(self.calc_output, calculator, 32)
 
+        footer = ctk.CTkFrame(page, fg_color="transparent")
+        footer.pack(fill="x", padx=18, pady=(2, 10))
+        ctk.CTkLabel(
+            footer, text="ADRIAN VALE  ·  MARKET INSIGHT",
+            font=ctk.CTkFont(size=10, weight="bold"),
+            text_color=("#646D64", "#C0C5BC")
+        ).pack(side="left")
+        ctk.CTkButton(
+            footer, text="@adrianvaleitl  ↗", width=125, height=26,
+            corner_radius=12, fg_color="transparent",
+            text_color=("#647B68", "#B8C2B5"),
+            hover_color=("#E4E4DC", "#35443C"),
+            command=lambda: webbrowser.open("https://www.tiktok.com/@adrianvaleitl")
+        ).pack(side="right")
+
     def _build_watchlist(self):
         page = self.pages["Watchlist"]
         card = self.card(page, "Your watchlist", "Add the stock ticker symbols you want to track. Separate each symbol with a comma. You can add up to 100.")
@@ -789,6 +804,26 @@ class MarketInsightApp(ctk.CTk):
                           text_color=("#414841", "#E5E4DE"),
                           command=lambda target=url: webbrowser.open(target)
                           ).pack(anchor="center", pady=4)
+
+        credits = self.card(page, "Credits and creator links",
+                            "Market Insight is created and maintained by Adrian Vale.")
+        ctk.CTkLabel(
+            credits, text="Created by Adrian Vale  ·  Market Insight",
+            font=ctk.CTkFont(size=12, weight="bold"),
+            text_color=("#646D64", "#C0C5BC")
+        ).pack(anchor="center", pady=(8, 4))
+        for label, url in [
+            ("TikTok  ·  @adrianvaleitl", "https://www.tiktok.com/@adrianvaleitl"),
+            ("Official website", "https://adrianvaleitl-debug.github.io/market-insight/"),
+            ("GitHub repository", "https://github.com/adrianvaleitl-debug/market-insight")
+        ]:
+            ctk.CTkButton(
+                credits, text=label + "  ↗", corner_radius=16,
+                fg_color=("#D8DAD4", "#414841"),
+                hover_color=("#C8CBC2", "#50564F"),
+                text_color=("#414841", "#E5E4DE"),
+                command=lambda target=url: webbrowser.open(target)
+            ).pack(anchor="center", pady=4)
 
     def _build_about(self):
         page = self.pages["About"]
