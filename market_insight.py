@@ -531,8 +531,15 @@ class MarketInsightApp(ctk.CTk):
                                           wraplength=wraplength or 600, justify="left")
             subtitle_label.pack(anchor="w", padx=18, pady=(0, 8))
 
+        last_wrap = [None]
+
         def fit_card_text(event=None):
-            available = max(120, frame.winfo_width() - 44)
+            # Only update labels when the card's actual width changes. Reconfiguring
+            # CTk labels on every Configure event creates a costly resize feedback loop.
+            available = max(120, (event.width if event is not None else frame.winfo_width()) - 44)
+            if available == last_wrap[0]:
+                return
+            last_wrap[0] = available
             title_label.configure(wraplength=available)
             if subtitle_label is not None:
                 subtitle_label.configure(wraplength=available)
@@ -543,7 +550,20 @@ class MarketInsightApp(ctk.CTk):
     def _resize_overview(self, event=None):
         if not hasattr(self, "overview_content"):
             return
-        width = self.overview_content.winfo_width()
+        # Debounce the layout switch while the user is dragging the window edge.
+        width = event.width if event is not None else self.overview_content.winfo_width()
+        self._pending_overview_width = width
+        pending = getattr(self, "_overview_resize_after", None)
+        if pending:
+            try:
+                self.after_cancel(pending)
+            except Exception:
+                pass
+        self._overview_resize_after = self.after(
+            70, lambda: self._apply_overview_layout(self._pending_overview_width)
+        )
+
+    def _apply_overview_layout(self, width):
         compact = width < 820
         if compact == self._overview_compact:
             return
@@ -626,8 +646,15 @@ class MarketInsightApp(ctk.CTk):
             text_color=("#718078", "#9BAAA2"), justify="left", wraplength=270
         )
         self.calc_output.pack(anchor="w", padx=14, pady=(0, 16))
-        calculator.bind("<Configure>", lambda event: self.calc_output.configure(
-            wraplength=max(140, event.width - 44)))
+        self._calculator_last_wrap = None
+
+        def fit_calculator_text(event):
+            available = max(140, event.width - 44)
+            if available != self._calculator_last_wrap:
+                self._calculator_last_wrap = available
+                self.calc_output.configure(wraplength=available)
+
+        calculator.bind("<Configure>", fit_calculator_text)
 
     def _build_watchlist(self):
         page = self.pages["Watchlist"]
