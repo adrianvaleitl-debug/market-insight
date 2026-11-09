@@ -539,20 +539,50 @@ class MarketInsightApp(ctk.CTk):
         self.scan_info = ctk.CTkLabel(actions, text="50 stocks included", text_color=("#738078", "#9BAAA2"))
         self.scan_info.pack(side="right", padx=8)
 
-        top = self.card(page, "Highest market score", "The stock with the highest score in your latest scan")
+        # Two-column overview: market results on the left, calculator always visible on the right.
+        content = ctk.CTkFrame(page, fg_color="transparent")
+        content.pack(fill="both", expand=True, padx=4)
+        left_column = ctk.CTkFrame(content, fg_color="transparent")
+        left_column.pack(side="left", fill="both", expand=True)
+        right_column = ctk.CTkFrame(content, width=270, fg_color="transparent")
+        right_column.pack(side="right", fill="y", padx=(4, 10), pady=10)
+        right_column.pack_propagate(False)
+
+        top = self.card(left_column, "Highest market score", "The stock with the highest score in your latest scan")
         self.top_symbol = ctk.CTkLabel(top, text="No scan has been run yet", font=ctk.CTkFont(size=30, weight="bold"))
         self.top_symbol.pack(anchor="w", padx=18, pady=(6, 0))
         self.top_details = ctk.CTkLabel(top, text="Connect Alpaca in Settings, then scan your watchlist to see available live prices.",
-                                        text_color=("#718078", "#A6B3AC"))
+                                        text_color=("#718078", "#A6B3AC"), wraplength=520, justify="left")
         self.top_details.pack(anchor="w", padx=18, pady=(2, 16))
 
-        self.watch_card = self.card(page, "Watchlist highlights", "The highest-scoring stocks from your latest scan")
+        self.watch_card = self.card(left_column, "Watchlist highlights", "The highest-scoring stocks from your latest scan")
         self.watch_table = ctk.CTkScrollableFrame(self.watch_card, height=260, corner_radius=12, fg_color=("#FFFFFF", "#202624"))
         self.watch_table.pack(fill="x", padx=16, pady=(8, 16))
 
-        caution = self.card(page, "Stocks to review", "Stocks showing two or more warning signs. These are prompts to take a closer look, not instructions to buy or sell.")
+        caution = self.card(left_column, "Stocks to review", "Stocks showing two or more warning signs. These are prompts to take a closer look, not instructions to buy or sell.")
         self.caution_text = ctk.CTkScrollableFrame(caution, height=170, corner_radius=12, fg_color=("#FFFFFF", "#202624"))
         self.caution_text.pack(fill="x", padx=16, pady=(8, 16))
+
+        calculator = self.card(right_column, "Position size calculator",
+                               "Estimate how many shares may fit your balance and risk limit. This is a guide only; it does not place trades.")
+        ctk.CTkLabel(calculator, text="Account balance (USD)",
+                     text_color=("#53635A", "#C5D3CB")).pack(anchor="w", padx=14, pady=(8, 3))
+        self.balance_entry = ctk.CTkEntry(calculator, placeholder_text="e.g. 1000")
+        self.balance_entry.insert(0, str(self.settings["balance"]))
+        self.balance_entry.pack(fill="x", padx=14, pady=(0, 8))
+        ctk.CTkLabel(calculator, text="Risk per trade (%)",
+                     text_color=("#53635A", "#C5D3CB")).pack(anchor="w", padx=14, pady=(2, 3))
+        self.risk_entry = ctk.CTkEntry(calculator, placeholder_text="e.g. 1")
+        self.risk_entry.insert(0, str(self.settings["risk_percent"]))
+        self.risk_entry.pack(fill="x", padx=14, pady=(0, 8))
+        ctk.CTkButton(calculator, text="Save calculator settings",
+                      command=self.save_calculator_settings).pack(fill="x", padx=14, pady=(4, 10))
+        self.calc_output = ctk.CTkLabel(
+            calculator,
+            text="Run a scan to see example position size and price levels for the highest-scoring stock.",
+            text_color=("#718078", "#9BAAA2"), justify="left", wraplength=220
+        )
+        self.calc_output.pack(anchor="w", padx=14, pady=(0, 16))
 
     def _build_watchlist(self):
         page = self.pages["Watchlist"]
@@ -615,18 +645,6 @@ class MarketInsightApp(ctk.CTk):
         ctk.CTkLabel(card, text="Price data comes from IEX, which does not cover every US market trade. Live prices are available only when the market is open and an IEX trade is available. Past-price indicators come from Yahoo Finance. If Alpaca can't provide a live price, the app will show an error rather than silently using delayed data.",
                      wraplength=760, justify="left", font=ctk.CTkFont(size=11),
                      text_color=("#8A6B42", "#D7B98B")).pack(anchor="w", padx=18, pady=(0, 14))
-
-        card = self.card(page, "Position size calculator", "Estimate a possible position size using your account balance and chosen risk. This is for planning only — it will not place a trade.")
-        self.balance_entry = ctk.CTkEntry(card, placeholder_text="Your account balance (USD)")
-        self.balance_entry.insert(0, str(self.settings["balance"]))
-        self.balance_entry.pack(fill="x", padx=18, pady=(8, 6))
-        self.risk_entry = ctk.CTkEntry(card, placeholder_text="Amount to risk per trade (%)")
-        self.risk_entry.insert(0, str(self.settings["risk_percent"]))
-        self.risk_entry.pack(fill="x", padx=18, pady=6)
-        ctk.CTkButton(card, text="Save calculator settings", command=self.save_calculator_settings).pack(anchor="e", padx=18, pady=8)
-        self.calc_output = ctk.CTkLabel(card, text="Run a scan and select a stock to see example stop-loss, target and position-size levels.",
-                                        text_color=("#718078", "#9BAAA2"), justify="left")
-        self.calc_output.pack(anchor="w", padx=18, pady=(0, 16))
 
     def _build_about(self):
         page = self.pages["About"]
@@ -719,6 +737,10 @@ class MarketInsightApp(ctk.CTk):
         self.settings["balance"] = balance
         self.settings["risk_percent"] = risk
         save_settings(self.settings)
+        valid = [(symbol, data) for symbol, data in self.results.items() if "error" not in data]
+        if valid:
+            best_symbol, best_data = max(valid, key=lambda item: item[1]["score"])
+            self._update_calculator(best_symbol, best_data)
         self.status.configure(text="Your calculator settings have been saved.")
 
     def start_scan(self):
