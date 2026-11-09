@@ -63,23 +63,26 @@ jobs:
         shell: pwsh
         run: |
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
-          if (!(Test-Path "installer-output/Market_Insight_Setup_V1.0.exe")) { throw "The Windows installer was not created." }
+          if (!(Test-Path "installer-output/Market_Insight_Setup_V1.1.exe")) { throw "The Windows installer was not created." }
 
       - name: Assemble source ZIP for existing users
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path Market_Insight | Out-Null
           Copy-Item market_insight.py, requirements.txt, SETUP_AND_START.bat, Start_Market_Insight.vbs, market_insight.ico, START_IN_DIAGNOSTIC_MODE.bat, Create_Desktop_Shortcut.ps1, README.md -Destination Market_Insight
-          Compress-Archive -Path Market_Insight -DestinationPath Market_Insight_V1.0.zip -Force
+          Compress-Archive -Path Market_Insight -DestinationPath Market_Insight_V1.1.zip -Force
 
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: pwsh
         run: |
-          gh release create V1.0 "installer-output/Market_Insight_Setup_V1.0.exe" "Market_Insight_V1.0.zip" --title "Market Insight V1.0" --notes @"
-          ## Market Insight V1.0
+          gh release create V1.1 "installer-output/Market_Insight_Setup_V1.1.exe" "Market_Insight_V1.1.zip" --title "Market Insight V1.1" --notes @"
+          ## Market Insight V1.1
 
+          - Added five selectable pastel colour palettes: Sage, Lavender, Ocean, Rose and Sand.
+          - Colour themes apply across the interface in both Light and Dark appearance modes and are saved between launches.
+          - Changing the palette updates the interface immediately without requiring an app restart.
           - Increased interface text sizes slightly further for improved readability.
           - Reworked the silver M with a bolder, larger shape for clearer Windows taskbar and shortcut display.
           - Fixed packaged icon lookup so the silver M icon is used instead of the obsolete fallback.
