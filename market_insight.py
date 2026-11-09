@@ -2,6 +2,7 @@ import json
 import math
 import os
 import sys
+import subprocess
 import threading
 import traceback
 import webbrowser
@@ -17,7 +18,8 @@ import ctypes
 
 APP_NAME = "Market Insight"
 APP_DIR = Path(__file__).resolve().parent
-CONFIG_FILE = APP_DIR / "settings.json"
+APP_DATA_DIR = Path(os.environ.get("APPDATA", str(Path.home() / "AppData" / "Roaming"))) / "Market Insight"
+CONFIG_FILE = APP_DATA_DIR / "settings.json"
 
 DEFAULT_TICKERS = [
     "SPY", "QQQ", "DIA", "IWM", "VTI", "VOO", "XLK", "XLF", "XLE", "XLV",
@@ -55,9 +57,12 @@ DEFAULTS = {
     "selected_platform": "",
     "custom_platform_url": "",
     "auto_open_platform": False,
+    "shortcut_prompted": False,
+    "create_desktop_shortcut": False,
 }
 
 def load_settings():
+    APP_DATA_DIR.mkdir(parents=True, exist_ok=True)
     try:
         data = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
         merged = DEFAULTS.copy()
@@ -67,7 +72,28 @@ def load_settings():
         return DEFAULTS.copy()
 
 def save_settings(settings):
+    APP_DATA_DIR.mkdir(parents=True, exist_ok=True)
     CONFIG_FILE.write_text(json.dumps(settings, indent=2), encoding="utf-8")
+
+def ensure_app_icon():
+    """Create the bundled-style Windows icon automatically when running the .py directly."""
+    icon_path = APP_DIR / "market_insight.ico"
+    if icon_path.exists():
+        return icon_path
+    try:
+        from PIL import Image, ImageDraw
+        size = 256
+        im = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(im)
+        draw.rounded_rectangle((8, 8, 248, 248), radius=54, fill=(8, 20, 16, 255), outline=(40, 190, 118, 255), width=5)
+        for x, top in [(54, 157), (91, 128), (128, 96), (165, 65)]:
+            draw.rounded_rectangle((x, top, x + 24, 198), radius=5, fill=(40, 205, 130, 255))
+        draw.line([(42, 151), (91, 118), (126, 135), (198, 59)], fill=(151, 255, 194, 255), width=13, joint="curve")
+        draw.polygon([(198, 34), (221, 70), (181, 65)], fill=(151, 255, 194, 255))
+        im.save(icon_path, format="ICO", sizes=[(16,16),(24,24),(32,32),(48,48),(64,64),(128,128),(256,256)])
+    except Exception:
+        return None
+    return icon_path
 
 def safe_num(value, default=0.0):
     try:
@@ -185,6 +211,7 @@ def scan_symbol(symbol, api_key, secret_key):
 class MarketInsightApp(ctk.CTk):
     def __init__(self):
         super().__init__()
+        ensure_app_icon()
         self.settings = load_settings()
         ctk.set_appearance_mode(self.settings["appearance"].lower())
         ctk.set_default_color_theme("green")
@@ -318,8 +345,50 @@ class MarketInsightApp(ctk.CTk):
         self.deiconify()
         self._build_ui()
         self._refresh_watchlist_text()
+        self.after(700, self._maybe_prompt_shortcut)
         if self.settings.get("auto_scan"):
             self.after(900, self.start_scan)
+
+    def _maybe_prompt_shortcut(self):
+        if self.settings.get("shortcut_prompted"):
+            return
+        from tkinter import messagebox
+        self.settings["shortcut_prompted"] = True
+        wants_shortcut = messagebox.askyesno(
+            "Desktop shortcut",
+            "Would you like Market Insight to create a shortcut on your desktop?\n\nYou can change this later in Settings."
+        )
+        self.settings["create_desktop_shortcut"] = bool(wants_shortcut)
+        save_settings(self.settings)
+        if wants_shortcut:
+            self._apply_desktop_shortcut(True, show_feedback=True)
+
+    def _apply_desktop_shortcut(self, enabled, show_feedback=False):
+        script = APP_DIR / "Create_Desktop_Shortcut.ps1"
+        if not script.exists():
+            if show_feedback and hasattr(self, "status"):
+                self.status.configure(text="Shortcut helper was not found")
+            return False
+        command = ["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(script)]
+        if not enabled:
+            command.append("-Remove")
+        try:
+            result = subprocess.run(command, capture_output=True, text=True, timeout=20,
+                                    creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+            success = result.returncode == 0
+        except Exception:
+            success = False
+        if show_feedback and hasattr(self, "status"):
+            self.status.configure(text="Desktop shortcut updated" if success else "Could not update desktop shortcut")
+        return success
+
+    def save_shortcut_preference(self):
+        enabled = bool(self.shortcut_var.get())
+        if self._apply_desktop_shortcut(enabled, show_feedback=True):
+            self.settings["create_desktop_shortcut"] = enabled
+            save_settings(self.settings)
+        else:
+            self.shortcut_var.set(not enabled)
 
     def _platform_url(self, symbol):
         symbol = symbol.upper().strip()
@@ -447,6 +516,11 @@ class MarketInsightApp(ctk.CTk):
         self.appearance_menu = ctk.CTkOptionMenu(card, values=["System", "Dark", "Light"], command=self.change_appearance)
         self.appearance_menu.set(self.settings["appearance"])
         self.appearance_menu.pack(anchor="w", padx=18, pady=(8, 16))
+
+        card = self.card(page, "Desktop shortcut", "Choose whether Market Insight has an icon on your Windows desktop. You can change this at any time.")
+        self.shortcut_var = ctk.BooleanVar(value=self.settings.get("create_desktop_shortcut", False))
+        ctk.CTkCheckBox(card, text="Keep a Market Insight desktop shortcut", variable=self.shortcut_var,
+                        command=self.save_shortcut_preference).pack(anchor="w", padx=18, pady=(8, 14))
 
         card = self.card(page, "Scanning", "Live latest-trade snapshots from Alpaca IEX; technical indicators use Yahoo Finance daily history.")
         self.auto_scan_var = ctk.BooleanVar(value=self.settings["auto_scan"])
@@ -719,6 +793,10 @@ if __name__ == "__main__":
         app = MarketInsightApp()
         app.mainloop()
     except BaseException:
-        error_path = APP_DIR / "startup_error.log"
+        APP_DATA_DIR.mkdir(parents=True, exist_ok=True)
+        error_path = APP_DATA_DIR / "startup_error.log"
         error_path.write_text(traceback.format_exc(), encoding="utf-8")
-        raise
+        try:
+            ctypes.windll.user32.MessageBoxW(None, "Market Insight could not start. A diagnostic log was saved here:\n" + str(error_path), APP_NAME, 0x10)
+        except Exception:
+            pass
