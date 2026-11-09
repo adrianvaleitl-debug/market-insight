@@ -63,22 +63,22 @@ jobs:
         shell: pwsh
         run: |
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
-          if (!(Test-Path "installer-output/Market_Insight_Setup_v1.2.26.exe")) { throw "The Windows installer was not created." }
+          if (!(Test-Path "installer-output/Market_Insight_Setup_V1.0.exe")) { throw "The Windows installer was not created." }
 
       - name: Assemble source ZIP for existing users
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path Market_Insight | Out-Null
           Copy-Item market_insight.py, requirements.txt, SETUP_AND_START.bat, Start_Market_Insight.vbs, market_insight.ico, START_IN_DIAGNOSTIC_MODE.bat, Create_Desktop_Shortcut.ps1, README.md -Destination Market_Insight
-          Compress-Archive -Path Market_Insight -DestinationPath Market_Insight_v1.2.26.zip -Force
+          Compress-Archive -Path Market_Insight -DestinationPath Market_Insight_V1.0.zip -Force
 
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: pwsh
         run: |
-          gh release create v1.2.26 "installer-output/Market_Insight_Setup_v1.2.26.exe" "Market_Insight_v1.2.26.zip" --title "Market Insight v1.2.26" --notes @"
-          ## Market Insight v1.2.26
+          gh release create V1.0 "installer-output/Market_Insight_Setup_V1.0.exe" "Market_Insight_V1.0.zip" --title "Market Insight V1.0" --notes @"
+          ## Market Insight V1.0
 
           - Increased interface text sizes slightly further for improved readability.
           - Reworked the silver M with a bolder, larger shape for clearer Windows taskbar and shortcut display.
