@@ -395,7 +395,7 @@ class MarketInsightApp(ctk.CTk):
         actions.pack(fill="x", padx=14, pady=(12, 0))
         ctk.CTkButton(actions, text="Scan markets now", height=40, corner_radius=12,
                       command=self.start_scan).pack(side="left")
-        ctk.CTkButton(actions, text="Open top result in TradingView", height=40, corner_radius=12,
+        ctk.CTkButton(actions, text="Open top result in selected platform", height=40, corner_radius=12,
                       fg_color=("#E8F0EB", "#35443C"), text_color=("#315B43", "#D6E8DC"),
                       command=self.open_top_result).pack(side="left", padx=8)
         self.scan_info = ctk.CTkLabel(actions, text="50 starter symbols", text_color=("#738078", "#9BAAA2"))
@@ -660,8 +660,8 @@ class MarketInsightApp(ctk.CTk):
         self.scan_info.configure(text=f"Last scan: {datetime.now().strftime('%H:%M')}")
         if valid:
             self._update_calculator(valid[0][0], valid[0][1])
-            if self.settings.get("auto_open_tradingview") and valid[0][1]["score"] >= self.settings.get("threshold", 70):
-                self._open_tradingview(valid[0][0], ask=self.settings.get("confirm_tradingview", True))
+            if self.settings.get("auto_open_platform") and valid[0][1]["score"] >= self.settings.get("threshold", 70):
+                self.open_selected_platform(valid[0][0], ask=False)
         self.schedule_next_scan()
 
     def _set_text(self, widget, value):
@@ -683,20 +683,13 @@ class MarketInsightApp(ctk.CTk):
         shares = min(risk_cash / stop_distance, balance / price)
         self.calc_output.configure(text=f"{symbol} example levels\nStop loss: ${stop:.2f}  |  Take profit: ${target:.2f}\nApprox. shares: {math.floor(shares)}  |  Risk budget: ${risk_cash:.2f}\nUses 1.5 × ATR stop and 2:1 potential reward-to-risk.")
 
-    def _open_tradingview(self, symbol, ask=True):
-        if ask:
-            from tkinter import messagebox
-            if not messagebox.askyesno("Open TradingView", f"Open {symbol} in TradingView?"):
-                return
-        webbrowser.open(f"https://www.tradingview.com/chart/?symbol={symbol}")
-
     def open_top_result(self):
         valid = [(s, d) for s, d in self.results.items() if "error" not in d]
         if not valid:
             self.status.configure(text="Run a scan first")
             return
         symbol, _ = max(valid, key=lambda item: item[1]["score"])
-        self._open_tradingview(symbol, ask=self.settings.get("confirm_tradingview", True))
+        self.open_selected_platform(symbol, ask=True)
 
     def schedule_next_scan(self):
         if self.after_id:
