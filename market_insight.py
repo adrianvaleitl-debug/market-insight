@@ -285,6 +285,11 @@ class MarketInsightApp(ctk.CTk):
                 pass
         self.geometry("1180x760")
         self.minsize(960, 640)
+        # Open the main application maximised on startup (Windows).
+        try:
+            self.state("zoomed")
+        except Exception:
+            pass
         self.configure(fg_color=("#F1F0EC", "#20211F"))
         self.results = {}
         self.scanning = False
