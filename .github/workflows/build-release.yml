@@ -6,6 +6,11 @@ on:
     paths:
       - "market_insight.py"
       - "requirements.txt"
+      - "SETUP_AND_START.bat"
+      - "Start_Market_Insight.vbs"
+      - "generate_icon.py"
+      - "Create_Desktop_Shortcut.ps1"
+      - "DEBUG_START.bat"
       - ".github/workflows/build-release.yml"
 
 permissions:
@@ -23,28 +28,34 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install packaging dependency and generate app icon
+        run: |
+          python -m pip install Pillow
+          python generate_icon.py
+
       - name: Check Python syntax
-        run: python -m py_compile market_insight.py
+        run: python -m py_compile market_insight.py generate_icon.py
 
       - name: Package Windows app
         run: |
-          zip -j Market_Insight_v1.1.1.zip \
+          zip -j Market_Insight_v1.1.2.zip \
             market_insight.py requirements.txt SETUP_AND_START.bat \
-            Start_Market_Insight.vbs Create_Desktop_Shortcut.bat \
-            Create_Desktop_Shortcut.ps1 HOW_TO_USE.txt README.md README.txt
+            Start_Market_Insight.vbs generate_icon.py market_insight.ico \
+            Create_Desktop_Shortcut.bat Create_Desktop_Shortcut.ps1 \
+            DEBUG_START.bat HOW_TO_USE.txt README.md README.txt
 
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create v1.1.1 Market_Insight_v1.1.1.zip \
-            --title "Market Insight v1.1.1" \
-            --notes "## Market Insight v1.1.1
+          gh release create v1.1.2 Market_Insight_v1.1.2.zip \
+            --title "Market Insight v1.1.2" \
+            --notes "## Market Insight v1.1.2
 
-          - First-run Alpaca API credential setup with live market-data validation
-          - Secure storage through Windows Credential Manager
-          - Trading platform selection: TradingView, MetaTrader 5, Interactive Brokers, Robinhood, eToro, or Other
-          - Stock cards redesigned with company names, prices, movement, scores and indicators
-          - Stock links use the user's selected platform; automatic opening is opt-in
+          - Includes the branded Windows app and taskbar icon
+          - Includes the desktop shortcut creator and icon generator
+          - Adds startup error logging to help diagnose launch problems
+          - Adds a visible diagnostic launcher for troubleshooting
+          - Retains Alpaca setup, platform selection, and watchlist features
 
           Educational research software only. Not financial advice."
