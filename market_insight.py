@@ -3,6 +3,7 @@ import math
 import os
 import sys
 import threading
+import traceback
 import webbrowser
 import requests
 import keyring
@@ -714,5 +715,10 @@ class MarketInsightApp(ctk.CTk):
             self.after_id = self.after(int(self.settings["scan_interval"]) * 60 * 1000, self.start_scan)
 
 if __name__ == "__main__":
-    app = MarketInsightApp()
-    app.mainloop()
+    try:
+        app = MarketInsightApp()
+        app.mainloop()
+    except BaseException:
+        error_path = APP_DIR / "startup_error.log"
+        error_path.write_text(traceback.format_exc(), encoding="utf-8")
+        raise
