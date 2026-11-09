@@ -23,6 +23,11 @@ py -3 -m pip install -r requirements.txt
 if errorlevel 1 goto failed
 
 echo.
+echo Creating the Market Insight app icon...
+py -3 generate_icon.py
+if errorlevel 1 goto failed
+
+echo.
 echo Setup complete. Starting Market Insight...
 start "" wscript.exe "%~dp0Start_Market_Insight.vbs"
 exit /b 0
