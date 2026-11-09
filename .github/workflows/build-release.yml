@@ -28,7 +28,7 @@ jobs:
 
       - name: Package Windows app
         run: |
-          zip -j Market_Insight_v1.1.0.zip \
+          zip -j Market_Insight_v1.1.1.zip \
             market_insight.py requirements.txt SETUP_AND_START.bat \
             Start_Market_Insight.vbs Create_Desktop_Shortcut.bat \
             Create_Desktop_Shortcut.ps1 HOW_TO_USE.txt README.md README.txt
@@ -37,9 +37,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create v1.1.0 Market_Insight_v1.1.0.zip \
-            --title "Market Insight v1.1.0" \
-            --notes "## Market Insight v1.1.0
+          gh release create v1.1.1 Market_Insight_v1.1.1.zip \
+            --title "Market Insight v1.1.1" \
+            --notes "## Market Insight v1.1.1
 
           - First-run Alpaca API credential setup with live market-data validation
           - Secure storage through Windows Credential Manager
