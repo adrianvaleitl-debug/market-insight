@@ -46,16 +46,17 @@ jobs:
           cp market_insight.py requirements.txt SETUP_AND_START.bat \
             Start_Market_Insight.vbs market_insight.ico \
             START_IN_DIAGNOSTIC_MODE.bat Create_Desktop_Shortcut.ps1 README.md Market_Insight/
-          zip -r Market_Insight_v1.2.4.zip Market_Insight
+          zip -r Market_Insight_v1.2.5.zip Market_Insight
 
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create v1.2.4 Market_Insight_v1.2.4.zip \
-            --title "Market Insight v1.2.4" \
-            --notes "## Market Insight v1.2.4
+          gh release create v1.2.5 Market_Insight_v1.2.5.zip \
+            --title "Market Insight v1.2.5" \
+            --notes "## Market Insight v1.2.5
 
+          - Improved resizing performance by avoiding repeated text-layout updates and debouncing responsive layout changes
           - Made the Overview layout responsive: the calculator sits beside scan results on wider windows and moves below them on narrower windows
           - Card headings, descriptions and calculator output wrap to fit the available width
           - Reduced the minimum window size while keeping the main content accessible through scrolling
