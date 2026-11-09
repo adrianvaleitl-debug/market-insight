@@ -25,6 +25,21 @@ DEFAULT_TICKERS = [
     "XOM", "CVX", "CAT", "GE", "AMD", "AVGO", "TSLA", "NFLX", "ORCL", "CRM"
 ]
 
+STOCK_NAMES = {
+    "SPY":"SPDR S&P 500 ETF","QQQ":"Invesco QQQ Trust","DIA":"SPDR Dow Jones ETF","IWM":"iShares Russell 2000 ETF",
+    "VTI":"Vanguard Total Stock Market ETF","VOO":"Vanguard S&P 500 ETF","XLK":"Technology Select Sector SPDR",
+    "XLF":"Financial Select Sector SPDR","XLE":"Energy Select Sector SPDR","XLV":"Health Care Select Sector SPDR",
+    "AAPL":"Apple Inc.","MSFT":"Microsoft Corporation","NVDA":"NVIDIA Corporation","AMZN":"Amazon.com, Inc.",
+    "GOOGL":"Alphabet Inc.","META":"Meta Platforms, Inc.","BRK-B":"Berkshire Hathaway Inc.","JPM":"JPMorgan Chase & Co.",
+    "BAC":"Bank of America","WFC":"Wells Fargo & Company","GS":"Goldman Sachs Group","V":"Visa Inc.",
+    "MA":"Mastercard Incorporated","COST":"Costco Wholesale","WMT":"Walmart Inc.","HD":"The Home Depot",
+    "MCD":"McDonald's Corporation","KO":"The Coca-Cola Company","PEP":"PepsiCo, Inc.","PG":"Procter & Gamble",
+    "JNJ":"Johnson & Johnson","LLY":"Eli Lilly and Company","UNH":"UnitedHealth Group","ABBV":"AbbVie Inc.",
+    "XOM":"Exxon Mobil Corporation","CVX":"Chevron Corporation","CAT":"Caterpillar Inc.","GE":"GE Aerospace",
+    "AMD":"Advanced Micro Devices","AVGO":"Broadcom Inc.","TSLA":"Tesla, Inc.","NFLX":"Netflix, Inc.",
+    "ORCL":"Oracle Corporation","CRM":"Salesforce, Inc."
+}
+
 DEFAULTS = {
     "appearance": "Dark",
     "auto_scan": True,
@@ -394,18 +409,12 @@ class MarketInsightApp(ctk.CTk):
         self.top_details.pack(anchor="w", padx=18, pady=(2, 16))
 
         self.watch_card = self.card(page, "Watchlist snapshot", "A quick look at the strongest scan results")
-        self.watch_table = ctk.CTkTextbox(self.watch_card, height=190, corner_radius=10,
-                                          fg_color=("#FFFFFF", "#202624"), text_color=("#33433A", "#DCE8E1"))
+        self.watch_table = ctk.CTkScrollableFrame(self.watch_card, height=260, corner_radius=12, fg_color=("#FFFFFF", "#202624"))
         self.watch_table.pack(fill="x", padx=16, pady=(8, 16))
-        self.watch_table.insert("1.0", "Run a scan to populate this list.")
-        self.watch_table.configure(state="disabled")
 
         caution = self.card(page, "Caution list", "Symbols with two or more warning signs. This is not a sell instruction.")
-        self.caution_text = ctk.CTkTextbox(caution, height=125, corner_radius=10,
-                                           fg_color=("#FFFFFF", "#202624"), text_color=("#8B5555", "#E6A5A5"))
+        self.caution_text = ctk.CTkScrollableFrame(caution, height=170, corner_radius=12, fg_color=("#FFFFFF", "#202624"))
         self.caution_text.pack(fill="x", padx=16, pady=(8, 16))
-        self.caution_text.insert("1.0", "No caution results yet.")
-        self.caution_text.configure(state="disabled")
 
     def _build_watchlist(self):
         page = self.pages["Watchlist"]
@@ -414,11 +423,8 @@ class MarketInsightApp(ctk.CTk):
         self.watch_input.pack(fill="x", padx=16, pady=8)
         ctk.CTkButton(card, text="Save watchlist", command=self.save_watchlist).pack(anchor="e", padx=16, pady=(0, 14))
         results = self.card(page, "Latest scan results")
-        self.results_text = ctk.CTkTextbox(results, height=330, corner_radius=10,
-                                           fg_color=("#FFFFFF", "#202624"), text_color=("#33433A", "#DCE8E1"))
+        self.results_text = ctk.CTkScrollableFrame(results, height=520, corner_radius=12, fg_color=("#FFFFFF", "#202624"))
         self.results_text.pack(fill="x", padx=16, pady=(8, 16))
-        self.results_text.insert("1.0", "Scan results will appear here.")
-        self.results_text.configure(state="disabled")
 
     def _build_settings(self):
         page = self.pages["Settings"]
