@@ -21,6 +21,33 @@ APP_DIR = Path(__file__).resolve().parent
 APP_DATA_DIR = Path(os.environ.get("APPDATA", str(Path.home() / "AppData" / "Roaming"))) / "Market Insight"
 CONFIG_FILE = APP_DATA_DIR / "settings.json"
 
+def write_diagnostic(details):
+    """Persist startup and callback errors, with a fallback beside the app."""
+    for path in (APP_DATA_DIR / "startup_error.log", APP_DIR / "startup_error.log"):
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with path.open("a", encoding="utf-8") as log:
+                log.write("\n" + "=" * 72 + "\n")
+                log.write(datetime.now().isoformat(timespec="seconds") + "\n")
+                log.write(str(details) + "\n")
+            return path
+        except Exception:
+            continue
+    return None
+
+def show_startup_error(details):
+    path = write_diagnostic(details)
+    message = "Market Insight encountered an error."
+    if path:
+        message += "\n\nA diagnostic report was saved to:\n" + str(path)
+    else:
+        message += "\n\nThe diagnostic report could not be saved."
+    try:
+        ctypes.windll.user32.MessageBoxW(None, message, APP_NAME, 0x10)
+    except Exception:
+        print(message)
+        print(details)
+
 DEFAULT_TICKERS = [
     "SPY", "QQQ", "DIA", "IWM", "VTI", "VOO", "XLK", "XLF", "XLE", "XLV",
     "XLI", "XLY", "XLP", "XLU", "GLD", "TLT", "AAPL", "MSFT", "NVDA", "AMZN",
@@ -62,9 +89,9 @@ DEFAULTS = {
 }
 
 def load_settings():
-    APP_DATA_DIR.mkdir(parents=True, exist_ok=True)
     data = {}
     try:
+        APP_DATA_DIR.mkdir(parents=True, exist_ok=True)
         if CONFIG_FILE.exists():
             data = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
         else:
@@ -73,6 +100,7 @@ def load_settings():
             if legacy_file.exists():
                 data = json.loads(legacy_file.read_text(encoding="utf-8"))
     except Exception:
+        write_diagnostic("Settings could not be loaded; defaults will be used.\n" + traceback.format_exc())
         data = {}
     merged = DEFAULTS.copy()
     if isinstance(data, dict):
@@ -249,6 +277,19 @@ class MarketInsightApp(ctk.CTk):
             self._show_platform_setup()
         else:
             self._show_alpaca_setup()
+
+    def report_callback_exception(self, exc, value, tb):
+        """Capture errors raised by Tkinter commands and scheduled callbacks."""
+        details = "".join(traceback.format_exception(exc, value, tb))
+        path = write_diagnostic("Tkinter callback error:\n" + details)
+        try:
+            from tkinter import messagebox
+            message = "A Market Insight action failed."
+            if path:
+                message += "\n\nDetails saved to:\n" + str(path)
+            messagebox.showerror(APP_NAME, message, parent=self)
+        except Exception:
+            print(details)
 
     def _validate_alpaca_credentials(self, api_key, secret_key):
         headers = {"APCA-API-KEY-ID": api_key, "APCA-API-SECRET-KEY": secret_key}
@@ -801,30 +842,13 @@ class MarketInsightApp(ctk.CTk):
             self.after_id = self.after(int(self.settings["scan_interval"]) * 60 * 1000, self.start_scan)
 
 if __name__ == "__main__":
-    # If Windows opened this file with console Python, hand off to pythonw.exe.
-    # This keeps direct .py launches windowless as well as setup/desktop launches.
-    if (os.name == "nt"
-            and not os.environ.get("MARKET_INSIGHT_WINDOWLESS")
-            and not os.environ.get("MARKET_INSIGHT_DEBUG")
-            and Path(sys.executable).name.lower() in ("python.exe", "python3.exe")):
-        pythonw = Path(sys.executable).with_name("pythonw.exe")
-        if pythonw.exists():
-            child_env = os.environ.copy()
-            child_env["MARKET_INSIGHT_WINDOWLESS"] = "1"
-            subprocess.Popen(
-                [str(pythonw), str(Path(__file__).resolve()), *sys.argv[1:]],
-                cwd=str(APP_DIR), env=child_env, close_fds=True
-            )
-            raise SystemExit
-
+    # Keep direct launches attached to their console. Normal setup and desktop
+    # launches use the dedicated windowless VBS/pythonw launchers instead.
     try:
         app = MarketInsightApp()
         app.mainloop()
     except BaseException:
-        APP_DATA_DIR.mkdir(parents=True, exist_ok=True)
-        error_path = APP_DATA_DIR / "startup_error.log"
-        error_path.write_text(traceback.format_exc(), encoding="utf-8")
-        try:
-            ctypes.windll.user32.MessageBoxW(None, "Market Insight could not start. A diagnostic log was saved here:\n" + str(error_path), APP_NAME, 0x10)
-        except Exception:
-            pass
+        details = traceback.format_exc()
+        show_startup_error(details)
+        if os.environ.get("MARKET_INSIGHT_DEBUG"):
+            raise
