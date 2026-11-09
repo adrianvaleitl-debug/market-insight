@@ -73,7 +73,7 @@ STOCK_NAMES = {
 
 DEFAULTS = {
     "appearance": "Dark",
-    "startup_window_mode": "Maximised",
+    "startup_window_mode": "Full screen",
     "auto_scan": True,
     "scan_interval": 5,
     "auto_open_tradingview": False,
