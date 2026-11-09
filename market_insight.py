@@ -18,9 +18,8 @@ import ctypes
 import winreg
 
 APP_NAME = "Market Insight"
-APP_VERSION = "1.2.20"
-# v1.2.20 is a no-feature release used to test the GitHub updater.
-# Release packaging test only; application behaviour is unchanged.
+APP_VERSION = "1.2.21"
+# v1.2.21 adds a Windows installer build; scanner features are unchanged.
 GITHUB_RELEASES_API = "https://api.github.com/repos/adrianvaleitl-debug/market-insight/releases/latest"
 GITHUB_RELEASES_PAGE = "https://github.com/adrianvaleitl-debug/market-insight/releases/latest"
 _SINGLE_INSTANCE_MUTEX = None
@@ -72,7 +71,7 @@ def version_tuple(value):
     return tuple(parts) if parts else (0,)
 
 
-APP_DIR = Path(__file__).resolve().parent
+APP_DIR = Path(sys.executable).resolve().parent if getattr(sys, "frozen", False) else Path(__file__).resolve().parent
 APP_DATA_DIR = Path(os.environ.get("APPDATA", str(Path.home() / "AppData" / "Roaming"))) / "Market Insight"
 CONFIG_FILE = APP_DATA_DIR / "settings.json"
 
