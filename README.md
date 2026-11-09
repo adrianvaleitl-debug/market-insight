@@ -105,6 +105,17 @@ You are responsible for your own research and decisions. Past market behaviour d
 - **Latest download:** https://github.com/adrianvaleitl-debug/market-insight/releases/latest
 - **Source code:** https://github.com/adrianvaleitl-debug/market-insight
 
+
+## Support Market Insight
+
+Market Insight is free to download and use. If you find the project useful and would like to support its continued development, you can make an optional contribution through Ko-fi.
+
+- **Support the project:** https://ko-fi.com/marketinsight
+- Contributions are voluntary; using the application does not require a payment.
+- Support helps with ongoing maintenance, improvements, and future development.
+
+Thank you for checking out Market Insight and supporting independent development.
+
 ## Credits
 
 Created by Adrian Vale.
