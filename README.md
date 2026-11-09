@@ -40,7 +40,7 @@ It is a research aid, not an automated trading system.
 
 1. Download the latest release ZIP and extract the **Market_Insight** folder.
 2. Double-click **SETUP_AND_START.bat**. This is the only file you need to run for setup.
-3. It installs the required packages and opens Market Insight without leaving a command window running.
+3. It installs the required packages and opens Market Insight without leaving a command window running. Opening `market_insight.py` directly also hands off to windowless Python automatically when available.
 
 The first time the app opens, it asks whether you want a desktop shortcut. Your answer is remembered, so it will not ask again. You can turn the shortcut on or off later in **Settings → Desktop shortcut**.
 
