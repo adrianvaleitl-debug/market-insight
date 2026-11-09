@@ -19,6 +19,7 @@ import winreg
 
 APP_NAME = "Market Insight"
 APP_VERSION = "1.2.20"
+# v1.2.20 is a no-feature release used to test the GitHub updater.
 GITHUB_RELEASES_API = "https://api.github.com/repos/adrianvaleitl-debug/market-insight/releases/latest"
 GITHUB_RELEASES_PAGE = "https://github.com/adrianvaleitl-debug/market-insight/releases/latest"
 _SINGLE_INSTANCE_MUTEX = None
