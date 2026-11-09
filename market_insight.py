@@ -560,6 +560,16 @@ class MarketInsightApp(ctk.CTk):
         else:
             self.shortcut_var.set(not enabled)
 
+    def create_desktop_shortcut(self):
+        if self._apply_desktop_shortcut(True, show_feedback=True):
+            self.settings["create_desktop_shortcut"] = True
+            save_settings(self.settings)
+
+    def remove_desktop_shortcut(self):
+        if self._apply_desktop_shortcut(False, show_feedback=True):
+            self.settings["create_desktop_shortcut"] = False
+            save_settings(self.settings)
+
     def _platform_url(self, symbol):
         symbol = symbol.upper().strip()
         platform = self.settings.get("selected_platform", "")
@@ -834,11 +844,23 @@ class MarketInsightApp(ctk.CTk):
         mode_note.pack(fill="x", padx=18, pady=(0, 12))
         self._fit_text_to_width(mode_note, preferences, 40)
 
-        self.shortcut_var = ctk.BooleanVar(value=self.settings.get("create_desktop_shortcut", False))
-        ctk.CTkCheckBox(
-            preferences, text="Show a Market Insight shortcut on my desktop",
-            variable=self.shortcut_var, command=self.save_shortcut_preference
-        ).pack(anchor="w", padx=18, pady=(4, 10))
+        ctk.CTkLabel(
+            preferences, text="Desktop shortcut",
+            font=ctk.CTkFont(size=11, weight="bold"),
+            text_color=("#555D54", "#C0C5BC")
+        ).pack(anchor="w", padx=18, pady=(8, 3))
+        shortcut_actions = ctk.CTkFrame(preferences, fg_color="transparent")
+        shortcut_actions.pack(fill="x", padx=18, pady=(0, 12))
+        ctk.CTkButton(
+            shortcut_actions, text="Create desktop shortcut",
+            command=self.create_desktop_shortcut
+        ).pack(side="left", padx=(0, 8))
+        ctk.CTkButton(
+            shortcut_actions, text="Remove desktop shortcut",
+            fg_color=("#E8E2DE", "#493B38"),
+            text_color=("#96716B", "#D8C1BA"),
+            command=self.remove_desktop_shortcut
+        ).pack(side="left")
 
         self.auto_scan_var = ctk.BooleanVar(value=self.settings["auto_scan"])
         ctk.CTkCheckBox(
@@ -918,6 +940,27 @@ class MarketInsightApp(ctk.CTk):
             page, "Help, resources and credits",
             "Useful notes and links for using Market Insight."
         )
+        for label, url in [
+            ("Manage Alpaca API keys", "https://app.alpaca.markets/"),
+            ("Alpaca market data guide", "https://docs.alpaca.markets/docs/about-market-data-api"),
+            ("Yahoo Finance market overview", "https://finance.yahoo.com/"),
+            ("TradingView charts", "https://www.tradingview.com/"),
+            ("TikTok  ·  @adrianvaleitl", "https://www.tiktok.com/@adrianvaleitl"),
+            ("Official website", "https://adrianvaleitl-debug.github.io/market-insight/"),
+            ("GitHub repository", "https://github.com/adrianvaleitl-debug/market-insight")
+        ]:
+            ctk.CTkButton(
+                extras, text=label + "  ↗", corner_radius=16,
+                fg_color=("#D8DAD4", "#414841"),
+                hover_color=("#C8CBC2", "#50564F"),
+                text_color=("#414841", "#E5E4DE"),
+                command=lambda target=url: webbrowser.open(target)
+            ).pack(anchor="center", pady=4)
+
+        ctk.CTkFrame(extras, height=1, fg_color=("#D8DAD4", "#414841")).pack(
+            fill="x", padx=18, pady=(12, 8)
+        )
+
         setting_notes = [
             ("Scan interval", "Automatic scans refresh your watchlist at the interval you choose. More frequent scans do not guarantee better prices or signals."),
             ("Score threshold", "The threshold controls when the app may automatically open a top-scoring stock on your selected platform. It does not mean the stock is likely to rise."),
@@ -935,23 +978,6 @@ class MarketInsightApp(ctk.CTk):
             )
             note.pack(fill="x", padx=18, pady=(0, 5))
             self._fit_text_to_width(note, extras, 40)
-
-        for label, url in [
-            ("Manage Alpaca API keys", "https://app.alpaca.markets/"),
-            ("Alpaca market data guide", "https://docs.alpaca.markets/docs/about-market-data-api"),
-            ("Yahoo Finance market overview", "https://finance.yahoo.com/"),
-            ("TradingView charts", "https://www.tradingview.com/"),
-            ("TikTok  ·  @adrianvaleitl", "https://www.tiktok.com/@adrianvaleitl"),
-            ("Official website", "https://adrianvaleitl-debug.github.io/market-insight/"),
-            ("GitHub repository", "https://github.com/adrianvaleitl-debug/market-insight")
-        ]:
-            ctk.CTkButton(
-                extras, text=label + "  ↗", corner_radius=16,
-                fg_color=("#D8DAD4", "#414841"),
-                hover_color=("#C8CBC2", "#50564F"),
-                text_color=("#414841", "#E5E4DE"),
-                command=lambda target=url: webbrowser.open(target)
-            ).pack(anchor="center", pady=4)
 
         ctk.CTkLabel(
             extras, text="Created by Adrian Vale  ·  Market Insight",
