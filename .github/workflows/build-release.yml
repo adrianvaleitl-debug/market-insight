@@ -1,5 +1,9 @@
 name: Build and publish Market Insight release
 
+concurrency:
+  group: market-insight-release
+  cancel-in-progress: true
+
 on:
   push:
     branches: [main]
@@ -70,8 +74,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: pwsh
         run: |
-          gh release create v1.2.22 "installer-output/Market_Insight_Setup_v1.2.21.exe" "Market_Insight_v1.2.21.zip" --title "Market Insight v1.2.22" --notes @"
-          ## Market Insight v1.2.21
+          gh release create v1.2.22 "installer-output/Market_Insight_Setup_v1.2.22.exe" "Market_Insight_v1.2.22.zip" --title "Market Insight v1.2.22" --notes @"
+          ## Market Insight v1.2.22
 
           - Added a single-file Windows installer.
           - The installer places the complete application and its bundled Python dependencies in your user Programs folder.
