@@ -197,6 +197,29 @@ def apply_ctk_palette_theme():
             theme[widget_name].update(values)
 
 
+def styled_settings_dropdown(parent, values, command=None):
+    """Create a settings selector that matches the app's soft card styling."""
+    return ctk.CTkOptionMenu(
+        parent,
+        values=values,
+        command=command,
+        width=230,
+        height=36,
+        corner_radius=10,
+        button_corner_radius=9,
+        fg_color=(palette_color("#E7E9E1"), palette_color("#343A33")),
+        button_color=(palette_color("#D2D8CC"), palette_color("#465044")),
+        button_hover_color=(palette_color("#C5CEBF"), palette_color("#53604F")),
+        text_color=(palette_color("#343A32"), palette_color("#E9ECE5")),
+        dropdown_fg_color=(palette_color("#F8F7F3"), palette_color("#292B28")),
+        dropdown_hover_color=(palette_color("#E5E9E0"), palette_color("#3C443A")),
+        dropdown_text_color=(palette_color("#343A32"), palette_color("#E9ECE5")),
+        font=ctk.CTkFont(size=13),
+        dropdown_font=ctk.CTkFont(size=13),
+        anchor="w",
+    )
+
+
 def load_settings():
     data = {}
     try:
@@ -912,7 +935,7 @@ class MarketInsightApp(ctk.CTk):
         ctk.CTkLabel(preferences, text="Appearance",
                      font=ctk.CTkFont(size=14, weight="bold"),
                      text_color=(palette_color("#555D54"), palette_color("#C0C5BC"))).pack(anchor="w", padx=18, pady=(10, 3))
-        self.appearance_menu = ctk.CTkOptionMenu(
+        self.appearance_menu = styled_settings_dropdown(
             preferences, values=["System", "Dark", "Light"], command=self.change_appearance
         )
         self.appearance_menu.set(self.settings["appearance"])
@@ -923,7 +946,7 @@ class MarketInsightApp(ctk.CTk):
             font=ctk.CTkFont(size=14, weight="bold"),
             text_color=(palette_color("#555D54"), palette_color("#C0C5BC"))
         ).pack(anchor="w", padx=18, pady=(4, 3))
-        self.colour_theme_menu = ctk.CTkOptionMenu(
+        self.colour_theme_menu = styled_settings_dropdown(
             preferences,
             values=list(COLOUR_THEME_HUES.keys()),
             command=self.change_colour_theme
@@ -942,7 +965,7 @@ class MarketInsightApp(ctk.CTk):
         ctk.CTkLabel(preferences, text="How the program opens",
                      font=ctk.CTkFont(size=14, weight="bold"),
                      text_color=(palette_color("#555D54"), palette_color("#C0C5BC"))).pack(anchor="w", padx=18, pady=(4, 3))
-        self.startup_mode_menu = ctk.CTkOptionMenu(
+        self.startup_mode_menu = styled_settings_dropdown(
             preferences, values=["Maximised", "Full screen", "Windowed"],
             command=self.change_startup_window_mode
         )
@@ -989,14 +1012,14 @@ class MarketInsightApp(ctk.CTk):
         ctk.CTkLabel(preferences, text="Automatic scan interval (minutes)",
                      font=ctk.CTkFont(size=13),
                      text_color=(palette_color("#777D75"), palette_color("#A7AAA1"))).pack(anchor="w", padx=18, pady=(0, 3))
-        self.interval_menu = ctk.CTkOptionMenu(preferences, values=["5", "15", "30", "60"])
+        self.interval_menu = styled_settings_dropdown(preferences, values=["5", "15", "30", "60"])
         self.interval_menu.set(str(self.settings["scan_interval"]))
         self.interval_menu.pack(anchor="w", padx=18, pady=(0, 12))
 
         ctk.CTkLabel(preferences, text="Your trading platform",
                      font=ctk.CTkFont(size=14, weight="bold"),
                      text_color=(palette_color("#555D54"), palette_color("#C0C5BC"))).pack(anchor="w", padx=18, pady=(4, 3))
-        self.platform_menu = ctk.CTkOptionMenu(
+        self.platform_menu = styled_settings_dropdown(
             preferences, values=["TradingView", "MetaTrader 5", "Interactive Brokers", "Robinhood", "eToro", "Other"],
             command=self.change_platform
         )
@@ -1016,7 +1039,7 @@ class MarketInsightApp(ctk.CTk):
         ctk.CTkLabel(preferences, text="Minimum score for automatic opening",
                      font=ctk.CTkFont(size=13),
                      text_color=(palette_color("#777D75"), palette_color("#A7AAA1"))).pack(anchor="w", padx=18, pady=(0, 3))
-        self.threshold_menu = ctk.CTkOptionMenu(preferences, values=["60", "70", "80", "90"])
+        self.threshold_menu = styled_settings_dropdown(preferences, values=["60", "70", "80", "90"])
         self.threshold_menu.set(str(self.settings["threshold"]))
         self.threshold_menu.pack(anchor="w", padx=18, pady=(0, 10))
         ctk.CTkButton(
