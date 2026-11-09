@@ -18,7 +18,7 @@ import ctypes
 import winreg
 
 APP_NAME = "Market Insight"
-APP_VERSION = "1.2.24"
+APP_VERSION = "1.2.25"
 # v1.2.24 resolves the bundled icon from PyInstaller's runtime resource folder.
 GITHUB_RELEASES_API = "https://api.github.com/repos/adrianvaleitl-debug/market-insight/releases/latest"
 GITHUB_RELEASES_PAGE = "https://github.com/adrianvaleitl-debug/market-insight/releases/latest"
