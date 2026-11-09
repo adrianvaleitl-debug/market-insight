@@ -368,8 +368,12 @@ class MarketInsightApp(ctk.CTk):
         )
         self.settings["create_desktop_shortcut"] = bool(wants_shortcut)
         save_settings(self.settings)
-        if wants_shortcut:
-            self._apply_desktop_shortcut(True, show_feedback=True)
+        # Remove a shortcut that may have been created automatically by an older release.
+        if not wants_shortcut:
+            self._apply_desktop_shortcut(False)
+        elif not self._apply_desktop_shortcut(True, show_feedback=True):
+            self.settings["create_desktop_shortcut"] = False
+            save_settings(self.settings)
 
     def _apply_desktop_shortcut(self, enabled, show_feedback=False):
         script = APP_DIR / "Create_Desktop_Shortcut.ps1"
