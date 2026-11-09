@@ -263,7 +263,7 @@ class MarketInsightApp(ctk.CTk):
             except Exception:
                 pass
         self.geometry("1180x760")
-        self.minsize(960, 640)
+        self.minsize(800, 550)
         self.configure(fg_color=("#F4F6F5", "#171B1A"))
         self.results = {}
         self.scanning = False
@@ -520,14 +520,44 @@ class MarketInsightApp(ctk.CTk):
     def card(self, parent, title, subtitle=None, wraplength=None):
         frame = ctk.CTkFrame(parent, corner_radius=16, fg_color=("#F5F8F6", "#29312D"))
         frame.pack(fill="x", padx=14, pady=10)
-        ctk.CTkLabel(frame, text=title, font=ctk.CTkFont(size=17, weight="bold"),
-                     text_color=("#2B3B33", "#E2ECE6"), wraplength=wraplength,
-                     justify="left").pack(anchor="w", padx=18, pady=(15, 2))
+        title_label = ctk.CTkLabel(frame, text=title, font=ctk.CTkFont(size=17, weight="bold"),
+                                   text_color=("#2B3B33", "#E2ECE6"), wraplength=wraplength or 600,
+                                   justify="left")
+        title_label.pack(anchor="w", padx=18, pady=(15, 2))
+        subtitle_label = None
         if subtitle:
-            ctk.CTkLabel(frame, text=subtitle, font=ctk.CTkFont(size=11),
-                         text_color=("#718078", "#9BAAA2"), wraplength=wraplength,
-                         justify="left").pack(anchor="w", padx=18, pady=(0, 8))
+            subtitle_label = ctk.CTkLabel(frame, text=subtitle, font=ctk.CTkFont(size=11),
+                                          text_color=("#718078", "#9BAAA2"),
+                                          wraplength=wraplength or 600, justify="left")
+            subtitle_label.pack(anchor="w", padx=18, pady=(0, 8))
+
+        def fit_card_text(event=None):
+            available = max(120, frame.winfo_width() - 44)
+            title_label.configure(wraplength=available)
+            if subtitle_label is not None:
+                subtitle_label.configure(wraplength=available)
+
+        frame.bind("<Configure>", fit_card_text)
         return frame
+
+    def _resize_overview(self, event=None):
+        if not hasattr(self, "overview_content"):
+            return
+        width = self.overview_content.winfo_width()
+        compact = width < 820
+        if compact == self._overview_compact:
+            return
+        self._overview_compact = compact
+        if compact:
+            self.overview_left.grid_configure(row=0, column=0, sticky="ew")
+            self.overview_right.grid_configure(row=1, column=0, sticky="ew")
+            self.overview_content.grid_columnconfigure(0, weight=1)
+            self.overview_content.grid_columnconfigure(1, weight=0)
+        else:
+            self.overview_left.grid_configure(row=0, column=0, sticky="nsew")
+            self.overview_right.grid_configure(row=0, column=1, sticky="nsew")
+            self.overview_content.grid_columnconfigure(0, weight=1)
+            self.overview_content.grid_columnconfigure(1, weight=0)
 
     def _build_overview(self):
         page = self.pages["Overview"]
@@ -541,14 +571,20 @@ class MarketInsightApp(ctk.CTk):
         self.scan_info = ctk.CTkLabel(actions, text="50 stocks included", text_color=("#738078", "#9BAAA2"))
         self.scan_info.pack(side="right", padx=8)
 
-        # Two-column overview: market results on the left, calculator always visible on the right.
+        # Responsive overview: show two columns when there is room, otherwise
+        # stack the calculator below the market results so neither column is squeezed.
         content = ctk.CTkFrame(page, fg_color="transparent")
         content.pack(fill="both", expand=True, padx=4)
+        content.grid_columnconfigure(0, weight=1)
+        self.overview_content = content
+        self._overview_compact = None
         left_column = ctk.CTkFrame(content, fg_color="transparent")
-        left_column.pack(side="left", fill="both", expand=True)
-        right_column = ctk.CTkFrame(content, width=320, fg_color="transparent")
-        right_column.pack(side="right", fill="y", padx=(4, 10), pady=10)
-        right_column.pack_propagate(False)
+        left_column.grid(row=0, column=0, sticky="nsew")
+        self.overview_left = left_column
+        right_column = ctk.CTkFrame(content, fg_color="transparent")
+        right_column.grid(row=0, column=1, sticky="nsew")
+        self.overview_right = right_column
+        content.bind("<Configure>", self._resize_overview)
 
         top = self.card(left_column, "Highest market score", "The stock with the highest score in your latest scan")
         self.top_symbol = ctk.CTkLabel(top, text="No scan has been run yet", font=ctk.CTkFont(size=30, weight="bold"))
@@ -566,8 +602,7 @@ class MarketInsightApp(ctk.CTk):
         self.caution_text.pack(fill="x", padx=16, pady=(8, 16))
 
         calculator = self.card(right_column, "Position size calculator",
-                               "Estimate how many shares may fit your balance and risk limit. This is a guide only; it does not place trades.",
-                               wraplength=270)
+                               "Estimate how many shares may fit your balance and risk limit. This is a guide only; it does not place trades.")
         ctk.CTkLabel(calculator, text="Account balance (USD)",
                      text_color=("#53635A", "#C5D3CB")).pack(anchor="w", padx=14, pady=(8, 3))
         self.balance_entry = ctk.CTkEntry(calculator, placeholder_text="e.g. 1000")
@@ -586,6 +621,8 @@ class MarketInsightApp(ctk.CTk):
             text_color=("#718078", "#9BAAA2"), justify="left", wraplength=270
         )
         self.calc_output.pack(anchor="w", padx=14, pady=(0, 16))
+        calculator.bind("<Configure>", lambda event: self.calc_output.configure(
+            wraplength=max(140, event.width - 44)))
 
     def _build_watchlist(self):
         page = self.pages["Watchlist"]
