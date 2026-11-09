@@ -12,6 +12,7 @@ from pathlib import Path
 import customtkinter as ctk
 import pandas as pd
 import yfinance as yf
+import ctypes
 
 APP_NAME = "Market Insight"
 APP_DIR = Path(__file__).resolve().parent
@@ -187,6 +188,16 @@ class MarketInsightApp(ctk.CTk):
         ctk.set_appearance_mode(self.settings["appearance"].lower())
         ctk.set_default_color_theme("green")
         self.title(APP_NAME)
+        try:
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("AdrianVale.MarketInsight")
+        except Exception:
+            pass
+        icon_path = APP_DIR / "market_insight.ico"
+        if icon_path.exists():
+            try:
+                self.iconbitmap(default=str(icon_path))
+            except Exception:
+                pass
         self.geometry("1180x760")
         self.minsize(960, 640)
         self.configure(fg_color=("#F4F6F5", "#171B1A"))
@@ -220,6 +231,12 @@ class MarketInsightApp(ctk.CTk):
         win = ctk.CTkToplevel(self)
         self.setup_window = win
         win.title("Welcome to Market Insight")
+        icon_path = APP_DIR / "market_insight.ico"
+        if icon_path.exists():
+            try:
+                win.iconbitmap(default=str(icon_path))
+            except Exception:
+                pass
         win.geometry("650x590")
         win.minsize(560, 520)
         win.configure(fg_color=("#F4F7F5", "#171D1A"))
