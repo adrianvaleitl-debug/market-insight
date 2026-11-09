@@ -598,6 +598,40 @@ class MarketInsightApp(ctk.CTk):
             self.after(0, lambda n=i+1, total=len(symbols): self.scan_info.configure(text=f"Scanned {n}/{total}"))
         self.after(0, lambda: self._finish_scan(output))
 
+    def _render_stock_cards(self, parent, rows, limit=None, caution=False):
+        for child in parent.winfo_children():
+            child.destroy()
+        rows = rows if limit is None else rows[:limit]
+        if not rows:
+            ctk.CTkLabel(parent, text="No matching stocks yet.", text_color=("#78857D", "#A2B0A7")).pack(anchor="w", padx=12, pady=14)
+            return
+        for symbol, data in rows:
+            tile = ctk.CTkFrame(parent, corner_radius=14, fg_color=("#F5F8F6", "#29332E"))
+            tile.pack(fill="x", padx=5, pady=5)
+            head = ctk.CTkFrame(tile, fg_color="transparent")
+            head.pack(fill="x", padx=13, pady=(9, 2))
+            title_area = ctk.CTkFrame(head, fg_color="transparent")
+            title_area.pack(side="left", fill="x", expand=True)
+            ctk.CTkLabel(title_area, text=STOCK_NAMES.get(symbol, symbol), font=ctk.CTkFont(size=13, weight="bold")).pack(anchor="w")
+            ctk.CTkLabel(title_area, text=symbol, font=ctk.CTkFont(size=10, weight="bold"),
+                         text_color=("#718078", "#A2B0A8")).pack(anchor="w")
+            if caution:
+                ctk.CTkLabel(tile, text=", ".join(data.get("warnings", [])) or "Caution flag",
+                             font=ctk.CTkFont(size=10), text_color=("#A45B5B", "#E4A4A4"),
+                             wraplength=650, justify="left").pack(anchor="w", padx=13, pady=(2, 9))
+            else:
+                tone = ("#38845A", "#91D4A8") if data["day_change"] >= 0 else ("#B65D5D", "#E5A0A0")
+                info = ctk.CTkFrame(tile, fg_color="transparent")
+                info.pack(fill="x", padx=13, pady=(5, 10))
+                ctk.CTkLabel(info, text="USD {:.2f}".format(data["price"]), font=ctk.CTkFont(size=14, weight="bold")).pack(side="left")
+                ctk.CTkLabel(info, text="{:+.2f}%".format(data["day_change"]), font=ctk.CTkFont(size=11, weight="bold"),
+                             text_color=tone).pack(side="left", padx=(10, 0))
+                ctk.CTkLabel(info, text="Score {}/100  ·  RSI {:.0f}  ·  Vol {:.1f}x".format(data["score"], data["rsi"], data["volume_ratio"]),
+                             font=ctk.CTkFont(size=10), text_color=("#78857D", "#A2B0A8")).pack(side="left", padx=(12, 0))
+                ctk.CTkButton(info, text="Open in {} ↗".format(self.settings.get("selected_platform", "platform")),
+                              width=145, height=28, corner_radius=9, font=ctk.CTkFont(size=10),
+                              command=lambda sym=symbol: self.open_selected_platform(sym, ask=True)).pack(side="right")
+
     def _finish_scan(self, output):
         self.results = output
         self.scanning = False
@@ -610,22 +644,18 @@ class MarketInsightApp(ctk.CTk):
         else:
             self.top_symbol.configure(text="No results available")
             self.top_details.configure(text="Check your internet connection or ticker symbols.")
-        lines = ["SYMBOL     PRICE       DAY       SCORE     RSI"]
-        for symbol, d in valid[:12]:
-            lines.append(f"{symbol:<10} ${d['price']:<10.2f} {d['day_change']:+.2f}%    {d['score']:>3}/100   {d['rsi']:.1f}")
-        self._set_text(self.watch_table, "\n".join(lines) if lines else "No market data returned.")
-        caution_lines = []
-        for symbol, d in valid:
-            if len(d["warnings"]) >= 2:
-                caution_lines.append(f"{symbol}: {', '.join(d['warnings'])}")
-        self._set_text(self.caution_text, "\n".join(caution_lines[:6]) if caution_lines else "No symbols currently meet the caution threshold.")
-        detail_lines = ["SYMBOL | PRICE | DAY CHANGE | 20-DAY CHANGE | SCORE | RSI | VOLUME RATIO"]
-        for symbol, d in valid:
-            detail_lines.append(f"{symbol} | ${d['price']:.2f} | {d['day_change']:+.2f}% | {d['change20']:+.2f}% | {d['score']}/100 | {d['rsi']:.1f} | {d['volume_ratio']:.2f}x")
-        errors = [f"{s}: {d['error']}" for s, d in output.items() if "error" in d]
+        self._render_stock_cards(self.watch_table, valid, limit=12)
+        caution_rows = [(symbol, data) for symbol, data in valid if len(data.get("warnings", [])) >= 2]
+        self._render_stock_cards(self.caution_text, caution_rows[:8], caution=True)
+        self._render_stock_cards(self.results_text, valid)
+        errors = ["{}: {}".format(symbol, data["error"]) for symbol, data in output.items() if "error" in data]
         if errors:
-            detail_lines.extend(["", "DATA ISSUES"] + errors[:12])
-        self._set_text(self.results_text, "\n".join(detail_lines))
+            issue = ctk.CTkFrame(self.results_text, corner_radius=12, fg_color=("#F8EEEE", "#3B2D2D"))
+            issue.pack(fill="x", padx=5, pady=6)
+            ctk.CTkLabel(issue, text="Data issues", font=ctk.CTkFont(size=12, weight="bold"),
+                         text_color=("#A34D4D", "#E6A0A0")).pack(anchor="w", padx=12, pady=(8, 2))
+            ctk.CTkLabel(issue, text="\\n".join(errors[:12]), justify="left", wraplength=700,
+                         text_color=("#8B5555", "#E6A5A5")).pack(anchor="w", padx=12, pady=(0, 10))
         self.status.configure(text=f"Scan complete · {len(valid)} symbols")
         self.scan_info.configure(text=f"Last scan: {datetime.now().strftime('%H:%M')}")
         if valid:
