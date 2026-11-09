@@ -40,7 +40,7 @@ It is a research aid, not an automated trading system.
 
 1. Download the latest release ZIP and extract the **Market_Insight** folder.
 2. Double-click **SETUP_AND_START.bat**. This is the only file you need to run for setup.
-3. It installs the required packages and opens Market Insight without leaving a command window running. Opening `market_insight.py` directly also hands off to windowless Python automatically when available.
+3. It installs the required packages and opens Market Insight without leaving a command window running. Opening `market_insight.py` directly runs in the current Python window; use `START_IN_DIAGNOSTIC_MODE.bat` to see startup errors. Normal setup and desktop shortcut launches remain windowless.
 
 The first time the app opens, it asks whether you want a desktop shortcut. Your answer is remembered, so it will not ask again. You can turn the shortcut on or off later in **Settings → Desktop shortcut**.
 
@@ -89,6 +89,7 @@ You can remove saved Alpaca credentials from the Live market data section in Set
 - If credentials are rejected, check that both the Key ID and Secret Key were copied correctly.
 - If a scan fails, check your internet connection and whether the data providers are responding.
 - If a symbol has no available IEX snapshot, try again later or review another symbol.
+- If the app closes unexpectedly, run `START_IN_DIAGNOSTIC_MODE.bat` from the extracted folder. It keeps the console open and displays startup errors. Logs are saved as `startup_error.log` in AppData, with a fallback beside the app.
 - If setup cannot install a dependency, check that Python is installed and available to the setup script.
 - Restart the app after changing system or Python installation settings.
 
