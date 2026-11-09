@@ -1,5 +1,5 @@
 #define MyAppName "Market Insight"
-#define MyAppVersion "1.2.26"
+#define MyAppVersion "V1.0"
 #define MyAppPublisher "Adrian Vale"
 #define MyAppExeName "Market Insight.exe"
 
@@ -13,7 +13,7 @@ DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 OutputDir=installer-output
-OutputBaseFilename=Market_Insight_Setup_v{#MyAppVersion}
+OutputBaseFilename=Market_Insight_Setup_{#MyAppVersion}
 SetupIconFile=market_insight.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 Compression=lzma2
