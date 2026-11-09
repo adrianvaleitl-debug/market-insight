@@ -46,16 +46,18 @@ jobs:
           cp market_insight.py requirements.txt SETUP_AND_START.bat \
             Start_Market_Insight.vbs market_insight.ico \
             START_IN_DIAGNOSTIC_MODE.bat Create_Desktop_Shortcut.ps1 README.md Market_Insight/
-          zip -r Market_Insight_v1.2.12.zip Market_Insight
+          zip -r Market_Insight_v1.2.13.zip Market_Insight
 
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create v1.2.12 Market_Insight_v1.2.12.zip \
-            --title "Market Insight v1.2.12" \
-            --notes "## Market Insight v1.2.12
+          gh release create v1.2.13 Market_Insight_v1.2.13.zip \
+            --title "Market Insight v1.2.13" \
+            --notes "## Market Insight v1.2.13
 
+          - Added a full creator credits section at the bottom of Settings with TikTok, website and GitHub links
+          - Added an Overview footer showing Adrian Vale and the TikTok profile link
           - Centered the dropdown options in Settings for a cleaner, more balanced layout
           - Expanded Settings with clear explanations of scan intervals, score thresholds, platform links, appearance and credential storage
           - Expanded About with plain-English explanations of the scanner indicators, a practical research routine and source links
