@@ -30,15 +30,15 @@ def make_icon():
         (624, 752), (448, 570), (448, 830), (334, 830),
     ]
     centre_x, centre_y = 624, 618
-    enlargement = 1.50
+    enlargement = 1.80
     points = [
         (
             int((centre_x + (x - centre_x) * enlargement) * n / 1254),
-            int((centre_y + (y - centre_y) * enlargement) * n / 1254),
+            int((centre_y + (y - centre_y) * 1.95) * n / 1254),
         )
         for x, y in points
     ]
-    d.polygon(points, fill=(190, 191, 193, 255))
+    d.polygon(points, fill=(215, 216, 218, 255))
 
     # Downsample once with a high-quality filter, then let Pillow encode the
     # complete multi-resolution ICO image for Windows.
