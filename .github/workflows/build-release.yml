@@ -46,20 +46,20 @@ jobs:
           cp market_insight.py requirements.txt SETUP_AND_START.bat \
             Start_Market_Insight.vbs market_insight.ico \
             START_IN_DIAGNOSTIC_MODE.bat Create_Desktop_Shortcut.ps1 README.md Market_Insight/
-          zip -r Market_Insight_v1.2.15.zip Market_Insight
+          zip -r Market_Insight_v1.2.16.zip Market_Insight
 
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create v1.2.15 Market_Insight_v1.2.15.zip \
-            --title "Market Insight v1.2.15" \
-            --notes "## Market Insight v1.2.15
+          gh release create v1.2.16 Market_Insight_v1.2.16.zip \
+            --title "Market Insight v1.2.16" \
+            --notes "## Market Insight v1.2.16
 
           - Added a full creator credits section at the bottom of Settings with TikTok, website and GitHub links
           - Added an Overview footer showing Adrian Vale and the TikTok profile link
           - Added Adrian Vale to the bottom of the left sidebar
-          - Added a startup display setting for Maximised, Full screen or Windowed mode
+          - Set Full screen as the default startup mode and added options for Maximised, Full screen or Windowed mode
           - Applied the selected startup display mode after the main window opens; Escape exits Full screen
           - Combined the Settings page into three larger sections for easier navigation
           - Replaced bright green interface accents with a softer grey-sage palette
