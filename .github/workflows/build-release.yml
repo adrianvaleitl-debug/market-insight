@@ -46,20 +46,20 @@ jobs:
           cp market_insight.py requirements.txt SETUP_AND_START.bat \
             Start_Market_Insight.vbs market_insight.ico \
             START_IN_DIAGNOSTIC_MODE.bat Create_Desktop_Shortcut.ps1 README.md Market_Insight/
-          zip -r Market_Insight_v1.2.8.zip Market_Insight
+          zip -r Market_Insight_v1.2.9.zip Market_Insight
 
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create v1.2.8 Market_Insight_v1.2.8.zip \
-            --title "Market Insight v1.2.8" \
-            --notes "## Market Insight v1.2.8
+          gh release create v1.2.9 Market_Insight_v1.2.9.zip \
+            --title "Market Insight v1.2.9" \
+            --notes "## Market Insight v1.2.9
 
-          - Restored the v1.2.3 layout and behaviour as the starting point
-          - Kept the original two-column Overview and original scan progress wording
-          - Updated card headings and descriptions to wrap onto readable lines instead of being cut off
-          - Restyled the scan status as a compact, rounded grey capsule inspired by a Dynamic Island
-          - Kept the existing scanner, calculator, watchlist, settings and platform features
+          - Improved text wrapping so headings, descriptions, stock metrics and warnings adapt to the available panel width
+          - Reflowed stock result details so prices, metrics and platform buttons no longer compete for one horizontal row
+          - Added a cool-toned, rounded glass-inspired visual theme with subtle borders and layered panels
+          - Enabled the native Windows 11 frosted backdrop where supported, with a graceful fallback on older Windows versions
+          - Preserved the existing v1.2.3-based layout, scanner, calculator, watchlist, settings and platform features
 
           Python 3 is still required. Educational research software only; not financial advice."
