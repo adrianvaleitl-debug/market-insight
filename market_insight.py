@@ -63,13 +63,21 @@ DEFAULTS = {
 
 def load_settings():
     APP_DATA_DIR.mkdir(parents=True, exist_ok=True)
+    data = {}
     try:
-        data = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
-        merged = DEFAULTS.copy()
-        merged.update(data)
-        return merged
+        if CONFIG_FILE.exists():
+            data = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
+        else:
+            # Preserve preferences from older versions that stored settings beside the app.
+            legacy_file = APP_DIR / "settings.json"
+            if legacy_file.exists():
+                data = json.loads(legacy_file.read_text(encoding="utf-8"))
     except Exception:
-        return DEFAULTS.copy()
+        data = {}
+    merged = DEFAULTS.copy()
+    if isinstance(data, dict):
+        merged.update(data)
+    return merged
 
 def save_settings(settings):
     APP_DATA_DIR.mkdir(parents=True, exist_ok=True)
