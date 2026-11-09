@@ -762,7 +762,7 @@ class MarketInsightApp(ctk.CTk):
             return
         self.settings["watchlist"] = symbols
         save_settings(self.settings)
-        self.scan_info.configure(text=f"{len(symbols)} symbols in watchlist")
+        self.scan_info.configure(text=f"{len(symbols)} STOCKS IN WATCHLIST", fg_color=("#26734A", "#26734A"), text_color=("#FFFFFF", "#FFFFFF"))
         self.status.configure(text="Your watchlist has been saved.")
 
     def change_appearance(self, value):
