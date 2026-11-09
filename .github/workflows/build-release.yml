@@ -56,7 +56,7 @@ jobs:
             --title "Market Insight v1.2.0" \
             --notes "## Market Insight v1.2.0
 
-- Fixed an invisible startup issue by keeping the root window mapped while the first-run setup dialog opens
+          - Fixed an invisible startup issue by keeping the root window mapped while the first-run setup dialog opens
           - Replaced app and website branding with the supplied custom charcoal tile and angular silver M logo
           - The app loads its branded icon automatically, including when market_insight.py is opened directly
           - First launch asks once whether to create a desktop shortcut; the choice is remembered and can be changed in Settings
