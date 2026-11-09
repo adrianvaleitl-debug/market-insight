@@ -15,8 +15,61 @@ import customtkinter as ctk
 import pandas as pd
 import yfinance as yf
 import ctypes
+import winreg
 
 APP_NAME = "Market Insight"
+APP_VERSION = "1.2.18"
+GITHUB_RELEASES_API = "https://api.github.com/repos/adrianvaleitl-debug/market-insight/releases/latest"
+GITHUB_RELEASES_PAGE = "https://github.com/adrianvaleitl-debug/market-insight/releases/latest"
+_SINGLE_INSTANCE_MUTEX = None
+
+
+def acquire_single_instance():
+    """Prevent a second Market Insight process from opening on Windows."""
+    global _SINGLE_INSTANCE_MUTEX
+    try:
+        kernel32 = ctypes.windll.kernel32
+        kernel32.CreateMutexW.argtypes = [ctypes.c_void_p, ctypes.c_bool, ctypes.c_wchar_p]
+        kernel32.CreateMutexW.restype = ctypes.c_void_p
+        handle = kernel32.CreateMutexW(None, False, "Local\\AdrianVale.MarketInsight.Singleton")
+        if not handle:
+            return True
+        if kernel32.GetLastError() == 183:
+            kernel32.CloseHandle(handle)
+            ctypes.windll.user32.MessageBoxW(None, "Market Insight is already running.\n\nCheck your taskbar for the open window.", APP_NAME, 0x40)
+            return False
+        _SINGLE_INSTANCE_MUTEX = handle
+        return True
+    except Exception:
+        return True
+
+
+def set_windows_startup(enabled):
+    """Add or remove the app from the current user's Windows startup registry key."""
+    run_key = r"Software\Microsoft\Windows\CurrentVersion\Run"
+    with winreg.OpenKey(winreg.HKEY_CURRENT_USER, run_key, 0, winreg.KEY_SET_VALUE) as key:
+        if enabled:
+            launcher = APP_DIR / "Start_Market_Insight.vbs"
+            if not launcher.exists():
+                raise FileNotFoundError("The startup launcher is missing from the Market Insight folder.")
+            winreg.SetValueEx(key, "Market Insight", 0, winreg.REG_SZ, 'wscript.exe "' + str(launcher) + '"')
+        else:
+            try:
+                winreg.DeleteValue(key, "Market Insight")
+            except FileNotFoundError:
+                pass
+
+
+def version_tuple(value):
+    parts = []
+    for part in str(value).strip().lstrip("vV").split("."):
+        digits = "".join(ch for ch in part if ch.isdigit())
+        if not digits:
+            break
+        parts.append(int(digits))
+    return tuple(parts) if parts else (0,)
+
+
 APP_DIR = Path(__file__).resolve().parent
 APP_DATA_DIR = Path(os.environ.get("APPDATA", str(Path.home() / "AppData" / "Roaming"))) / "Market Insight"
 CONFIG_FILE = APP_DATA_DIR / "settings.json"
@@ -87,6 +140,8 @@ DEFAULTS = {
     "auto_open_platform": False,
     "shortcut_prompted": False,
     "create_desktop_shortcut": False,
+    "run_on_windows_startup": False,
+    "check_for_updates": True,
 }
 
 def load_settings():
@@ -451,6 +506,8 @@ class MarketInsightApp(ctk.CTk):
         # Apply the selected window mode only after Tk has mapped the main window.
         self.after(250, self.apply_startup_window_mode)
         self.after(700, self._maybe_prompt_shortcut)
+        if self.settings.get("check_for_updates", True):
+            self.after(3000, self.check_for_updates)
         if self.settings.get("auto_scan"):
             self.after(900, self.start_scan)
 
@@ -844,6 +901,12 @@ class MarketInsightApp(ctk.CTk):
         mode_note.pack(fill="x", padx=18, pady=(0, 12))
         self._fit_text_to_width(mode_note, preferences, 40)
 
+        self.run_startup_var = ctk.BooleanVar(value=self.settings.get("run_on_windows_startup", False))
+        ctk.CTkCheckBox(
+            preferences, text="Open Market Insight when Windows starts",
+            variable=self.run_startup_var, command=self.change_windows_startup
+        ).pack(anchor="w", padx=18, pady=(0, 12))
+
         ctk.CTkLabel(
             preferences, text="Desktop shortcut",
             font=ctk.CTkFont(size=11, weight="bold"),
@@ -903,6 +966,24 @@ class MarketInsightApp(ctk.CTk):
         ctk.CTkButton(
             preferences, text="Save preferences", command=self.save_general_settings
         ).pack(anchor="e", padx=18, pady=(4, 16))
+
+        updates = self.card(
+            page, "Updates",
+            "Check GitHub for a newer version and download the official release when one is available."
+        )
+        self.update_status = ctk.CTkLabel(
+            updates, text="Current version: v{}".format(APP_VERSION),
+            font=ctk.CTkFont(size=10), text_color=("#777D75", "#A7AAA1"), justify="left"
+        )
+        self.update_status.pack(anchor="w", padx=18, pady=(8, 5))
+        self.auto_update_check_var = ctk.BooleanVar(value=self.settings.get("check_for_updates", True))
+        ctk.CTkCheckBox(
+            updates, text="Check for updates automatically when the app opens",
+            variable=self.auto_update_check_var, command=self.change_update_check_preference
+        ).pack(anchor="w", padx=18, pady=4)
+        ctk.CTkButton(
+            updates, text="Check for updates now", command=self.check_for_updates
+        ).pack(anchor="w", padx=18, pady=(6, 14))
 
         # Connection credentials stay together in one separate section.
         connection = self.card(
@@ -1086,6 +1167,98 @@ class MarketInsightApp(ctk.CTk):
             text_color=("#E5E4DE", "#E5E4DE")
         )
         self.status.configure(text="Your watchlist has been saved.")
+
+    def change_windows_startup(self):
+        enabled = bool(self.run_startup_var.get())
+        try:
+            set_windows_startup(enabled)
+            self.settings["run_on_windows_startup"] = enabled
+            save_settings(self.settings)
+            self.status.configure(text="Windows startup preference saved.")
+        except Exception as exc:
+            self.run_startup_var.set(not enabled)
+            from tkinter import messagebox
+            messagebox.showerror(APP_NAME, "Couldn't change the Windows startup setting.\n\n{}".format(exc), parent=self)
+
+    def change_update_check_preference(self):
+        enabled = bool(self.auto_update_check_var.get())
+        self.settings["check_for_updates"] = enabled
+        save_settings(self.settings)
+        self.status.configure(text="Automatic update checks " + ("enabled." if enabled else "disabled."))
+
+    def check_for_updates(self):
+        if getattr(self, "_update_check_running", False):
+            return
+        self._update_check_running = True
+        if hasattr(self, "update_status"):
+            self.update_status.configure(text="Checking GitHub for updates…")
+        threading.Thread(target=self._check_for_updates_worker, daemon=True).start()
+
+    def _check_for_updates_worker(self):
+        try:
+            response = requests.get(GITHUB_RELEASES_API, headers={"Accept": "application/vnd.github+json"}, timeout=12)
+            response.raise_for_status()
+            release = response.json()
+            latest_tag = str(release.get("tag_name", "")).strip()
+            if version_tuple(latest_tag) <= version_tuple(APP_VERSION):
+                self.after(0, lambda: self._show_update_status("You're up to date · v{}".format(APP_VERSION)))
+                return
+            assets = release.get("assets") or []
+            asset = next((item for item in assets if str(item.get("name", "")).endswith(".zip")), None)
+            if not asset or not str(asset.get("browser_download_url", "")).startswith("https://github.com/adrianvaleitl-debug/market-insight/releases/download/"):
+                self.after(0, lambda: self._show_update_status("A newer release is available, but its ZIP download couldn't be verified. Open GitHub releases."))
+                return
+            self.after(0, lambda tag=latest_tag, url=asset["browser_download_url"], name=asset["name"]: self._offer_update_download(tag, url, name))
+        except Exception:
+            self.after(0, lambda: self._show_update_status("Couldn't check GitHub right now. Check your connection and try again."))
+        finally:
+            self._update_check_running = False
+
+    def _show_update_status(self, message):
+        if hasattr(self, "update_status"):
+            self.update_status.configure(text=message)
+
+    def _offer_update_download(self, tag, url, filename):
+        from tkinter import messagebox
+        if not messagebox.askyesno(
+            "Market Insight update available",
+            "A newer version is available: {}\n\nYou have: v{}\n\nDownload the official update ZIP now?".format(tag, APP_VERSION),
+            parent=self
+        ):
+            self._show_update_status("Update {} is available on GitHub.".format(tag))
+            return
+        self._show_update_status("Downloading {}…".format(tag))
+        threading.Thread(target=self._download_update_worker, args=(url, filename, tag), daemon=True).start()
+
+    def _download_update_worker(self, url, filename, tag):
+        try:
+            response = requests.get(url, stream=True, timeout=(15, 90))
+            response.raise_for_status()
+            downloads = Path.home() / "Downloads"
+            downloads.mkdir(parents=True, exist_ok=True)
+            destination = downloads / filename
+            temporary = destination.with_suffix(destination.suffix + ".part")
+            with temporary.open("wb") as output:
+                for chunk in response.iter_content(chunk_size=1024 * 128):
+                    if chunk:
+                        output.write(chunk)
+            temporary.replace(destination)
+            self.after(0, lambda path=destination, version=tag: self._update_download_complete(path, version))
+        except Exception:
+            self.after(0, lambda: self._show_update_status("The update download failed. Please try again or use GitHub releases."))
+
+    def _update_download_complete(self, path, tag):
+        self._show_update_status("Downloaded {} to Downloads. Close the app and extract the ZIP to update.".format(tag))
+        try:
+            os.startfile(str(path.parent))
+        except Exception:
+            pass
+        from tkinter import messagebox
+        messagebox.showinfo(
+            "Update downloaded",
+            "Market Insight {} has been downloaded to your Downloads folder.\n\nClose Market Insight, extract the ZIP, and replace the old app files with the new ones.".format(tag),
+            parent=self
+        )
 
     def change_appearance(self, value):
         self.settings["appearance"] = value
@@ -1346,6 +1519,8 @@ class MarketInsightApp(ctk.CTk):
             self.after_id = self.after(int(self.settings["scan_interval"]) * 60 * 1000, self.start_scan)
 
 if __name__ == "__main__":
+    if not acquire_single_instance():
+        raise SystemExit(0)
     # Keep direct launches attached to their console. Normal setup and desktop
     # launches use the dedicated windowless VBS/pythonw launchers instead.
     try:
