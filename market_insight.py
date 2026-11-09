@@ -205,19 +205,16 @@ class MarketInsightApp(ctk.CTk):
 
     def _validate_alpaca_credentials(self, api_key, secret_key):
         headers = {"APCA-API-KEY-ID": api_key, "APCA-API-SECRET-KEY": secret_key}
-        last_error = "Alpaca could not validate these credentials."
-        for endpoint in ("https://api.alpaca.markets/v2/account", "https://paper-api.alpaca.markets/v2/account"):
-            try:
-                response = requests.get(endpoint, headers=headers, timeout=12)
-                if response.status_code == 200:
-                    return True, ""
-                if response.status_code in (401, 403):
-                    last_error = "Alpaca rejected these keys. Check the Key ID and Secret Key."
-                else:
-                    last_error = "Alpaca returned HTTP {}. Please try again.".format(response.status_code)
-            except requests.RequestException:
-                last_error = "Could not reach Alpaca. Check your internet connection and try again."
-        return False, last_error
+        endpoint = "https://data.alpaca.markets/v2/stocks/SPY/snapshot"
+        try:
+            response = requests.get(endpoint, headers=headers, params={"feed": "iex"}, timeout=12)
+            if response.status_code == 200:
+                return True, ""
+            if response.status_code in (401, 403):
+                return False, "Alpaca rejected these keys. Check the Key ID and Secret Key."
+            return False, "Alpaca returned HTTP {}. Please try again.".format(response.status_code)
+        except requests.RequestException:
+            return False, "Could not reach Alpaca. Check your internet connection and try again."
 
     def _setup_window(self, title, subtitle):
         win = ctk.CTkToplevel(self)
