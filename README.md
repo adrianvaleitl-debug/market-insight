@@ -38,13 +38,13 @@ It is a research aid, not an automated trading system.
 
 ## Installation
 
-1. Download the latest release ZIP from the project's GitHub Releases page.
-2. Extract the ZIP file into a folder you can easily find.
-3. Open the extracted Market Insight folder.
-4. Double-click `SETUP_AND_START.bat`.
-5. Allow the setup process to install the required Python packages.
-6. Follow the on-screen instructions to start the application.
-7. To create a desktop shortcut with the Market Insight icon, right-click `Create_Desktop_Shortcut.ps1` and choose **Run with PowerShell**. If Windows blocks the script, open PowerShell in the extracted folder and run `powershell -ExecutionPolicy Bypass -File .\\Create_Desktop_Shortcut.ps1`.
+1. Download the latest release ZIP and extract the folder.
+2. Double-click **SETUP_AND_START.bat** once.
+3. The setup automatically installs the required packages, prepares the logo, creates a desktop shortcut, and starts Market Insight.
+
+After setup, open Market Insight from the desktop shortcut. You do not need to run the setup again unless you reinstall or update the app. The normal app launch runs without a command window.
+
+Python 3 must be installed on the computer. If setup cannot find it, install Python from https://www.python.org/downloads/ and run the setup again.
 
 If Windows displays a security prompt, check that you downloaded the ZIP from the official repository before choosing whether to continue.
 
