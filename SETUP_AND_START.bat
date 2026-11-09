@@ -7,28 +7,34 @@ echo.
 echo  MARKET INSIGHT
 echo  ==============
 echo.
+echo Checking Python...
 py -3 --version >nul 2>&1
 if errorlevel 1 (
-    echo Python 3 was not found.
-    echo Install Python 3.11 or newer from https://www.python.org/downloads/
-    echo During installation, enable "Add Python to PATH".
+    echo Python 3 is required but was not found.
+    echo Install Python from https://www.python.org/downloads/
+    echo Then run this installer again.
     pause
     exit /b 1
 )
 
-echo Installing required packages. This may take a few minutes...
-py -3 -m pip install --upgrade pip
-if errorlevel 1 goto failed
-py -3 -m pip install -r requirements.txt
+echo Installing Market Insight components...
+py -3 -m pip install -r requirements.txt --disable-pip-version-check --quiet
 if errorlevel 1 goto failed
 
-echo.
-echo Creating the Market Insight app icon...
-py -3 generate_icon.py
-if errorlevel 1 goto failed
+if not exist "%~dp0market_insight.ico" (
+    echo Preparing the app icon...
+    py -3 generate_icon.py
+    if errorlevel 1 goto failed
+)
 
-echo.
-echo Setup complete. Starting Market Insight...
+echo Creating your desktop shortcut...
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0Create_Desktop_Shortcut.ps1" >nul 2>&1
+if errorlevel 1 (
+    echo The shortcut could not be created automatically.
+    echo You can still open Market Insight using Start_Market_Insight.vbs.
+)
+
+echo Starting Market Insight...
 start "" wscript.exe "%~dp0Start_Market_Insight.vbs"
 exit /b 0
 
