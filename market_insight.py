@@ -565,7 +565,7 @@ class MarketInsightApp(ctk.CTk):
                           font=ctk.CTkFont(size=9),
                           command=lambda url=link_url: webbrowser.open(url)
                           ).pack(fill="x", padx=4, pady=2)
-        ctk.CTkLabel(self.sidebar, text="Market Insight  •  Research only",
+        ctk.CTkLabel(self.sidebar, text="Market Insight  •  Research only  •  Adrian Vale",
                      font=ctk.CTkFont(size=9), text_color=("#75827B", "#87958E"),
                      justify="left").pack(side="bottom", anchor="w", padx=14, pady=10)
 
