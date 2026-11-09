@@ -46,15 +46,15 @@ jobs:
           cp market_insight.py requirements.txt SETUP_AND_START.bat \
             Start_Market_Insight.vbs market_insight.ico \
             START_IN_DIAGNOSTIC_MODE.bat Create_Desktop_Shortcut.ps1 README.md Market_Insight/
-          zip -r Market_Insight_v1.2.18.zip Market_Insight
+          zip -r Market_Insight_v1.2.19.zip Market_Insight
 
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create v1.2.18 Market_Insight_v1.2.18.zip \
-            --title "Market Insight v1.2.18" \
-            --notes "## Market Insight v1.2.18
+          gh release create v1.2.19 Market_Insight_v1.2.19.zip \
+            --title "Market Insight v1.2.19" \
+            --notes "## Market Insight v1.2.19
 
           - Added a full creator credits section at the bottom of Settings with TikTok, website and GitHub links
           - Added an Overview footer showing Adrian Vale and the TikTok profile link
@@ -64,6 +64,9 @@ jobs:
           - Added F11 to toggle Full screen and Escape to leave it; keyboard shortcuts work while child controls have focus
           - Rendered stock result cards in small batches to reduce interface pauses and redraw lag
           - Reduced progress-label updates during large watchlist scans
+          - Added a Windows startup setting to open Market Insight when you sign in
+          - Prevented multiple copies of Market Insight from running at the same time
+          - Added automatic and manual GitHub update checks with a confirmed ZIP download
           - Added clear Create desktop shortcut and Remove desktop shortcut buttons in Settings
           - Moved useful website and creator links to the top of the Settings help and credits section
           - Combined the Settings page into three larger sections for easier navigation
