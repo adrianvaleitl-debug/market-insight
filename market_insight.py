@@ -617,7 +617,7 @@ class MarketInsightApp(ctk.CTk):
 
         pulse = self.card(right_column, "Market pulse", "Daily market direction from Yahoo Finance. Updates when you scan.")
         self.market_pulse_labels = {}
-        for symbol, name in [("SPY", "S&P 500"), ("QQQ", "Nasdaq 100"), ("DIA", "Dow Jones"), ("IWM", "Russell 2000"), ("^VIX", "Volatility (VIX)"):
+        for symbol, name in [("SPY", "S&P 500"), ("QQQ", "Nasdaq 100"), ("DIA", "Dow Jones"), ("IWM", "Russell 2000"), ("^VIX", "Volatility (VIX)")]:
             line = ctk.CTkFrame(pulse, fg_color="transparent")
             line.pack(fill="x", padx=14, pady=3)
             ctk.CTkLabel(line, text=name, font=ctk.CTkFont(size=10), text_color=("#646D64", "#B8BDB4")).pack(side="left")
