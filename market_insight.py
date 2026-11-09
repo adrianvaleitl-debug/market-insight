@@ -517,14 +517,16 @@ class MarketInsightApp(ctk.CTk):
         self._build_about()
         self.show_page("Overview")
 
-    def card(self, parent, title, subtitle=None):
+    def card(self, parent, title, subtitle=None, wraplength=None):
         frame = ctk.CTkFrame(parent, corner_radius=16, fg_color=("#F5F8F6", "#29312D"))
         frame.pack(fill="x", padx=14, pady=10)
         ctk.CTkLabel(frame, text=title, font=ctk.CTkFont(size=17, weight="bold"),
-                     text_color=("#2B3B33", "#E2ECE6")).pack(anchor="w", padx=18, pady=(15, 2))
+                     text_color=("#2B3B33", "#E2ECE6"), wraplength=wraplength,
+                     justify="left").pack(anchor="w", padx=18, pady=(15, 2))
         if subtitle:
             ctk.CTkLabel(frame, text=subtitle, font=ctk.CTkFont(size=11),
-                         text_color=("#718078", "#9BAAA2")).pack(anchor="w", padx=18, pady=(0, 8))
+                         text_color=("#718078", "#9BAAA2"), wraplength=wraplength,
+                         justify="left").pack(anchor="w", padx=18, pady=(0, 8))
         return frame
 
     def _build_overview(self):
@@ -544,7 +546,7 @@ class MarketInsightApp(ctk.CTk):
         content.pack(fill="both", expand=True, padx=4)
         left_column = ctk.CTkFrame(content, fg_color="transparent")
         left_column.pack(side="left", fill="both", expand=True)
-        right_column = ctk.CTkFrame(content, width=270, fg_color="transparent")
+        right_column = ctk.CTkFrame(content, width=320, fg_color="transparent")
         right_column.pack(side="right", fill="y", padx=(4, 10), pady=10)
         right_column.pack_propagate(False)
 
@@ -564,7 +566,8 @@ class MarketInsightApp(ctk.CTk):
         self.caution_text.pack(fill="x", padx=16, pady=(8, 16))
 
         calculator = self.card(right_column, "Position size calculator",
-                               "Estimate how many shares may fit your balance and risk limit. This is a guide only; it does not place trades.")
+                               "Estimate how many shares may fit your balance and risk limit. This is a guide only; it does not place trades.",
+                               wraplength=270)
         ctk.CTkLabel(calculator, text="Account balance (USD)",
                      text_color=("#53635A", "#C5D3CB")).pack(anchor="w", padx=14, pady=(8, 3))
         self.balance_entry = ctk.CTkEntry(calculator, placeholder_text="e.g. 1000")
@@ -580,7 +583,7 @@ class MarketInsightApp(ctk.CTk):
         self.calc_output = ctk.CTkLabel(
             calculator,
             text="Run a scan to see example position size and price levels for the highest-scoring stock.",
-            text_color=("#718078", "#9BAAA2"), justify="left", wraplength=220
+            text_color=("#718078", "#9BAAA2"), justify="left", wraplength=270
         )
         self.calc_output.pack(anchor="w", padx=14, pady=(0, 16))
 
