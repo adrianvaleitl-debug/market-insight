@@ -188,6 +188,135 @@ class MarketInsightApp(ctk.CTk):
         else:
             self._show_alpaca_setup()
 
+    def _validate_alpaca_credentials(self, api_key, secret_key):
+        headers = {"APCA-API-KEY-ID": api_key, "APCA-API-SECRET-KEY": secret_key}
+        last_error = "Alpaca could not validate these credentials."
+        for endpoint in ("https://api.alpaca.markets/v2/account", "https://paper-api.alpaca.markets/v2/account"):
+            try:
+                response = requests.get(endpoint, headers=headers, timeout=12)
+                if response.status_code == 200:
+                    return True, ""
+                if response.status_code in (401, 403):
+                    last_error = "Alpaca rejected these keys. Check the Key ID and Secret Key."
+                else:
+                    last_error = "Alpaca returned HTTP {}. Please try again.".format(response.status_code)
+            except requests.RequestException:
+                last_error = "Could not reach Alpaca. Check your internet connection and try again."
+        return False, last_error
+
+    def _setup_window(self, title, subtitle):
+        win = ctk.CTkToplevel(self)
+        self.setup_window = win
+        win.title("Welcome to Market Insight")
+        win.geometry("650x590")
+        win.minsize(560, 520)
+        win.configure(fg_color=("#F4F7F5", "#171D1A"))
+        win.protocol("WM_DELETE_WINDOW", lambda: None)
+        win.grab_set()
+        panel = ctk.CTkFrame(win, corner_radius=24, fg_color=("#FFFFFF", "#222B26"))
+        panel.pack(fill="both", expand=True, padx=22, pady=22)
+        ctk.CTkLabel(panel, text="MARKET INSIGHT", font=ctk.CTkFont(size=13, weight="bold")).pack(anchor="w", padx=30, pady=(25, 8))
+        ctk.CTkLabel(panel, text=title, font=ctk.CTkFont(size=27, weight="bold")).pack(anchor="w", padx=30)
+        ctk.CTkLabel(panel, text=subtitle, font=ctk.CTkFont(size=12), wraplength=520, justify="left").pack(anchor="w", padx=30, pady=(8, 18))
+        return win, panel
+
+    def _show_alpaca_setup(self):
+        win, panel = self._setup_window("Connect your Alpaca account", "First, enter your API credentials. Market Insight validates them before you can continue.")
+        ctk.CTkLabel(panel, text="API Key ID").pack(anchor="w", padx=30, pady=(0, 5))
+        self.setup_key_entry = ctk.CTkEntry(panel, height=44, placeholder_text="Paste your Alpaca Key ID")
+        self.setup_key_entry.pack(fill="x", padx=30, pady=(0, 13))
+        ctk.CTkLabel(panel, text="Secret Key").pack(anchor="w", padx=30, pady=(0, 5))
+        self.setup_secret_entry = ctk.CTkEntry(panel, height=44, show="•", placeholder_text="Paste your Alpaca Secret Key")
+        self.setup_secret_entry.pack(fill="x", padx=30)
+        ctk.CTkButton(panel, text="Get your API keys from Alpaca ↗", fg_color="transparent",
+                      text_color=("#367653", "#A9D9B9"),
+                      command=lambda: webbrowser.open("https://app.alpaca.markets/")).pack(anchor="w", padx=25, pady=12)
+        self.setup_status = ctk.CTkLabel(panel, text="Credentials are stored in Windows Credential Manager.", wraplength=520, justify="left")
+        self.setup_status.pack(anchor="w", padx=30, pady=8)
+        ctk.CTkButton(panel, text="Validate and continue", height=45, command=self._validate_setup_keys).pack(fill="x", padx=30, pady=18)
+        win.focus_force()
+
+    def _validate_setup_keys(self):
+        api_key = self.setup_key_entry.get().strip()
+        secret_key = self.setup_secret_entry.get().strip()
+        if not api_key or not secret_key:
+            self.setup_status.configure(text="Enter both the API Key ID and Secret Key.")
+            return
+        self.setup_status.configure(text="Checking credentials with Alpaca…")
+        self.update_idletasks()
+        valid, message = self._validate_alpaca_credentials(api_key, secret_key)
+        if not valid:
+            self.setup_status.configure(text=message)
+            return
+        try:
+            keyring.set_password("Market Insight", "alpaca_api_key", api_key)
+            keyring.set_password("Market Insight", "alpaca_secret_key", secret_key)
+        except Exception as exc:
+            self.setup_status.configure(text="Could not securely store credentials: {}".format(exc))
+            return
+        self.setup_window.grab_release()
+        self.setup_window.destroy()
+        self._show_platform_setup()
+
+    def _show_platform_setup(self):
+        win, panel = self._setup_window("Where do you trade?", "Choose the platform you actually use. Stock links will follow this choice.")
+        self.setup_platform_var = ctk.StringVar(value=self.settings.get("selected_platform") or "TradingView")
+        choices = [
+            ("TradingView", "Charts and technical analysis"),
+            ("MetaTrader 5", "Desktop trading terminal"),
+            ("Interactive Brokers", "IBKR trading platform"),
+            ("Robinhood", "Stocks and investing"),
+            ("eToro", "Multi-asset investing platform"),
+            ("Other", "Add your own stock link in Settings"),
+        ]
+        for name, detail in choices:
+            row = ctk.CTkFrame(panel, corner_radius=12, fg_color=("#F3F7F4", "#2A342E"))
+            row.pack(fill="x", padx=30, pady=3)
+            ctk.CTkRadioButton(row, text=name, value=name, variable=self.setup_platform_var).pack(anchor="w", padx=14, pady=(7, 0))
+            ctk.CTkLabel(row, text=detail, font=ctk.CTkFont(size=10)).pack(anchor="w", padx=39, pady=(0, 6))
+        ctk.CTkButton(panel, text="Save platform and continue", height=44, command=self._finish_first_run).pack(fill="x", padx=30, pady=16)
+        win.focus_force()
+
+    def _finish_first_run(self):
+        self.settings["selected_platform"] = self.setup_platform_var.get()
+        save_settings(self.settings)
+        self.setup_window.grab_release()
+        self.setup_window.destroy()
+        self._launch_main_ui()
+
+    def _launch_main_ui(self):
+        self.deiconify()
+        self._build_ui()
+        self._refresh_watchlist_text()
+        if self.settings.get("auto_scan"):
+            self.after(900, self.start_scan)
+
+    def _platform_url(self, symbol):
+        symbol = symbol.upper().strip()
+        platform = self.settings.get("selected_platform", "")
+        urls = {
+            "TradingView": "https://www.tradingview.com/chart/?symbol=" + symbol,
+            "Robinhood": "https://robinhood.com/stocks/" + symbol,
+            "eToro": "https://www.etoro.com/markets/" + symbol.lower(),
+            "Interactive Brokers": "https://www.google.com/search?q=" + symbol + "+stock+Interactive+Brokers",
+            "MetaTrader 5": "https://www.google.com/search?q=" + symbol + "+stock+MetaTrader+5",
+        }
+        if platform == "Other":
+            template = self.settings.get("custom_platform_url", "").strip()
+            return template.replace("{symbol}", symbol) if "{symbol}" in template else None
+        return urls.get(platform)
+
+    def open_selected_platform(self, symbol, ask=True):
+        url = self._platform_url(symbol)
+        if not url:
+            self.status.configure(text="Add a custom URL template in Settings using {symbol}.")
+            return
+        if ask:
+            from tkinter import messagebox
+            if not messagebox.askyesno("Open stock", "Open {} using {}?".format(symbol, self.settings.get("selected_platform"))):
+                return
+        webbrowser.open(url)
+
     def _build_ui(self):
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
