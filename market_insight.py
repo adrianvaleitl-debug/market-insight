@@ -558,36 +558,6 @@ class MarketInsightApp(ctk.CTk):
         frame.bind("<Configure>", fit_card_text)
         return frame
 
-    def _resize_overview(self, event=None):
-        if not hasattr(self, "overview_content"):
-            return
-        # Only the column arrangement depends on width. Ignore height-only
-        # resize events and switch once when crossing the compact breakpoint.
-        width = event.width if event is not None else self.overview_content.winfo_width()
-        compact = width < 820
-        if compact != self._overview_compact:
-            self._apply_overview_layout(width)
-
-    def _apply_overview_layout(self, width):
-        compact = width < 820
-        if compact == self._overview_compact:
-            return
-        self._overview_compact = compact
-        if compact:
-            self.overview_left.grid_configure(row=0, column=0, sticky="ew")
-            self.overview_right.grid_configure(row=1, column=0, sticky="ew")
-            self.overview_right.grid_propagate(True)
-            self.overview_right.configure(width=0)
-            self.overview_content.grid_columnconfigure(0, weight=1)
-            self.overview_content.grid_columnconfigure(1, weight=0, minsize=0)
-        else:
-            self.overview_left.grid_configure(row=0, column=0, sticky="nsew")
-            self.overview_right.grid_configure(row=0, column=1, sticky="nsew")
-            self.overview_right.configure(width=300)
-            self.overview_right.grid_propagate(False)
-            self.overview_content.grid_columnconfigure(0, weight=1)
-            self.overview_content.grid_columnconfigure(1, weight=0, minsize=300)
-
     def _build_overview(self):
         page = self.pages["Overview"]
         actions = ctk.CTkFrame(page, fg_color="transparent")
@@ -598,29 +568,22 @@ class MarketInsightApp(ctk.CTk):
                       fg_color=("#E8F0EB", "#35443C"), text_color=("#315B43", "#D6E8DC"),
                       command=self.open_top_result).pack(side="left", padx=8)
         self.scan_info = ctk.CTkLabel(
-            actions, text="50 STOCKS IN WATCHLIST",
+            actions, text="50 STOCKS READY",
             font=ctk.CTkFont(size=12, weight="bold"),
             text_color=("#FFFFFF", "#FFFFFF"),
-            fg_color=("#26734A", "#26734A"),
-            corner_radius=10, padx=13, pady=8
+            fg_color=("#34443C", "#34443C"),
+            corner_radius=12, padx=15, pady=9
         )
         self.scan_info.pack(side="right", padx=8)
 
-        # Responsive overview: show two columns when there is room, otherwise
-        # stack the calculator below the market results so neither column is squeezed.
+        # Keep the original fixed two-column overview layout.
         content = ctk.CTkFrame(page, fg_color="transparent")
         content.pack(fill="both", expand=True, padx=4)
-        content.grid_columnconfigure(0, weight=1)
-        self.overview_content = content
-        self._overview_compact = None
         left_column = ctk.CTkFrame(content, fg_color="transparent")
-        left_column.grid(row=0, column=0, sticky="nsew")
-        self.overview_left = left_column
-        right_column = ctk.CTkFrame(content, width=300, fg_color="transparent")
-        right_column.grid(row=0, column=1, sticky="nsew")
-        right_column.grid_propagate(False)
-        self.overview_right = right_column
-        content.bind("<Configure>", self._resize_overview)
+        left_column.pack(side="left", fill="both", expand=True)
+        right_column = ctk.CTkFrame(content, width=320, fg_color="transparent")
+        right_column.pack(side="right", fill="y", padx=(4, 10), pady=10)
+        right_column.pack_propagate(False)
 
         top = self.card(left_column, "Highest market score", "The stock with the highest score in your latest scan")
         self.top_symbol = ctk.CTkLabel(top, text="No scan has been run yet", font=ctk.CTkFont(size=30, weight="bold"))
@@ -762,7 +725,7 @@ class MarketInsightApp(ctk.CTk):
             return
         self.settings["watchlist"] = symbols
         save_settings(self.settings)
-        self.scan_info.configure(text=f"{len(symbols)} STOCKS IN WATCHLIST", fg_color=("#26734A", "#26734A"), text_color=("#FFFFFF", "#FFFFFF"))
+        self.scan_info.configure(text=f"{len(symbols)} STOCKS READY", fg_color=("#34443C", "#34443C"), text_color=("#FFFFFF", "#FFFFFF"))
         self.status.configure(text="Your watchlist has been saved.")
 
     def change_appearance(self, value):
@@ -910,9 +873,13 @@ class MarketInsightApp(ctk.CTk):
         attempted = len(output)
         total = len(self.settings.get("watchlist", DEFAULT_TICKERS))
         self.scan_info.configure(
-            text=f"SCAN COMPLETE · {attempted} / {total}",
-            fg_color=("#26734A", "#26734A"),
-            text_color=("#FFFFFF", "#FFFFFF")
+            text=f"✓ SCAN FINISHED  ·  {attempted} OF {total} CHECKED",
+            fg_color=("#1F6B45", "#1F6B45"),
+            text_color=("#FFFFFF", "#FFFFFF"),
+            font=ctk.CTkFont(size=12, weight="bold"),
+            corner_radius=12,
+            padx=15,
+            pady=9
         )
         if valid:
             self._update_calculator(valid[0][0], valid[0][1])
