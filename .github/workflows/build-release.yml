@@ -43,19 +43,19 @@ jobs:
           cp market_insight.py requirements.txt SETUP_AND_START.bat \
             Start_Market_Insight.vbs market_insight.ico \
             Create_Desktop_Shortcut.ps1 README.md Market_Insight/
-          zip -r Market_Insight_v1.1.5.zip Market_Insight
+          zip -r Market_Insight_v1.1.6.zip Market_Insight
 
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create v1.1.5 Market_Insight_v1.1.5.zip \
-            --title "Market Insight v1.1.5" \
-            --notes "## Market Insight v1.1.5
+          gh release create v1.1.6 Market_Insight_v1.1.6.zip \
+            --title "Market Insight v1.1.6" \
+            --notes "## Market Insight v1.1.6
 
           - The app loads its branded icon automatically, including when market_insight.py is opened directly
           - First launch asks once whether to create a desktop shortcut; the choice is remembered and can be changed in Settings
-          - Desktop shortcuts and normal launch use windowless Python, avoiding the recurring command prompt
+          - Direct .py launches, desktop shortcuts, and normal setup launches hand off to windowless Python
           - App settings and diagnostic logs are stored separately in the user's AppData folder, with existing preferences migrated
           - One clearly named setup file installs dependencies and starts the app
           - Download package is cleaned of developer-only scripts and duplicate instructions
