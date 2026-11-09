@@ -179,6 +179,24 @@ def palette_color(value):
     except Exception:
         return value
 
+def apply_ctk_palette_theme():
+    """Update CustomTkinter's built-in accent colours for the active palette."""
+    ctk.set_default_color_theme("green")
+    theme = ctk.ThemeManager.theme
+    muted = {
+        "CTkButton": {"fg_color": [palette_color("#747B70"), palette_color("#596158")], "hover_color": [palette_color("#62695F"), palette_color("#4B534A")], "text_color": [palette_color("#F5F4EF"), palette_color("#F1F0EA")]},
+        "CTkCheckBox": {"fg_color": [palette_color("#747B70"), palette_color("#596158")], "hover_color": [palette_color("#62695F"), palette_color("#4B534A")], "border_color": [palette_color("#92968B"), palette_color("#858A80")], "checkmark_color": [palette_color("#F5F4EF"), palette_color("#F1F0EA")]},
+        "CTkSwitch": {"fg_color": [palette_color("#C8C9C0"), palette_color("#454941")], "progress_color": [palette_color("#747B70"), palette_color("#687164")], "button_color": [palette_color("#F5F4EF"), palette_color("#D9D9D0")], "button_hover_color": [palette_color("#E1E1D9"), palette_color("#C4C6BB")]},
+        "CTkOptionMenu": {"fg_color": [palette_color("#747B70"), palette_color("#596158")], "button_color": [palette_color("#62695F"), palette_color("#4B534A")], "button_hover_color": [palette_color("#555D53"), palette_color("#414940")], "text_color": [palette_color("#F5F4EF"), palette_color("#F1F0EA")], "dropdown_fg_color": [palette_color("#F1F0EC"), palette_color("#292B28")], "dropdown_hover_color": [palette_color("#E2E3DC"), palette_color("#3C413A")], "dropdown_text_color": [palette_color("#343832"), palette_color("#E8E8E1")]},
+        "CTkSlider": {"progress_color": [palette_color("#747B70"), palette_color("#687164")], "button_color": [palette_color("#747B70"), palette_color("#687164")], "button_hover_color": [palette_color("#62695F"), palette_color("#4B534A")]},
+        "CTkProgressBar": {"progress_color": [palette_color("#747B70"), palette_color("#687164")]},
+        "CTkRadioButton": {"fg_color": [palette_color("#747B70"), palette_color("#687164")], "hover_color": [palette_color("#62695F"), palette_color("#4B534A")]},
+    }
+    for widget_name, values in muted.items():
+        if widget_name in theme:
+            theme[widget_name].update(values)
+
+
 def load_settings():
     data = {}
     try:
@@ -362,20 +380,7 @@ class MarketInsightApp(ctk.CTk):
             ACTIVE_COLOUR_THEME = "Sage"
         ctk.set_appearance_mode(self.settings["appearance"].lower())
         ctk.set_default_color_theme("green")
-        # Replace the stock bright-green accent with a restrained grey-sage palette.
-        theme = ctk.ThemeManager.theme
-        muted = {
-            "CTkButton": {"fg_color": [palette_color("#747B70"), palette_color("#596158")], "hover_color": [palette_color("#62695F"), palette_color("#4B534A")], "text_color": [palette_color("#F5F4EF"), palette_color("#F1F0EA")]},
-            "CTkCheckBox": {"fg_color": [palette_color("#747B70"), palette_color("#596158")], "hover_color": [palette_color("#62695F"), palette_color("#4B534A")], "border_color": [palette_color("#92968B"), palette_color("#858A80")], "checkmark_color": [palette_color("#F5F4EF"), palette_color("#F1F0EA")]},
-            "CTkSwitch": {"fg_color": [palette_color("#C8C9C0"), palette_color("#454941")], "progress_color": [palette_color("#747B70"), palette_color("#687164")], "button_color": [palette_color("#F5F4EF"), palette_color("#D9D9D0")], "button_hover_color": [palette_color("#E1E1D9"), palette_color("#C4C6BB")]},
-            "CTkOptionMenu": {"fg_color": [palette_color("#747B70"), palette_color("#596158")], "button_color": [palette_color("#62695F"), palette_color("#4B534A")], "button_hover_color": [palette_color("#555D53"), palette_color("#414940")], "text_color": [palette_color("#F5F4EF"), palette_color("#F1F0EA")], "dropdown_fg_color": [palette_color("#F1F0EC"), palette_color("#292B28")], "dropdown_hover_color": [palette_color("#E2E3DC"), palette_color("#3C413A")], "dropdown_text_color": [palette_color("#343832"), palette_color("#E8E8E1")]},
-            "CTkSlider": {"progress_color": [palette_color("#747B70"), palette_color("#687164")], "button_color": [palette_color("#747B70"), palette_color("#687164")], "button_hover_color": [palette_color("#62695F"), palette_color("#4B534A")]},
-            "CTkProgressBar": {"progress_color": [palette_color("#747B70"), palette_color("#687164")]},
-            "CTkRadioButton": {"fg_color": [palette_color("#747B70"), palette_color("#687164")], "hover_color": [palette_color("#62695F"), palette_color("#4B534A")]},
-        }
-        for widget_name, values in muted.items():
-            if widget_name in theme:
-                theme[widget_name].update(values)
+        apply_ctk_palette_theme()
         self.title(APP_NAME)
         icon_path = ensure_app_icon()
         if icon_path and icon_path.exists():
@@ -1192,6 +1197,7 @@ class MarketInsightApp(ctk.CTk):
 
 
     def show_page(self, name):
+        self.current_page = name
         for frame in self.pages.values():
             frame.grid_remove()
         self.pages[name].grid()
@@ -1323,6 +1329,7 @@ class MarketInsightApp(ctk.CTk):
             value = "Sage"
         self.settings["colour_theme"] = value
         ACTIVE_COLOUR_THEME = value
+        apply_ctk_palette_theme()
         save_settings(self.settings)
 
         # Rebuild widgets with the new palette; preserve the current page and app state.
