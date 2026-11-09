@@ -46,20 +46,20 @@ jobs:
           cp market_insight.py requirements.txt SETUP_AND_START.bat \
             Start_Market_Insight.vbs market_insight.ico \
             START_IN_DIAGNOSTIC_MODE.bat Create_Desktop_Shortcut.ps1 README.md Market_Insight/
-          zip -r Market_Insight_v1.2.10.zip Market_Insight
+          zip -r Market_Insight_v1.2.11.zip Market_Insight
 
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create v1.2.10 Market_Insight_v1.2.10.zip \
-            --title "Market Insight v1.2.10" \
-            --notes "## Market Insight v1.2.10
+          gh release create v1.2.11 Market_Insight_v1.2.11.zip \
+            --title "Market Insight v1.2.11" \
+            --notes "## Market Insight v1.2.11
 
-          - Restored the v1.2.8 interface and layout
-          - Refined heading, paragraph, label and stock-list text sizes for a clearer reading hierarchy
-          - Made long descriptions, warnings and scan error details wrap to the available panel width
-          - Kept important stock symbols, prices and scan status prominent while reducing secondary text where space is tight
-          - Preserved the existing scanner, calculator, watchlist, settings and platform features
+          - Added a market pulse panel for the S&P 500, Nasdaq 100, Dow Jones, Russell 2000 and VIX using Yahoo Finance daily data
+          - Added watchlist breadth showing how many scanned stocks are up, down or unchanged
+          - Filled the overview's unused space with a practical pre-trade discipline checklist
+          - Refined the interface with softer neutral colours and more rounded cards, buttons and panels
+          - Preserved the existing scanner, position calculator, watchlist, settings and platform features
 
           Python 3 is still required. Educational research software only; not financial advice."
