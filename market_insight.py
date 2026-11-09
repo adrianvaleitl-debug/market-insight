@@ -18,8 +18,8 @@ import ctypes
 import winreg
 
 APP_NAME = "Market Insight"
-APP_VERSION = "1.2.21"
-# v1.2.21 adds a Windows installer build; scanner features are unchanged.
+APP_VERSION = "1.2.22"
+# v1.2.22 refines settings dropdown styling and bundles the current app icon.
 GITHUB_RELEASES_API = "https://api.github.com/repos/adrianvaleitl-debug/market-insight/releases/latest"
 GITHUB_RELEASES_PAGE = "https://github.com/adrianvaleitl-debug/market-insight/releases/latest"
 _SINGLE_INSTANCE_MUTEX = None
@@ -335,7 +335,7 @@ class MarketInsightApp(ctk.CTk):
             "CTkButton": {"fg_color": ["#747B70", "#596158"], "hover_color": ["#62695F", "#4B534A"], "text_color": ["#F5F4EF", "#F1F0EA"]},
             "CTkCheckBox": {"fg_color": ["#747B70", "#596158"], "hover_color": ["#62695F", "#4B534A"], "border_color": ["#92968B", "#858A80"], "checkmark_color": ["#F5F4EF", "#F1F0EA"]},
             "CTkSwitch": {"fg_color": ["#C8C9C0", "#454941"], "progress_color": ["#747B70", "#687164"], "button_color": ["#F5F4EF", "#D9D9D0"], "button_hover_color": ["#E1E1D9", "#C4C6BB"]},
-            "CTkOptionMenu": {"fg_color": ["#747B70", "#596158"], "button_color": ["#62695F", "#4B534A"], "button_hover_color": ["#555D53", "#414940"], "text_color": ["#F5F4EF", "#F1F0EA"]},
+            "CTkOptionMenu": {"fg_color": ["#747B70", "#596158"], "button_color": ["#62695F", "#4B534A"], "button_hover_color": ["#555D53", "#414940"], "text_color": ["#F5F4EF", "#F1F0EA"], "dropdown_fg_color": ["#F1F0EC", "#292B28"], "dropdown_hover_color": ["#E2E3DC", "#3C413A"], "dropdown_text_color": ["#343832", "#E8E8E1"]},
             "CTkSlider": {"progress_color": ["#747B70", "#687164"], "button_color": ["#747B70", "#687164"], "button_hover_color": ["#62695F", "#4B534A"]},
             "CTkProgressBar": {"progress_color": ["#747B70", "#687164"]},
             "CTkRadioButton": {"fg_color": ["#747B70", "#687164"], "hover_color": ["#62695F", "#4B534A"]},
