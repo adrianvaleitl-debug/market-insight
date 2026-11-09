@@ -56,7 +56,7 @@ jobs:
             --title "Market Insight v1.2.20" \
             --notes "## Market Insight v1.2.20
 
-- Test release to verify the in-app GitHub update check and download prompt; no functional changes
+          - Test release to verify the in-app GitHub update check and download prompt; no functional changes
           - This release intentionally contains no new app features.
 
           - Added a full creator credits section at the bottom of Settings with TikTok, website and GitHub links
