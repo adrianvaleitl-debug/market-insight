@@ -73,6 +73,7 @@ STOCK_NAMES = {
 
 DEFAULTS = {
     "appearance": "Dark",
+    "startup_window_mode": "Maximised",
     "auto_scan": True,
     "scan_interval": 5,
     "auto_open_tradingview": False,
@@ -272,6 +273,20 @@ class MarketInsightApp(ctk.CTk):
         self.settings = load_settings()
         ctk.set_appearance_mode(self.settings["appearance"].lower())
         ctk.set_default_color_theme("green")
+        # Replace the stock bright-green accent with a restrained grey-sage palette.
+        theme = ctk.ThemeManager.theme
+        muted = {
+            "CTkButton": {"fg_color": ["#747B70", "#596158"], "hover_color": ["#62695F", "#4B534A"], "text_color": ["#F5F4EF", "#F1F0EA"]},
+            "CTkCheckBox": {"fg_color": ["#747B70", "#596158"], "hover_color": ["#62695F", "#4B534A"], "border_color": ["#92968B", "#858A80"], "checkmark_color": ["#F5F4EF", "#F1F0EA"]},
+            "CTkSwitch": {"fg_color": ["#C8C9C0", "#454941"], "progress_color": ["#747B70", "#687164"], "button_color": ["#F5F4EF", "#D9D9D0"], "button_hover_color": ["#E1E1D9", "#C4C6BB"]},
+            "CTkOptionMenu": {"fg_color": ["#747B70", "#596158"], "button_color": ["#62695F", "#4B534A"], "button_hover_color": ["#555D53", "#414940"], "text_color": ["#F5F4EF", "#F1F0EA"]},
+            "CTkSlider": {"progress_color": ["#747B70", "#687164"], "button_color": ["#747B70", "#687164"], "button_hover_color": ["#62695F", "#4B534A"]},
+            "CTkProgressBar": {"progress_color": ["#747B70", "#687164"]},
+            "CTkRadioButton": {"fg_color": ["#747B70", "#687164"], "hover_color": ["#62695F", "#4B534A"]},
+        }
+        for widget_name, values in muted.items():
+            if widget_name in theme:
+                theme[widget_name].update(values)
         self.title(APP_NAME)
         try:
             ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("AdrianVale.MarketInsight")
@@ -285,11 +300,6 @@ class MarketInsightApp(ctk.CTk):
                 pass
         self.geometry("1180x760")
         self.minsize(960, 640)
-        # Open the main application maximised on startup (Windows).
-        try:
-            self.state("zoomed")
-        except Exception:
-            pass
         self.configure(fg_color=("#F1F0EC", "#20211F"))
         self.results = {}
         self.scanning = False
@@ -438,9 +448,38 @@ class MarketInsightApp(ctk.CTk):
         self.deiconify()
         self._build_ui()
         self._refresh_watchlist_text()
+        # Apply the selected window mode only after Tk has mapped the main window.
+        self.after(250, self.apply_startup_window_mode)
         self.after(700, self._maybe_prompt_shortcut)
         if self.settings.get("auto_scan"):
             self.after(900, self.start_scan)
+
+    def apply_startup_window_mode(self):
+        """Apply the user's saved startup display mode after the window is visible."""
+        mode = self.settings.get("startup_window_mode", "Maximised")
+        try:
+            self.attributes("-fullscreen", False)
+            if mode == "Full screen":
+                self.attributes("-fullscreen", True)
+            elif mode == "Windowed":
+                self.state("normal")
+                self.geometry("1180x760")
+            else:
+                self.state("zoomed")
+        except Exception:
+            # Some window managers do not support every state; keep a usable window.
+            try:
+                self.state("zoomed" if mode != "Windowed" else "normal")
+            except Exception:
+                pass
+
+    def _exit_fullscreen(self, event=None):
+        try:
+            if self.attributes("-fullscreen"):
+                self.attributes("-fullscreen", False)
+                self.state("zoomed")
+        except Exception:
+            pass
 
     def _maybe_prompt_shortcut(self):
         if self.settings.get("shortcut_prompted"):
@@ -599,6 +638,7 @@ class MarketInsightApp(ctk.CTk):
         self._build_settings()
         self._build_about()
         self.show_page("Overview")
+        self.bind("<Escape>", self._exit_fullscreen)
 
     def card(self, parent, title, subtitle=None, wraplength=None):
         frame = ctk.CTkFrame(parent, corner_radius=22, fg_color=("#EFEEE8", "#30332F"))
@@ -725,110 +765,163 @@ class MarketInsightApp(ctk.CTk):
 
     def _build_settings(self):
         page = self.pages["Settings"]
-        card = self.card(page, "App appearance", "Choose Light, Dark or match your Windows setting.")
-        self.appearance_menu = ctk.CTkOptionMenu(card, values=["System", "Dark", "Light"], command=self.change_appearance)
+
+        # Keep the everyday controls together in one clear preferences section.
+        preferences = self.card(
+            page, "Preferences and display",
+            "Choose how Market Insight looks, opens and keeps your watchlist up to date."
+        )
+        ctk.CTkLabel(preferences, text="Appearance",
+                     font=ctk.CTkFont(size=11, weight="bold"),
+                     text_color=("#555D54", "#C0C5BC")).pack(anchor="w", padx=18, pady=(10, 3))
+        self.appearance_menu = ctk.CTkOptionMenu(
+            preferences, values=["System", "Dark", "Light"], command=self.change_appearance
+        )
         self.appearance_menu.set(self.settings["appearance"])
-        self.appearance_menu.pack(anchor="center", pady=(8, 16))
+        self.appearance_menu.pack(anchor="w", padx=18, pady=(0, 12))
 
-        card = self.card(page, "Desktop shortcut", "Choose whether to keep a Market Insight icon on your desktop. You can change this whenever you like.")
+        ctk.CTkLabel(preferences, text="How the program opens",
+                     font=ctk.CTkFont(size=11, weight="bold"),
+                     text_color=("#555D54", "#C0C5BC")).pack(anchor="w", padx=18, pady=(4, 3))
+        self.startup_mode_menu = ctk.CTkOptionMenu(
+            preferences, values=["Maximised", "Full screen", "Windowed"],
+            command=self.save_general_settings
+        )
+        self.startup_mode_menu.set(self.settings.get("startup_window_mode", "Maximised"))
+        self.startup_mode_menu.pack(anchor="w", padx=18, pady=(0, 5))
+        mode_note = ctk.CTkLabel(
+            preferences,
+            text="Maximised fills the screen but keeps the Windows title bar and taskbar. Full screen hides them. Press Escape to leave full screen.",
+            font=ctk.CTkFont(size=10), justify="left", anchor="w",
+            text_color=("#777D75", "#A7AAA1")
+        )
+        mode_note.pack(fill="x", padx=18, pady=(0, 12))
+        self._fit_text_to_width(mode_note, preferences, 40)
+
         self.shortcut_var = ctk.BooleanVar(value=self.settings.get("create_desktop_shortcut", False))
-        ctk.CTkCheckBox(card, text="Show a Market Insight shortcut on my desktop", variable=self.shortcut_var,
-                        command=self.save_shortcut_preference).pack(anchor="w", padx=18, pady=(8, 14))
+        ctk.CTkCheckBox(
+            preferences, text="Show a Market Insight shortcut on my desktop",
+            variable=self.shortcut_var, command=self.save_shortcut_preference
+        ).pack(anchor="w", padx=18, pady=(4, 10))
 
-        card = self.card(page, "Automatic scanning", "Market Insight gets the latest available prices from Alpaca IEX. It uses Yahoo Finance past prices to calculate stock indicators.")
         self.auto_scan_var = ctk.BooleanVar(value=self.settings["auto_scan"])
-        ctk.CTkCheckBox(card, text="Scan my watchlist automatically", variable=self.auto_scan_var,
-                        command=self.save_general_settings).pack(anchor="w", padx=18, pady=8)
-        self.interval_menu = ctk.CTkOptionMenu(card, values=["5", "15", "30", "60"])
+        ctk.CTkCheckBox(
+            preferences, text="Scan my watchlist automatically",
+            variable=self.auto_scan_var, command=self.save_general_settings
+        ).pack(anchor="w", padx=18, pady=(4, 7))
+        ctk.CTkLabel(preferences, text="Automatic scan interval (minutes)",
+                     font=ctk.CTkFont(size=10),
+                     text_color=("#777D75", "#A7AAA1")).pack(anchor="w", padx=18, pady=(0, 3))
+        self.interval_menu = ctk.CTkOptionMenu(preferences, values=["5", "15", "30", "60"])
         self.interval_menu.set(str(self.settings["scan_interval"]))
-        self.interval_menu.pack(anchor="center", pady=(4, 16))
+        self.interval_menu.pack(anchor="w", padx=18, pady=(0, 12))
 
-        ctk.CTkLabel(card, text="Your trading platform", text_color=("#646D64", "#C0C5BC")).pack(anchor="w", padx=18, pady=(8, 4))
-        self.platform_menu = ctk.CTkOptionMenu(card, values=["TradingView", "MetaTrader 5", "Interactive Brokers", "Robinhood", "eToro", "Other"], command=self.change_platform)
+        ctk.CTkLabel(preferences, text="Your trading platform",
+                     font=ctk.CTkFont(size=11, weight="bold"),
+                     text_color=("#555D54", "#C0C5BC")).pack(anchor="w", padx=18, pady=(4, 3))
+        self.platform_menu = ctk.CTkOptionMenu(
+            preferences, values=["TradingView", "MetaTrader 5", "Interactive Brokers", "Robinhood", "eToro", "Other"],
+            command=self.change_platform
+        )
         self.platform_menu.set(self.settings.get("selected_platform") or "TradingView")
-        self.platform_menu.pack(anchor="center", pady=(0, 8))
-        self.custom_platform_entry = ctk.CTkEntry(card, placeholder_text="Your platform's stock link (put {symbol} where the ticker goes)")
+        self.platform_menu.pack(anchor="w", padx=18, pady=(0, 7))
+        self.custom_platform_entry = ctk.CTkEntry(
+            preferences, placeholder_text="Your platform's stock link (put {symbol} where the ticker goes)"
+        )
         self.custom_platform_entry.insert(0, self.settings.get("custom_platform_url", ""))
         self.custom_platform_entry.pack(fill="x", padx=18, pady=6)
-        self.auto_platform_var = ctk.BooleanVar(value=self.settings.get("auto_open_platform", False))
-        ctk.CTkCheckBox(card, text="Automatically open the highest-scoring stock on my platform",
-                        variable=self.auto_platform_var, command=self.save_general_settings).pack(anchor="w", padx=18, pady=8)
-        self.threshold_menu = ctk.CTkOptionMenu(card, values=["60", "70", "80", "90"])
-        self.threshold_menu.set(str(self.settings["threshold"]))
-        self.threshold_menu.pack(anchor="center", pady=(4, 16))
-        ctk.CTkButton(card, text="Save scan settings", command=self.save_general_settings).pack(anchor="e", padx=18, pady=(0, 14))
 
-        card = self.card(page, "Live prices — Alpaca", "Add your Alpaca API Key ID and Secret Access Key to use live price data. Your keys are stored securely in Windows Credential Manager.")
-        self.alpaca_key_entry = ctk.CTkEntry(card, placeholder_text="Alpaca API Key ID", show="•")
+        self.auto_platform_var = ctk.BooleanVar(value=self.settings.get("auto_open_platform", False))
+        ctk.CTkCheckBox(
+            preferences, text="Automatically open the highest-scoring stock on my platform",
+            variable=self.auto_platform_var, command=self.save_general_settings
+        ).pack(anchor="w", padx=18, pady=(8, 7))
+        ctk.CTkLabel(preferences, text="Minimum score for automatic opening",
+                     font=ctk.CTkFont(size=10),
+                     text_color=("#777D75", "#A7AAA1")).pack(anchor="w", padx=18, pady=(0, 3))
+        self.threshold_menu = ctk.CTkOptionMenu(preferences, values=["60", "70", "80", "90"])
+        self.threshold_menu.set(str(self.settings["threshold"]))
+        self.threshold_menu.pack(anchor="w", padx=18, pady=(0, 10))
+        ctk.CTkButton(
+            preferences, text="Save preferences", command=self.save_general_settings
+        ).pack(anchor="e", padx=18, pady=(4, 16))
+
+        # Connection credentials stay together in one separate section.
+        connection = self.card(
+            page, "Live market data connection",
+            "Connect Alpaca for the latest available IEX prices. Your API details are stored securely in Windows Credential Manager."
+        )
+        self.alpaca_key_entry = ctk.CTkEntry(connection, placeholder_text="Alpaca API Key ID", show="•")
         self.alpaca_key_entry.pack(fill="x", padx=18, pady=(8, 6))
-        self.alpaca_secret_entry = ctk.CTkEntry(card, placeholder_text="Alpaca Secret Access Key", show="•")
+        self.alpaca_secret_entry = ctk.CTkEntry(connection, placeholder_text="Alpaca Secret Access Key", show="•")
         self.alpaca_secret_entry.pack(fill="x", padx=18, pady=6)
         key_status = "Your Alpaca keys are saved securely." if all(get_alpaca_credentials()) else "No Alpaca keys have been saved yet."
-        self.alpaca_status = ctk.CTkLabel(card, text=key_status, text_color=("#647B68", "#B8C2B5"))
+        self.alpaca_status = ctk.CTkLabel(
+            connection, text=key_status, text_color=("#747B70", "#AEB3A8")
+        )
         self.alpaca_status.pack(anchor="w", padx=18, pady=(4, 4))
-        alpaca_actions = ctk.CTkFrame(card, fg_color="transparent")
+        alpaca_actions = ctk.CTkFrame(connection, fg_color="transparent")
         alpaca_actions.pack(fill="x", padx=18, pady=(4, 8))
         ctk.CTkButton(alpaca_actions, text="Save Alpaca keys", command=self.save_alpaca_keys).pack(side="left")
-        ctk.CTkButton(alpaca_actions, text="Remove saved keys", fg_color=("#E8E2DE", "#493B38"),
-                      text_color=("#96716B", "#D8C1BA"), command=self.remove_alpaca_keys).pack(side="left", padx=8)
-        price_note = ctk.CTkLabel(card, text="Price data comes from IEX, which does not cover every US market trade. Live prices are available only when the market is open and an IEX trade is available. Past-price indicators come from Yahoo Finance. If Alpaca can't provide a live price, the app will show an error rather than silently using delayed data.",
-                                  justify="left", font=ctk.CTkFont(size=10),
-                                  text_color=("#8C8067", "#BDB19A"))
+        ctk.CTkButton(
+            alpaca_actions, text="Remove saved keys",
+            fg_color=("#E8E2DE", "#493B38"), text_color=("#96716B", "#D8C1BA"),
+            command=self.remove_alpaca_keys
+        ).pack(side="left", padx=8)
+        price_note = ctk.CTkLabel(
+            connection,
+            text="Price data comes from IEX, which does not cover every US market trade. Live prices are available only when the market is open and an IEX trade is available. Past-price indicators come from Yahoo Finance. If Alpaca can't provide a live price, the app will show an error rather than silently using delayed data.",
+            justify="left", font=ctk.CTkFont(size=10),
+            text_color=("#8C8067", "#BDB19A")
+        )
         price_note.pack(anchor="w", fill="x", padx=18, pady=(0, 14))
-        self._fit_text_to_width(price_note, card, 40)
+        self._fit_text_to_width(price_note, connection, 40)
 
-        guidance = self.card(page, "Understanding your settings",
-                             "A few notes to help you choose settings that suit your workflow.")
+        # Resources, practical notes and creator links share a single final section.
+        extras = self.card(
+            page, "Help, resources and credits",
+            "Useful notes and links for using Market Insight."
+        )
         setting_notes = [
             ("Scan interval", "Automatic scans refresh your watchlist at the interval you choose. More frequent scans do not guarantee better prices or signals."),
             ("Score threshold", "The threshold controls when the app may automatically open a top-scoring stock on your selected platform. It does not mean the stock is likely to rise."),
             ("Trading platform", "Choose where stock links should open. If you select Other, add a URL containing {symbol} where the ticker should be inserted."),
-            ("Appearance", "System follows your Windows appearance setting. Light and Dark override it inside Market Insight."),
             ("Alpaca credentials", "Your API Key ID and Secret Access Key are stored in Windows Credential Manager. The secret is never shown back on screen.")
         ]
         for heading, description in setting_notes:
-            ctk.CTkLabel(guidance, text=heading, font=ctk.CTkFont(size=10, weight="bold"),
-                         text_color=("#4A514B", "#D8DDD7")).pack(anchor="w", padx=18, pady=(7, 1))
-            note = ctk.CTkLabel(guidance, text=description, font=ctk.CTkFont(size=10),
-                                justify="left", anchor="w",
-                                text_color=("#777D75", "#A7AAA1"))
+            ctk.CTkLabel(
+                extras, text=heading, font=ctk.CTkFont(size=10, weight="bold"),
+                text_color=("#555D54", "#D8DDD7")
+            ).pack(anchor="w", padx=18, pady=(7, 1))
+            note = ctk.CTkLabel(
+                extras, text=description, font=ctk.CTkFont(size=10),
+                justify="left", anchor="w", text_color=("#777D75", "#A7AAA1")
+            )
             note.pack(fill="x", padx=18, pady=(0, 5))
-            self._fit_text_to_width(note, guidance, 40)
+            self._fit_text_to_width(note, extras, 40)
 
-        resources = self.card(page, "Trading and data resources",
-                              "These links open in your web browser.")
         for label, url in [
             ("Manage Alpaca API keys", "https://app.alpaca.markets/"),
             ("Alpaca market data guide", "https://docs.alpaca.markets/docs/about-market-data-api"),
             ("Yahoo Finance market overview", "https://finance.yahoo.com/"),
-            ("TradingView charts", "https://www.tradingview.com/")
-        ]:
-            ctk.CTkButton(resources, text=label + "  ↗", corner_radius=16,
-                          fg_color=("#D8DAD4", "#414841"),
-                          hover_color=("#C8CBC2", "#50564F"),
-                          text_color=("#414841", "#E5E4DE"),
-                          command=lambda target=url: webbrowser.open(target)
-                          ).pack(anchor="center", pady=4)
-
-        credits = self.card(page, "Credits and creator links",
-                            "Market Insight is created and maintained by Adrian Vale.")
-        ctk.CTkLabel(
-            credits, text="Created by Adrian Vale  ·  Market Insight",
-            font=ctk.CTkFont(size=12, weight="bold"),
-            text_color=("#646D64", "#C0C5BC")
-        ).pack(anchor="center", pady=(8, 4))
-        for label, url in [
+            ("TradingView charts", "https://www.tradingview.com/"),
             ("TikTok  ·  @adrianvaleitl", "https://www.tiktok.com/@adrianvaleitl"),
             ("Official website", "https://adrianvaleitl-debug.github.io/market-insight/"),
             ("GitHub repository", "https://github.com/adrianvaleitl-debug/market-insight")
         ]:
             ctk.CTkButton(
-                credits, text=label + "  ↗", corner_radius=16,
+                extras, text=label + "  ↗", corner_radius=16,
                 fg_color=("#D8DAD4", "#414841"),
                 hover_color=("#C8CBC2", "#50564F"),
                 text_color=("#414841", "#E5E4DE"),
                 command=lambda target=url: webbrowser.open(target)
             ).pack(anchor="center", pady=4)
+
+        ctk.CTkLabel(
+            extras, text="Created by Adrian Vale  ·  Market Insight",
+            font=ctk.CTkFont(size=12, weight="bold"),
+            text_color=("#646D64", "#C0C5BC")
+        ).pack(anchor="center", pady=(10, 14))
 
     def _build_about(self):
         page = self.pages["About"]
@@ -949,8 +1042,10 @@ class MarketInsightApp(ctk.CTk):
         self.settings["custom_platform_url"] = self.custom_platform_entry.get().strip()
         self.settings["auto_open_platform"] = bool(self.auto_platform_var.get())
         self.settings["threshold"] = int(self.threshold_menu.get())
+        if hasattr(self, "startup_mode_menu"):
+            self.settings["startup_window_mode"] = self.startup_mode_menu.get()
         save_settings(self.settings)
-        self.status.configure(text="Your settings have been saved.")
+        self.status.configure(text="Your settings have been saved. The display mode will apply next time you open Market Insight.")
         self.schedule_next_scan()
 
     def save_alpaca_keys(self):
