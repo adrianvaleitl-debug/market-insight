@@ -263,7 +263,7 @@ class MarketInsightApp(ctk.CTk):
             except Exception:
                 pass
         self.geometry("1180x760")
-        self.minsize(800, 550)
+        self.minsize(960, 640)
         self.configure(fg_color=("#F4F6F5", "#171B1A"))
         self.results = {}
         self.scanning = False
@@ -520,42 +520,15 @@ class MarketInsightApp(ctk.CTk):
     def card(self, parent, title, subtitle=None, wraplength=None):
         frame = ctk.CTkFrame(parent, corner_radius=16, fg_color=("#F5F8F6", "#29312D"))
         frame.pack(fill="x", padx=14, pady=10)
-        title_label = ctk.CTkLabel(frame, text=title, font=ctk.CTkFont(size=17, weight="bold"),
-                                   text_color=("#2B3B33", "#E2ECE6"), wraplength=wraplength or 600,
-                                   justify="left")
-        title_label.pack(anchor="w", padx=18, pady=(15, 2))
-        subtitle_label = None
+        # Keep longer headings and descriptions on readable multiple lines.
+        text_width = wraplength or 520
+        ctk.CTkLabel(frame, text=title, font=ctk.CTkFont(size=17, weight="bold"),
+                     text_color=("#2B3B33", "#E2ECE6"), wraplength=text_width,
+                     justify="left").pack(anchor="w", padx=18, pady=(15, 2))
         if subtitle:
-            subtitle_label = ctk.CTkLabel(frame, text=subtitle, font=ctk.CTkFont(size=11),
-                                          text_color=("#718078", "#9BAAA2"),
-                                          wraplength=wraplength or 600, justify="left")
-            subtitle_label.pack(anchor="w", padx=18, pady=(0, 8))
-
-        last_wrap = [None]
-        wrap_job = [None]
-
-        def fit_card_text(event=None):
-            # Delay text reflow until the user pauses resizing. Reflowing every
-            # card continuously while the window edge moves makes Windows stutter.
-            available = max(120, (event.width if event is not None else frame.winfo_width()) - 44)
-            if available == last_wrap[0]:
-                return
-            last_wrap[0] = available
-            if wrap_job[0] is not None:
-                try:
-                    self.after_cancel(wrap_job[0])
-                except Exception:
-                    pass
-
-            def apply_wrap():
-                wrap_job[0] = None
-                title_label.configure(wraplength=available)
-                if subtitle_label is not None:
-                    subtitle_label.configure(wraplength=available)
-
-            wrap_job[0] = self.after(120, apply_wrap)
-
-        frame.bind("<Configure>", fit_card_text)
+            ctk.CTkLabel(frame, text=subtitle, font=ctk.CTkFont(size=11),
+                         text_color=("#718078", "#9BAAA2"), wraplength=text_width,
+                         justify="left").pack(anchor="w", padx=18, pady=(0, 8))
         return frame
 
     def _build_overview(self):
@@ -568,15 +541,15 @@ class MarketInsightApp(ctk.CTk):
                       fg_color=("#E8F0EB", "#35443C"), text_color=("#315B43", "#D6E8DC"),
                       command=self.open_top_result).pack(side="left", padx=8)
         self.scan_info = ctk.CTkLabel(
-            actions, text="50 STOCKS READY",
-            font=ctk.CTkFont(size=12, weight="bold"),
-            text_color=("#FFFFFF", "#FFFFFF"),
-            fg_color=("#34443C", "#34443C"),
-            corner_radius=12, padx=15, pady=9
+            actions, text="50 stocks included",
+            font=ctk.CTkFont(size=11, weight="bold"),
+            text_color=("#E7E9EC", "#E7E9EC"),
+            fg_color=("#454A50", "#30343A"),
+            corner_radius=18, padx=16, pady=9
         )
         self.scan_info.pack(side="right", padx=8)
 
-        # Keep the original fixed two-column overview layout.
+        # Two-column overview: market results on the left, calculator always visible on the right.
         content = ctk.CTkFrame(page, fg_color="transparent")
         content.pack(fill="both", expand=True, padx=4)
         left_column = ctk.CTkFrame(content, fg_color="transparent")
@@ -601,7 +574,8 @@ class MarketInsightApp(ctk.CTk):
         self.caution_text.pack(fill="x", padx=16, pady=(8, 16))
 
         calculator = self.card(right_column, "Position size calculator",
-                               "Estimate how many shares may fit your balance and risk limit. This is a guide only; it does not place trades.")
+                               "Estimate how many shares may fit your balance and risk limit. This is a guide only; it does not place trades.",
+                               wraplength=270)
         ctk.CTkLabel(calculator, text="Account balance (USD)",
                      text_color=("#53635A", "#C5D3CB")).pack(anchor="w", padx=14, pady=(8, 3))
         self.balance_entry = ctk.CTkEntry(calculator, placeholder_text="e.g. 1000")
@@ -620,15 +594,6 @@ class MarketInsightApp(ctk.CTk):
             text_color=("#718078", "#9BAAA2"), justify="left", wraplength=270
         )
         self.calc_output.pack(anchor="w", padx=14, pady=(0, 16))
-        self._calculator_last_wrap = None
-
-        def fit_calculator_text(event):
-            available = max(140, event.width - 44)
-            if available != self._calculator_last_wrap:
-                self._calculator_last_wrap = available
-                self.calc_output.configure(wraplength=available)
-
-        calculator.bind("<Configure>", fit_calculator_text)
 
     def _build_watchlist(self):
         page = self.pages["Watchlist"]
@@ -725,7 +690,11 @@ class MarketInsightApp(ctk.CTk):
             return
         self.settings["watchlist"] = symbols
         save_settings(self.settings)
-        self.scan_info.configure(text=f"{len(symbols)} STOCKS READY", fg_color=("#34443C", "#34443C"), text_color=("#FFFFFF", "#FFFFFF"))
+        self.scan_info.configure(
+            text=f"{len(symbols)} symbols in watchlist",
+            fg_color=("#454A50", "#30343A"),
+            text_color=("#E7E9EC", "#E7E9EC")
+        )
         self.status.configure(text="Your watchlist has been saved.")
 
     def change_appearance(self, value):
@@ -794,9 +763,11 @@ class MarketInsightApp(ctk.CTk):
             return
         self.scanning = True
         self.status.configure(text="Automatic scanning…")
-        total = len(self.settings.get("watchlist", DEFAULT_TICKERS))
-        self.scan_info.configure(text=f"SCANNING · 0 / {total}", fg_color=("#A86A18", "#A86A18"))
-        self.scan_info.configure(text_color=("#FFFFFF", "#FFFFFF"))
+        self.scan_info.configure(
+            text="Getting recent stock price data…",
+            fg_color=("#454A50", "#30343A"),
+            text_color=("#E7E9EC", "#E7E9EC")
+        )
         threading.Thread(target=self._scan_worker, daemon=True).start()
 
     def _scan_worker(self):
@@ -808,7 +779,7 @@ class MarketInsightApp(ctk.CTk):
                 output[symbol] = scan_symbol(symbol, api_key, secret_key)
             except Exception as exc:
                 output[symbol] = {"error": str(exc)}
-            self.after(0, lambda n=i+1, total=len(symbols): self.scan_info.configure(text=f"SCANNING · {n} / {total}"))
+            self.after(0, lambda n=i+1, total=len(symbols): self.scan_info.configure(text=f"Scanned {n}/{total}"))
         self.after(0, lambda: self._finish_scan(output))
 
     def _render_stock_cards(self, parent, rows, limit=None, caution=False):
@@ -870,16 +841,10 @@ class MarketInsightApp(ctk.CTk):
             ctk.CTkLabel(issue, text="\\n".join(errors[:12]), justify="left", wraplength=700,
                          text_color=("#8B5555", "#E6A5A5")).pack(anchor="w", padx=12, pady=(0, 10))
         self.status.configure(text=f"Scan complete · {len(valid)} symbols")
-        attempted = len(output)
-        total = len(self.settings.get("watchlist", DEFAULT_TICKERS))
         self.scan_info.configure(
-            text=f"✓ SCAN FINISHED  ·  {attempted} OF {total} CHECKED",
-            fg_color=("#1F6B45", "#1F6B45"),
-            text_color=("#FFFFFF", "#FFFFFF"),
-            font=ctk.CTkFont(size=12, weight="bold"),
-            corner_radius=12,
-            padx=15,
-            pady=9
+            text=f"Last scan: {datetime.now().strftime('%H:%M')}",
+            fg_color=("#454A50", "#30343A"),
+            text_color=("#E7E9EC", "#E7E9EC")
         )
         if valid:
             self._update_calculator(valid[0][0], valid[0][1])
