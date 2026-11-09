@@ -1171,49 +1171,90 @@ class MarketInsightApp(ctk.CTk):
                 output[symbol] = scan_symbol(symbol, api_key, secret_key)
             except Exception as exc:
                 output[symbol] = {"error": str(exc)}
-            self.after(0, lambda n=i+1, total=len(symbols): self.scan_info.configure(text=f"Scanned {n}/{total}"))
+            if (i + 1) % 5 == 0 or i + 1 == len(symbols):
+                self.after(0, lambda n=i+1, total=len(symbols): self.scan_info.configure(text=f"Scanned {n}/{total}"))
         market_context = fetch_market_context()
         self.after(0, lambda: self._finish_scan(output, market_context))
 
     def _render_stock_cards(self, parent, rows, limit=None, caution=False):
+        """Render cards in short batches so the window stays responsive."""
+        previous_job = getattr(parent, "_render_job", None)
+        if previous_job:
+            try:
+                parent.after_cancel(previous_job)
+            except Exception:
+                pass
+            parent._render_job = None
+
         for child in parent.winfo_children():
             child.destroy()
-        rows = rows if limit is None else rows[:limit]
+
+        rows = list(rows if limit is None else rows[:limit])
         if not rows:
-            ctk.CTkLabel(parent, text="No stocks to show yet. Run a scan to see results here.", text_color=("#858A80", "#AEB1A8")).pack(anchor="w", padx=12, pady=14)
+            ctk.CTkLabel(
+                parent, text="No stocks to show yet. Run a scan to see results here.",
+                text_color=("#858A80", "#AEB1A8")
+            ).pack(anchor="w", padx=12, pady=14)
             return
-        for symbol, data in rows:
-            tile = ctk.CTkFrame(parent, corner_radius=18, fg_color=("#EFEEE8", "#30332F"))
-            tile.pack(fill="x", padx=5, pady=5)
-            head = ctk.CTkFrame(tile, fg_color="transparent")
-            head.pack(fill="x", padx=13, pady=(9, 2))
-            title_area = ctk.CTkFrame(head, fg_color="transparent")
-            title_area.pack(side="left", fill="x", expand=True)
-            company_name = ctk.CTkLabel(title_area, text=STOCK_NAMES.get(symbol, symbol),
-                                        font=ctk.CTkFont(size=12, weight="bold"), justify="left")
-            company_name.pack(anchor="w", fill="x")
-            self._fit_text_to_width(company_name, title_area, 12)
-            ctk.CTkLabel(title_area, text=symbol, font=ctk.CTkFont(size=10, weight="bold"),
-                         text_color=("#777D75", "#AEB1A8")).pack(anchor="w")
-            if caution:
-                warning_text = ctk.CTkLabel(tile, text=", ".join(data.get("warnings", [])) or "Needs a closer look",
-                                            font=ctk.CTkFont(size=10), text_color=("#A87975", "#C5AAA4"),
-                                            justify="left")
-                warning_text.pack(anchor="w", fill="x", padx=13, pady=(2, 9))
-                self._fit_text_to_width(warning_text, tile, 30)
-            else:
-                tone = ("#738875", "#B4C4B1") if data["day_change"] >= 0 else ("#A87975", "#C5AAA4")
-                info = ctk.CTkFrame(tile, fg_color="transparent")
-                info.pack(fill="x", padx=13, pady=(5, 10))
-                ctk.CTkLabel(info, text="USD {:.2f}".format(data["price"]), font=ctk.CTkFont(size=14, weight="bold")).pack(side="left")
-                ctk.CTkLabel(info, text="{:+.2f}%".format(data["day_change"]), font=ctk.CTkFont(size=11, weight="bold"),
-                             text_color=tone).pack(side="left", padx=(10, 0))
-                ctk.CTkLabel(info, text="Score: {}/100 · RSI: {:.0f} · Vol: {:.1f}x".format(data["score"], data["rsi"], data["volume_ratio"]),
-                             font=ctk.CTkFont(size=9, weight="bold"),
-                             text_color=("#747A72", "#B8BDB4")).pack(side="left", padx=(10, 0))
-                ctk.CTkButton(info, text="View on {} ↗".format(self.settings.get("selected_platform", "platform")),
-                              width=145, height=28, corner_radius=9, font=ctk.CTkFont(size=10),
-                              command=lambda sym=symbol: self.open_selected_platform(sym, ask=True)).pack(side="right")
+
+        def render_batch(index=0):
+            parent._render_job = None
+            end_index = min(index + 6, len(rows))
+            for symbol, data in rows[index:end_index]:
+                tile = ctk.CTkFrame(parent, corner_radius=18, fg_color=("#EFEEE8", "#30332F"))
+                tile.pack(fill="x", padx=5, pady=5)
+                head = ctk.CTkFrame(tile, fg_color="transparent")
+                head.pack(fill="x", padx=13, pady=(9, 2))
+                title_area = ctk.CTkFrame(head, fg_color="transparent")
+                title_area.pack(side="left", fill="x", expand=True)
+                company_name = ctk.CTkLabel(
+                    title_area, text=STOCK_NAMES.get(symbol, symbol),
+                    font=ctk.CTkFont(size=12, weight="bold"), justify="left"
+                )
+                company_name.pack(anchor="w", fill="x")
+                self._fit_text_to_width(company_name, title_area, 12)
+                ctk.CTkLabel(
+                    title_area, text=symbol, font=ctk.CTkFont(size=10, weight="bold"),
+                    text_color=("#777D75", "#AEB1A8")
+                ).pack(anchor="w")
+
+                if caution:
+                    warning_text = ctk.CTkLabel(
+                        tile, text=", ".join(data.get("warnings", [])) or "Needs a closer look",
+                        font=ctk.CTkFont(size=10), text_color=("#A87975", "#C5AAA4"),
+                        justify="left"
+                    )
+                    warning_text.pack(anchor="w", fill="x", padx=13, pady=(2, 9))
+                    self._fit_text_to_width(warning_text, tile, 30)
+                else:
+                    tone = ("#738875", "#B4C4B1") if data["day_change"] >= 0 else ("#A87975", "#C5AAA4")
+                    info = ctk.CTkFrame(tile, fg_color="transparent")
+                    info.pack(fill="x", padx=13, pady=(5, 10))
+                    ctk.CTkLabel(
+                        info, text="USD {:.2f}".format(data["price"]),
+                        font=ctk.CTkFont(size=14, weight="bold")
+                    ).pack(side="left")
+                    ctk.CTkLabel(
+                        info, text="{:+.2f}%".format(data["day_change"]),
+                        font=ctk.CTkFont(size=11, weight="bold"), text_color=tone
+                    ).pack(side="left", padx=(10, 0))
+                    ctk.CTkLabel(
+                        info, text="Score: {}/100 · RSI: {:.0f} · Vol: {:.1f}x".format(
+                            data["score"], data["rsi"], data["volume_ratio"]
+                        ),
+                        font=ctk.CTkFont(size=9, weight="bold"),
+                        text_color=("#747A72", "#B8BDB4")
+                    ).pack(side="left", padx=(10, 0))
+                    ctk.CTkButton(
+                        info, text="View on {} ↗".format(self.settings.get("selected_platform", "platform")),
+                        width=145, height=28, corner_radius=9, font=ctk.CTkFont(size=10),
+                        command=lambda sym=symbol: self.open_selected_platform(sym, ask=True)
+                    ).pack(side="right")
+
+            if end_index < len(rows):
+                parent._render_job = parent.after(10, lambda: render_batch(end_index))
+
+        render_batch()
 
     def _finish_scan(self, output, market_context=None):
         self.results = output
