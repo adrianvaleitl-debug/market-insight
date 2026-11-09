@@ -46,16 +46,18 @@ jobs:
           cp market_insight.py requirements.txt SETUP_AND_START.bat \
             Start_Market_Insight.vbs market_insight.ico \
             START_IN_DIAGNOSTIC_MODE.bat Create_Desktop_Shortcut.ps1 README.md Market_Insight/
-          zip -r Market_Insight_v1.2.0.zip Market_Insight
+          zip -r Market_Insight_v1.2.1.zip Market_Insight
 
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create v1.2.0 Market_Insight_v1.2.0.zip \
-            --title "Market Insight v1.2.0" \
-            --notes "## Market Insight v1.2.0
+          gh release create v1.2.1 Market_Insight_v1.2.1.zip \
+            --title "Market Insight v1.2.1" \
+            --notes "## Market Insight v1.2.1
 
+          - Improved wording throughout the app to make instructions, settings, results, warnings and error messages easier to understand
+          - Kept all app features, calculations, layout and behaviour unchanged
           - Fixed an invisible startup issue by keeping the root window mapped while the first-run setup dialog opens
           - Replaced app and website branding with the supplied custom charcoal tile and angular silver M logo
           - The app loads its branded icon automatically, including when market_insight.py is opened directly
