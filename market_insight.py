@@ -268,7 +268,8 @@ class MarketInsightApp(ctk.CTk):
         self.results = {}
         self.scanning = False
         self.after_id = None
-        self.withdraw()
+        # Keep the root window mapped while onboarding dialogs are displayed.
+        # Withdrawing the parent can also hide its CTkToplevel setup dialog on Windows.
         api_key, secret_key = get_alpaca_credentials()
         valid = self._validate_alpaca_credentials(api_key, secret_key)[0] if api_key and secret_key else False
         if valid and self.settings.get("selected_platform"):
