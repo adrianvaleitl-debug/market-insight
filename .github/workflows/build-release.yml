@@ -77,4 +77,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: pwsh
         run: |
-          gh release upload V1.2 "installer-output/Market_Insight_Setup_V1.2.exe" "Market_Insight_V1.2.zip" --clobber
+          gh release view V1.2 --repo adrianvaleitl-debug/market-insight 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create V1.2 --repo adrianvaleitl-debug/market-insight --title "Market Insight V1.2" --notes "Market Insight V1.2 release." --target main
+            if ($LASTEXITCODE -ne 0) { throw "Could not create the V1.2 GitHub release." }
+          }
+          gh release upload V1.2 "installer-output/Market_Insight_Setup_V1.2.exe" "Market_Insight_V1.2.zip" --repo adrianvaleitl-debug/market-insight --clobber
+          if ($LASTEXITCODE -ne 0) { throw "Could not upload the V1.2 release assets." }
