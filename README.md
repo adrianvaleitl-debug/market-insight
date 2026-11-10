@@ -11,6 +11,7 @@ The V1.4 update adds five improvements to make scan results easier to review:
 - **Sorting:** organise results by score, daily gain, daily loss, RSI, or volume.
 - **Filters:** narrow results to positive or negative movers, scores of 70+, or stocks with caution warnings.
 - **CSV export:** export scan results and key indicators for your own review.
+- **Live scan results:** each stock appears in the results list as soon as its check finishes, instead of waiting for the whole watchlist.
 
 Follow Market Insight on both platforms: [YouTube @Adrianvaleitl](https://www.youtube.com/@Adrianvaleitl) · [TikTok @adrianvaleitl](https://www.tiktok.com/@adrianvaleitl).
 
@@ -34,6 +35,7 @@ It is a research aid, not an automated trading system.
 - Sort results by score, biggest daily gain, biggest daily loss, highest RSI, or highest volume.
 - Filter results by all stocks, positive or negative daily move, score 70+, or caution warnings.
 - Export scan results to CSV, including prices, changes, indicators, volume data, and warnings.
+- Live scan progress: add each stock to the results list immediately after it has been checked.
 - In-app What's New page with version-by-version release notes.
 - Market overview with the strongest result from the latest scan.
 - Dedicated Market Hours section with UK-local forex sessions, session overlaps and major stock-exchange hours.
