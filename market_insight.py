@@ -26,6 +26,43 @@ APP_VERSION = "V1.3"
 GITHUB_RELEASES_API = "https://api.github.com/repos/adrianvaleitl-debug/market-insight/releases/latest"
 GITHUB_RELEASES_PAGE = "https://github.com/adrianvaleitl-debug/market-insight/releases/latest"
 _SINGLE_INSTANCE_MUTEX = None
+_WINDOW_ICON_HANDLES = []
+
+
+def set_windows_window_icon(window, icon_path):
+    """Set explicit high-resolution Windows taskbar and title-bar icons."""
+    if not sys.platform.startswith("win") or not icon_path or not Path(icon_path).is_file():
+        return
+    try:
+        user32 = ctypes.windll.user32
+        user32.LoadImageW.argtypes = [
+            ctypes.c_void_p, ctypes.c_wchar_p, ctypes.c_uint,
+            ctypes.c_int, ctypes.c_int, ctypes.c_uint
+        ]
+        user32.LoadImageW.restype = ctypes.c_void_p
+        user32.SendMessageW.argtypes = [
+            ctypes.c_void_p, ctypes.c_uint, ctypes.c_void_p, ctypes.c_void_p
+        ]
+        user32.SendMessageW.restype = ctypes.c_void_p
+        hwnd = ctypes.c_void_p(window.winfo_id())
+        load_from_file = 0x0010
+        image_icon = 1
+        wm_seticon = 0x0080
+        icon_small = 0
+        icon_big = 1
+        # Load the exact 256px and 32px frames from the multi-resolution ICO.
+        for size, kind in ((256, icon_big), (32, icon_small)):
+            handle = user32.LoadImageW(
+                None, str(icon_path), image_icon, size, size, load_from_file
+            )
+            if handle:
+                user32.SendMessageW(
+                    hwnd, wm_seticon, ctypes.c_void_p(kind), ctypes.c_void_p(handle)
+                )
+                _WINDOW_ICON_HANDLES.append(handle)
+    except Exception:
+        # Keep the existing Tk icon as a safe fallback on unsupported systems.
+        pass
 
 
 def acquire_single_instance():
@@ -448,6 +485,10 @@ class MarketInsightApp(ctk.CTk):
                 pass
         self.geometry("1180x760")
         self.minsize(960, 640)
+        # Apply native Windows icon handles after the window has a real HWND.
+        if icon_path and icon_path.exists():
+            self.update_idletasks()
+            set_windows_window_icon(self, icon_path)
         self.configure(fg_color=(palette_color("#F1F0EC"), palette_color("#20211F")))
         self.results = {}
         self.scanning = False
