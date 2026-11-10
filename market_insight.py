@@ -24,6 +24,34 @@ from tkinter import filedialog
 
 APP_NAME = "Market Insight"
 APP_VERSION = "V1.4"
+
+# Keep this release history current whenever a new version is published.
+RELEASE_NOTES = [
+    {
+        "version": "V1.4",
+        "title": "Scanner improvements",
+        "date": "November 2026",
+        "items": [
+            "Scan snapshot with average score, strongest and weakest daily moves, and highest-volume stock.",
+            "Search scan results by ticker symbol or company name.",
+            "Sort results by score, daily gain, daily loss, RSI, or volume.",
+            "Filter positive and negative movers, scores of 70+, and caution warnings.",
+            "Export scan results and key indicators to CSV.",
+            "YouTube and TikTok creator links are both available in the app.",
+        ],
+    },
+    {
+        "version": "V1.3",
+        "title": "More trading tools and personalisation",
+        "date": "Previous release",
+        "items": [
+            "Economic Calendar with upcoming events and UK-local times.",
+            "Price Alerts for chosen ticker price levels while the app is running.",
+            "Trading Journal for closed trades and performance review.",
+            "11 colour themes and improved first-launch tutorial.",
+        ],
+    },
+]
 # Temporary QA switch: replay first-launch onboarding on every startup.
 # Existing credentials and preferences are preserved.
 ONBOARDING_TEST_MODE = False
@@ -937,7 +965,7 @@ class MarketInsightApp(ctk.CTk):
         ctk.CTkLabel(self.sidebar, text="MARKET\nINSIGHT", font=ctk.CTkFont(size=25, weight="bold"),
                      text_color=(palette_color("#3C453F"), palette_color("#D4D8D2")), justify="left").pack(anchor="w", padx=22, pady=(28, 30))
         self.nav_buttons = {}
-        for label in ["Overview", "Market Hours", "Watchlist", "Economic Calendar", "Price Alerts", "Trading Journal", "Settings", "About"]:
+        for label in ["Overview", "What's New", "Market Hours", "Watchlist", "Economic Calendar", "Price Alerts", "Trading Journal", "Settings", "About"]:
             btn = ctk.CTkButton(self.sidebar, text=label, anchor="w", height=42, corner_radius=12,
                                 fg_color="transparent", text_color=(palette_color("#4A514B"), palette_color("#D8E3DE")),
                                 hover_color=(palette_color("#D8DAD4"), palette_color("#303B36")),
@@ -1004,11 +1032,12 @@ class MarketInsightApp(ctk.CTk):
         self.status.grid(row=0, column=1, sticky="e")
 
         self.pages = {}
-        for name in ["Overview", "Market Hours", "Watchlist", "Economic Calendar", "Price Alerts", "Trading Journal", "Settings", "About"]:
+        for name in ["Overview", "What's New", "Market Hours", "Watchlist", "Economic Calendar", "Price Alerts", "Trading Journal", "Settings", "About"]:
             frame = ctk.CTkScrollableFrame(self.main, corner_radius=20, fg_color=(palette_color("#F8F7F3"), palette_color("#292B28")))
             frame.grid(row=1, column=0, sticky="nsew")
             self.pages[name] = frame
         self._build_overview()
+        self._build_whats_new()
         self._build_market_hours()
         self._build_watchlist()
         self._build_economic_calendar()
@@ -1152,6 +1181,45 @@ class MarketInsightApp(ctk.CTk):
             command=lambda: webbrowser.open("https://ko-fi.com/marketinsight")
         ).pack(side="right", padx=(6, 0))
 
+
+    def _build_whats_new(self):
+        page = self.pages["What's New"]
+        self.card(
+            page,
+            "What's new in Market Insight",
+            "Release notes for the latest versions. This page is updated with each major app release."
+        )
+        for release in RELEASE_NOTES:
+            card = ctk.CTkFrame(
+                page, corner_radius=20,
+                fg_color=(palette_color("#EFEEE8"), palette_color("#30332F"))
+            )
+            card.pack(fill="x", padx=14, pady=9)
+            header = ctk.CTkFrame(card, fg_color="transparent")
+            header.pack(fill="x", padx=18, pady=(15, 5))
+            ctk.CTkLabel(
+                header, text=release["version"],
+                font=ctk.CTkFont(size=18, weight="bold"),
+                text_color=(palette_color("#526D58"), palette_color("#B8D4B9"))
+            ).pack(side="left")
+            ctk.CTkLabel(
+                header, text=release["date"],
+                font=ctk.CTkFont(size=12),
+                text_color=(palette_color("#777D75"), palette_color("#A7AAA1"))
+            ).pack(side="right")
+            ctk.CTkLabel(
+                card, text=release["title"],
+                font=ctk.CTkFont(size=16, weight="bold"),
+                text_color=(palette_color("#414841"), palette_color("#D8DDD7"))
+            ).pack(anchor="w", padx=18, pady=(2, 6))
+            for item in release["items"]:
+                ctk.CTkLabel(
+                    card, text="•  " + item, justify="left", anchor="w",
+                    wraplength=850,
+                    font=ctk.CTkFont(size=13),
+                    text_color=(palette_color("#626A62"), palette_color("#C0C5BC"))
+                ).pack(fill="x", padx=22, pady=3)
+            ctk.CTkFrame(card, height=10, fg_color="transparent").pack()
 
     def _build_market_hours(self):
         page = self.pages["Market Hours"]
@@ -1867,7 +1935,7 @@ class MarketInsightApp(ctk.CTk):
         for frame in self.pages.values():
             frame.grid_remove()
         self.pages[name].grid()
-        self.page_title.configure(text={"Overview":"Market overview","Market Hours":"Market hours","Watchlist":"Watchlist","Economic Calendar":"Economic calendar","Price Alerts":"Price alerts","Trading Journal":"Trading journal","Settings":"Settings","About":"About"}[name])
+        self.page_title.configure(text={"Overview":"Market overview","What's New":"What's New","Market Hours":"Market hours","Watchlist":"Watchlist","Economic Calendar":"Economic calendar","Price Alerts":"Price alerts","Trading Journal":"Trading journal","Settings":"Settings","About":"About"}[name])
         if name == "Market Hours":
             self.refresh_market_hours()
         elif name == "Economic Calendar" and not getattr(self, "_calendar_loaded", False):
