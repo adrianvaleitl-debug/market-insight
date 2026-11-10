@@ -12,7 +12,7 @@ The V1.4 update adds five improvements to make scan results easier to review:
 - **Filters:** narrow results to positive or negative movers, scores of 70+, or stocks with caution warnings.
 - **CSV export:** export scan results and key indicators for your own review.
 
-The website and app project links now point to the official YouTube channel: [@Adrianvaleitl](https://www.youtube.com/@Adrianvaleitl).
+Follow Market Insight on both platforms: [YouTube @Adrianvaleitl](https://www.youtube.com/@Adrianvaleitl) · [TikTok @adrianvaleitl](https://www.tiktok.com/@adrianvaleitl).
 
 [View all releases](https://github.com/adrianvaleitl-debug/market-insight/releases) · [Open the website](https://adrianvaleitl-debug.github.io/market-insight/)
 
@@ -137,6 +137,7 @@ You are responsible for your own research and decisions. Past market behaviour d
 - **Latest download:** https://github.com/adrianvaleitl-debug/market-insight/releases/latest
 - **Source code:** https://github.com/adrianvaleitl-debug/market-insight
 - **YouTube:** https://www.youtube.com/@Adrianvaleitl
+- **TikTok:** https://www.tiktok.com/@adrianvaleitl
 
 
 ## Support Market Insight
