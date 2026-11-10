@@ -43,6 +43,7 @@ RELEASE_NOTES = [
         "date": "November 2026",
         "items": [
             "Scan snapshot with average score, strongest and weakest daily moves, and highest-volume stock.",
+            "Live scan results: each stock appears in the results list as soon as its check finishes.",
             "Search scan results by ticker symbol or company name.",
             "Sort results by score, daily gain, daily loss, RSI, or volume.",
             "Filter positive and negative movers, scores of 70+, and caution warnings.",
