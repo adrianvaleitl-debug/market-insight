@@ -1188,14 +1188,14 @@ class MarketInsightApp(ctk.CTk):
             balance_heading, text="Account balance ({})".format(self.settings.get("currency", "USD")),
             text_color=(palette_color("#646D64"), palette_color("#C0C5BC"))
         )
-        self.balance_label.pack(side="left")
+        self.balance_label.pack(anchor="w")
         self.currency_menu = styled_settings_dropdown(
-            balance_heading, values=list(CURRENCY_OPTIONS.values()),
+            calculator, values=list(CURRENCY_OPTIONS.values()),
             command=self.change_calculator_currency
         )
         selected_currency = self.settings.get("currency", "USD")
         self.currency_menu.set(CURRENCY_OPTIONS.get(selected_currency, CURRENCY_OPTIONS["USD"]))
-        self.currency_menu.pack(side="right")
+        self.currency_menu.pack(anchor="w", padx=14, pady=(0, 8))
         self.balance_entry = ctk.CTkEntry(calculator, placeholder_text="e.g. 1000")
         self.balance_entry.insert(0, str(self.settings["balance"]))
         self.balance_entry.pack(fill="x", padx=14, pady=(0, 8))
