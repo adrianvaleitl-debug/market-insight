@@ -404,9 +404,9 @@ def _uk_market_range(day, zone, start, end):
     return clock(a) + "–" + clock(b)
 
 
-def _uk_market_overlap(day, zone_a, zone_b):
-    a = (_uk_market_time(day, zone_a, 8), _uk_market_time(day, zone_a, 17))
-    b = (_uk_market_time(day, zone_b, 8), _uk_market_time(day, zone_b, 17))
+def _uk_market_overlap(day, zone_a, hours_a, zone_b, hours_b):
+    a = (_uk_market_time(day, zone_a, *hours_a[0]), _uk_market_time(day, zone_a, *hours_a[1]))
+    b = (_uk_market_time(day, zone_b, *hours_b[0]), _uk_market_time(day, zone_b, *hours_b[1]))
     start, end = max(a[0], b[0]), min(a[1], b[1])
     if end <= start:
         return "No overlap today"
@@ -1020,17 +1020,17 @@ class MarketInsightApp(ctk.CTk):
                          text_color=(palette_color("#777D75"), palette_color("#A7AAA1"))).pack(side="left", padx=8)
 
         overlaps = [
-            ("Sydney–Tokyo", "Australia/Sydney", "Asia/Tokyo", "AUD / NZD / JPY pairs"),
-            ("Tokyo–London", "Asia/Tokyo", "Europe/London", "JPY pairs / European handover"),
-            ("London–New York", "Europe/London", "America/New_York", "EUR / GBP / USD major pairs")
+            ("Sydney–Tokyo", "Australia/Sydney", ((7, 0), (16, 0)), "Asia/Tokyo", ((9, 0), (18, 0)), "AUD / NZD / JPY pairs"),
+            ("Tokyo–London", "Asia/Tokyo", ((9, 0), (18, 0)), "Europe/London", ((8, 0), (17, 0)), "JPY pairs / European handover"),
+            ("London–New York", "Europe/London", ((8, 0), (17, 0)), "America/New_York", ((8, 0), (17, 0)), "EUR / GBP / USD major pairs")
         ]
-        for name, zone_a, zone_b, pairs in overlaps:
+        for name, zone_a, hours_a, zone_b, hours_b, pairs in overlaps:
             row = ctk.CTkFrame(self.fx_overlap_frame, corner_radius=12,
                 fg_color=(palette_color("#E7E8E1"), palette_color("#353A34")))
             row.pack(fill="x", padx=10, pady=3)
             ctk.CTkLabel(row, text=name, width=155, anchor="w",
                          font=ctk.CTkFont(size=14, weight="bold")).pack(side="left", padx=12, pady=10)
-            ctk.CTkLabel(row, text=_uk_market_overlap(today, zone_a, zone_b), width=160,
+            ctk.CTkLabel(row, text=_uk_market_overlap(today, zone_a, hours_a, zone_b, hours_b), width=160,
                          anchor="w", font=ctk.CTkFont(size=14, weight="bold")).pack(side="left")
             ctk.CTkLabel(row, text=pairs, anchor="w", font=ctk.CTkFont(size=12),
                          text_color=(palette_color("#777D75"), palette_color("#A7AAA1"))).pack(side="left", padx=8)
