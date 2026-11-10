@@ -23,7 +23,7 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V1.3"
+APP_VERSION = "V1.4"
 # Temporary QA switch: replay first-launch onboarding on every startup.
 # Existing credentials and preferences are preserved.
 ONBOARDING_TEST_MODE = False
