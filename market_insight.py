@@ -1,5 +1,6 @@
 import json
 import math
+import csv
 import os
 import hashlib
 import sys
@@ -19,6 +20,7 @@ import pandas as pd
 import yfinance as yf
 import ctypes
 import winreg
+from tkinter import filedialog
 
 APP_NAME = "Market Insight"
 APP_VERSION = "V1.3"
@@ -1127,9 +1129,49 @@ class MarketInsightApp(ctk.CTk):
         self.watch_input = ctk.CTkTextbox(card, height=120, corner_radius=10)
         self.watch_input.pack(fill="x", padx=16, pady=8)
         ctk.CTkButton(card, text="Save watchlist", command=self.save_watchlist).pack(anchor="e", padx=16, pady=(0, 14))
-        results = self.card(page, "Results from your latest scan")
+        summary = self.card(page, "Scan snapshot", "A quick summary of the latest completed scan.")
+        self.scan_summary_labels = {}
+        summary_grid = ctk.CTkFrame(summary, fg_color="transparent")
+        summary_grid.pack(fill="x", padx=12, pady=(4, 12))
+        for index, (key, heading) in enumerate([
+            ("average", "AVERAGE SCORE"), ("best", "BEST DAILY MOVE"),
+            ("worst", "WORST DAILY MOVE"), ("volume", "HIGH VOLUME")
+        ]):
+            tile = ctk.CTkFrame(summary_grid, corner_radius=12, fg_color=(palette_color("#E5E6DF"), palette_color("#383C36")))
+            tile.grid(row=0, column=index, sticky="nsew", padx=4, pady=4)
+            summary_grid.grid_columnconfigure(index, weight=1)
+            ctk.CTkLabel(tile, text=heading, font=ctk.CTkFont(size=10, weight="bold"),
+                         text_color=(palette_color("#777D75"), palette_color("#AEB1A8"))).pack(anchor="w", padx=10, pady=(9, 2))
+            value = ctk.CTkLabel(tile, text="—", font=ctk.CTkFont(size=17, weight="bold"))
+            value.pack(anchor="w", padx=10, pady=(0, 9))
+            self.scan_summary_labels[key] = value
+
+        results = self.card(page, "Results from your latest scan", "Search, sort and filter your scanned symbols, or export the results.")
+        controls = ctk.CTkFrame(results, fg_color="transparent")
+        controls.pack(fill="x", padx=14, pady=(6, 4))
+        self.results_search = ctk.CTkEntry(controls, placeholder_text="Search ticker or company…", width=220)
+        self.results_search.pack(side="left", padx=(0, 7), pady=4)
+        self.results_search.bind("<KeyRelease>", lambda _event: self._refresh_results_view())
+        self.results_sort = styled_settings_dropdown(
+            controls, ["Highest score", "Biggest daily gain", "Biggest daily loss", "Highest RSI", "Highest volume"],
+            command=lambda _value: self._refresh_results_view()
+        )
+        self.results_sort.configure(width=175)
+        self.results_sort.set("Highest score")
+        self.results_sort.pack(side="left", padx=4, pady=4)
+        self.results_filter = styled_settings_dropdown(
+            controls, ["All stocks", "Positive today", "Negative today", "Score 70+", "With warnings"],
+            command=lambda _value: self._refresh_results_view()
+        )
+        self.results_filter.configure(width=155)
+        self.results_filter.set("All stocks")
+        self.results_filter.pack(side="left", padx=4, pady=4)
+        ctk.CTkButton(controls, text="Export CSV", width=105, command=self.export_scan_csv).pack(side="right", padx=4, pady=4)
+        self.results_count = ctk.CTkLabel(results, text="No scan results yet", font=ctk.CTkFont(size=12),
+                                          text_color=(palette_color("#777D75"), palette_color("#AEB1A8")))
+        self.results_count.pack(anchor="w", padx=18, pady=(0, 4))
         self.results_text = ctk.CTkScrollableFrame(results, height=520, corner_radius=12, fg_color=(palette_color("#F8F7F3"), palette_color("#292B28")))
-        self.results_text.pack(fill="x", padx=16, pady=(8, 16))
+        self.results_text.pack(fill="x", padx=16, pady=(4, 16))
 
 
     def _build_economic_calendar(self):
@@ -2045,6 +2087,89 @@ class MarketInsightApp(ctk.CTk):
 
         render_batch()
 
+    def _update_scan_summary(self, valid):
+        labels = getattr(self, "scan_summary_labels", {})
+        if not labels:
+            return
+        if not valid:
+            for label in labels.values():
+                label.configure(text="—")
+            return
+        average = sum(data["score"] for _, data in valid) / len(valid)
+        best = max(valid, key=lambda item: item[1].get("day_change", 0))
+        worst = min(valid, key=lambda item: item[1].get("day_change", 0))
+        high_volume = max(valid, key=lambda item: item[1].get("volume_ratio", 0))
+        labels["average"].configure(text="{:.0f}/100".format(average))
+        labels["best"].configure(text="{} {:+.1f}%".format(best[0], best[1].get("day_change", 0)))
+        labels["worst"].configure(text="{} {:+.1f}%".format(worst[0], worst[1].get("day_change", 0)))
+        labels["volume"].configure(text="{} {:.1f}x".format(high_volume[0], high_volume[1].get("volume_ratio", 0)))
+
+    def _refresh_results_view(self):
+        if not hasattr(self, "results_text"):
+            return
+        rows = [(symbol, data) for symbol, data in self.results.items() if "error" not in data]
+        query = self.results_search.get().strip().lower() if hasattr(self, "results_search") else ""
+        if query:
+            rows = [(symbol, data) for symbol, data in rows
+                    if query in symbol.lower() or query in STOCK_NAMES.get(symbol, symbol).lower()]
+        filter_name = self.results_filter.get() if hasattr(self, "results_filter") else "All stocks"
+        if filter_name == "Positive today":
+            rows = [(s, d) for s, d in rows if d.get("day_change", 0) > 0]
+        elif filter_name == "Negative today":
+            rows = [(s, d) for s, d in rows if d.get("day_change", 0) < 0]
+        elif filter_name == "Score 70+":
+            rows = [(s, d) for s, d in rows if d.get("score", 0) >= 70]
+        elif filter_name == "With warnings":
+            rows = [(s, d) for s, d in rows if d.get("warnings")]
+        sort_name = self.results_sort.get() if hasattr(self, "results_sort") else "Highest score"
+        sort_keys = {
+            "Highest score": lambda item: item[1].get("score", 0),
+            "Biggest daily gain": lambda item: item[1].get("day_change", 0),
+            "Biggest daily loss": lambda item: item[1].get("day_change", 0),
+            "Highest RSI": lambda item: item[1].get("rsi", 0),
+            "Highest volume": lambda item: item[1].get("volume_ratio", 0),
+        }
+        rows.sort(key=sort_keys.get(sort_name, sort_keys["Highest score"]),
+                  reverse=(sort_name != "Biggest daily loss"))
+        self._render_stock_cards(self.results_text, rows)
+        total_valid = sum(1 for data in self.results.values() if "error" not in data)
+        if hasattr(self, "results_count"):
+            self.results_count.configure(text="Showing {} of {} successful results".format(len(rows), total_valid))
+
+    def export_scan_csv(self):
+        if not self.results:
+            self.status.configure(text="Run a scan before exporting results.")
+            return
+        path = filedialog.asksaveasfilename(
+            parent=self, title="Export Market Insight scan",
+            defaultextension=".csv", filetypes=[("CSV spreadsheet", "*.csv")],
+            initialfile="Market_Insight_Scan_{}.csv".format(datetime.now().strftime("%Y%m%d_%H%M"))
+        )
+        if not path:
+            return
+        columns = ["Ticker", "Company", "Price USD", "Score", "Daily change %", "20-day change %",
+                   "RSI", "MACD", "ATR", "Volume vs average", "EMA 20", "EMA 50", "Date", "Warnings", "Error"]
+        try:
+            with open(path, "w", newline="", encoding="utf-8-sig") as file:
+                writer = csv.DictWriter(file, fieldnames=columns)
+                writer.writeheader()
+                for symbol, data in self.results.items():
+                    writer.writerow({
+                        "Ticker": symbol, "Company": STOCK_NAMES.get(symbol, symbol),
+                        "Price USD": data.get("price", ""), "Score": data.get("score", ""),
+                        "Daily change %": data.get("day_change", ""),
+                        "20-day change %": data.get("change20", ""), "RSI": data.get("rsi", ""),
+                        "MACD": data.get("macd", ""), "ATR": data.get("atr", ""),
+                        "Volume vs average": data.get("volume_ratio", ""),
+                        "EMA 20": data.get("ema20", ""), "EMA 50": data.get("ema50", ""),
+                        "Date": data.get("date", ""), "Warnings": "; ".join(data.get("warnings", [])),
+                        "Error": data.get("error", "")
+                    })
+            self.status.configure(text="Scan results exported to CSV.")
+        except Exception as exc:
+            from tkinter import messagebox
+            messagebox.showerror(APP_NAME, "Couldn't export the CSV file.\\n\\n{}".format(exc), parent=self)
+
     def _finish_scan(self, output, market_context=None):
         self.results = output
         market_context = market_context or {}
@@ -2075,7 +2200,8 @@ class MarketInsightApp(ctk.CTk):
         self._render_stock_cards(self.watch_table, valid, limit=12)
         caution_rows = [(symbol, data) for symbol, data in valid if len(data.get("warnings", [])) >= 2]
         self._render_stock_cards(self.caution_text, caution_rows[:8], caution=True)
-        self._render_stock_cards(self.results_text, valid)
+        self._update_scan_summary(valid)
+        self._refresh_results_view()
         errors = ["{}: {}".format(symbol, data["error"]) for symbol, data in output.items() if "error" in data]
         if errors:
             issue = ctk.CTkFrame(self.results_text, corner_radius=12, fg_color=(palette_color("#EEE8E4"), palette_color("#393331")))
