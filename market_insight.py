@@ -211,7 +211,7 @@ STOCK_NAMES = {
 
 DEFAULTS = {
     "appearance": "Dark",
-    "colour_theme": "Emerald",
+    "colour_theme": "Dollar",
     "font_family": "Segoe UI",
     "bold_text": True,
     "startup_window_mode": "Maximised",
@@ -239,15 +239,16 @@ DEFAULTS = {
 
 # Five high-contrast accent identities. The hue is applied consistently across
 # cards, controls and highlights while preserving each surface's lightness.
-ACTIVE_COLOUR_THEME = "Emerald"
+ACTIVE_COLOUR_THEME = "Dollar"
 ACTIVE_FONT_FAMILY = "Segoe UI"
 ACTIVE_BOLD_TEXT = True
+# Inspired by the distinctive colours commonly associated with major banknotes.
 COLOUR_THEME_HUES = {
-    "Emerald": 150,
-    "Sapphire": 218,
-    "Violet": 276,
-    "Crimson": 350,
-    "Amber": 42,
+    "Dollar": 150,   # US dollar: green
+    "Euro": 218,     # Euro notes: blue
+    "Pound": 276,    # British pound notes: purple
+    "Yen": 350,      # Japanese yen notes: rose/red
+    "Franc": 174,    # Swiss franc notes: teal
 }
 CURRENCY_OPTIONS = {
     "USD": "USD ($)",
@@ -283,7 +284,7 @@ def palette_color(value):
             return value
         red, green, blue = (int(value[i:i + 2], 16) / 255 for i in (1, 3, 5))
         hue, lightness, saturation = colorsys.rgb_to_hls(red, green, blue)
-        target = COLOUR_THEME_HUES.get(ACTIVE_COLOUR_THEME, COLOUR_THEME_HUES["Emerald"]) / 360
+        target = COLOUR_THEME_HUES.get(ACTIVE_COLOUR_THEME, COLOUR_THEME_HUES["Dollar"]) / 360
         degrees = hue * 360
         # Preserve meaningful warning/status colours (reds and oranges).
         if saturation > 0.24 and (degrees < 48 or degrees > 330):
@@ -549,14 +550,19 @@ class MarketInsightApp(ctk.CTk):
         super().__init__()
         self.settings = load_settings()
         global ACTIVE_COLOUR_THEME
-        ACTIVE_COLOUR_THEME = self.settings.get("colour_theme", "Emerald")
+        previous_theme_names = {
+            "Emerald": "Dollar", "Sapphire": "Euro", "Violet": "Pound",
+            "Crimson": "Yen", "Amber": "Franc",
+        }
+        saved_theme = self.settings.get("colour_theme", "Dollar")
+        ACTIVE_COLOUR_THEME = previous_theme_names.get(saved_theme, saved_theme)
         global ACTIVE_FONT_FAMILY, ACTIVE_BOLD_TEXT
         ACTIVE_FONT_FAMILY = self.settings.get("font_family", "Segoe UI")
         ACTIVE_BOLD_TEXT = bool(self.settings.get("bold_text", True))
         if ACTIVE_FONT_FAMILY not in ("Segoe UI", "Arial", "Verdana", "Trebuchet MS", "Georgia"):
             ACTIVE_FONT_FAMILY = "Segoe UI"
         if ACTIVE_COLOUR_THEME not in COLOUR_THEME_HUES:
-            ACTIVE_COLOUR_THEME = "Emerald"
+            ACTIVE_COLOUR_THEME = "Dollar"
         self.settings["colour_theme"] = ACTIVE_COLOUR_THEME
         if self.settings.get("currency") not in CURRENCY_OPTIONS:
             self.settings["currency"] = "USD"
@@ -1725,7 +1731,7 @@ class MarketInsightApp(ctk.CTk):
             values=list(COLOUR_THEME_HUES.keys()),
             command=self.change_colour_theme
         )
-        self.colour_theme_menu.set(self.settings.get("colour_theme", "Emerald"))
+        self.colour_theme_menu.set(self.settings.get("colour_theme", "Dollar"))
         self.colour_theme_menu.pack(anchor="w", padx=18, pady=(0, 5))
         colour_theme_note = ctk.CTkLabel(
             preferences,
@@ -2220,7 +2226,7 @@ class MarketInsightApp(ctk.CTk):
         """Apply a palette immediately and rebuild the UI so every surface updates."""
         global ACTIVE_COLOUR_THEME
         if value not in COLOUR_THEME_HUES:
-            value = "Emerald"
+            value = "Dollar"
         self.settings["colour_theme"] = value
         ACTIVE_COLOUR_THEME = value
         apply_ctk_palette_theme()
