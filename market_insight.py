@@ -2207,7 +2207,14 @@ class MarketInsightApp(ctk.CTk):
         if self.scanning:
             return
         self.scanning = True
-        self.status.configure(text="Automatic scanning…")
+        self._scan_total = len(self.settings.get("watchlist", DEFAULT_TICKERS))
+        self._scan_remaining = self._scan_total
+        self.results = {}
+        self.status.configure(text="Scanning watchlist…")
+        # Start with an empty results list so old scan data is not mistaken for
+        # stocks checked in the current run.
+        if hasattr(self, "results_text"):
+            self._refresh_results_view()
         self.scan_info.configure(
             text="Getting recent stock price data…",
             fg_color=(palette_color("#555A55"), palette_color("#3B3E3A")),
@@ -2227,7 +2234,10 @@ class MarketInsightApp(ctk.CTk):
             except Exception as exc:
                 output[symbol] = {"error": str(exc)}
             remaining = total - (i + 1)
-            self.after(0, lambda left=remaining, count=total: self.scan_info.configure(text=f"{left}/{count} left"))
+            # Add each stock to the visible results immediately after its
+            # check completes, rather than waiting for the entire watchlist.
+            self.after(0, lambda sym=symbol, result=output[symbol], left=remaining, count=total:
+                       self._add_scan_result(sym, result, left, count))
         market_context = fetch_market_context()
         self.after(0, lambda: self._finish_scan(output, market_context))
 
@@ -2328,6 +2338,19 @@ class MarketInsightApp(ctk.CTk):
         labels["worst"].configure(text="{} {:+.1f}%".format(worst[0], worst[1].get("day_change", 0)))
         labels["volume"].configure(text="{} {:.1f}x".format(high_volume[0], high_volume[1].get("volume_ratio", 0)))
 
+    def _add_scan_result(self, symbol, data, remaining, total):
+        """Show a stock in the results list as soon as its check completes."""
+        self.results[symbol] = data
+        self._scan_remaining = remaining
+        self._scan_total = total
+        self._refresh_results_view()
+        self.scan_info.configure(text=f"{remaining}/{total} left")
+        checked = total - remaining
+        if "error" in data:
+            self.status.configure(text=f"Checked {checked}/{total} stocks · {symbol} could not be loaded")
+        else:
+            self.status.configure(text=f"Loaded {checked}/{total} stocks · checking {remaining} left")
+
     def _refresh_results_view(self):
         if not hasattr(self, "results_text"):
             return
@@ -2358,7 +2381,13 @@ class MarketInsightApp(ctk.CTk):
         self._render_stock_cards(self.results_text, rows)
         total_valid = sum(1 for data in self.results.values() if "error" not in data)
         if hasattr(self, "results_count"):
-            self.results_count.configure(text="Showing {} of {} successful results".format(len(rows), total_valid))
+            if getattr(self, "scanning", False):
+                checked = getattr(self, "_scan_total", 0) - getattr(self, "_scan_remaining", 0)
+                self.results_count.configure(
+                    text="Showing {} loaded stocks · {} of {} checked".format(len(rows), checked, getattr(self, "_scan_total", 0))
+                )
+            else:
+                self.results_count.configure(text="Showing {} of {} successful results".format(len(rows), total_valid))
 
     def export_scan_csv(self):
         if not self.results:
