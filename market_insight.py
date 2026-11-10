@@ -642,10 +642,123 @@ class MarketInsightApp(ctk.CTk):
         # Apply the selected window mode only after Tk has mapped the main window.
         self.after(250, self.apply_startup_window_mode)
         self.after(700, self._maybe_prompt_shortcut)
+        # Show the beginner walkthrough on every launch for testing; it does not
+        # alter saved preferences and can be closed at any time.
+        self.after(1200, self.show_beginner_tutorial)
         if self.settings.get("check_for_updates", True):
             self.after(3000, self.check_for_updates)
         if self.settings.get("auto_scan"):
             self.after(900, self.start_scan)
+
+    def show_beginner_tutorial(self):
+        """Display a guided, repeatable introduction to the main app features."""
+        existing = getattr(self, "_tutorial_window", None)
+        if existing is not None:
+            try:
+                if existing.winfo_exists():
+                    existing.lift()
+                    return
+            except Exception:
+                pass
+        steps = [
+            ("Welcome to Market Insight",
+             "This short tour explains the main areas of the app and how to get started. It appears every time you open the app in this test version. Nothing in this tour places trades."),
+            ("1. Your market overview",
+             "The Overview is your starting point. It shows the highest-scoring stock from your latest scan, watchlist highlights, market direction and a position-size calculator. The figures are analysis tools, not guaranteed predictions."),
+            ("2. Build your watchlist",
+             "Open Watchlist in the left menu. Replace the example ticker symbols with the stocks you want to follow, separated by commas. Select Save watchlist. You can track up to 100 symbols."),
+            ("3. Run your first scan",
+             "Return to Overview and select Scan watchlist. Market Insight checks each symbol one at a time. The counter shows how many are left. When the scan finishes, the results appear in Overview and Watchlist."),
+            ("4. Understand the results",
+             "Each stock has a score out of 100, daily price movement, RSI and volume information. Higher scores mean more of the scanner's selected conditions are present; they are not a promise that a stock will rise. Read any warnings before making a decision."),
+            ("5. Check market timing and news",
+             "Market Hours shows major trading sessions and exchange opening times in UK local time. Economic Calendar lists upcoming releases that can move markets. High-impact news can cause sharp price changes and wider spreads."),
+            ("6. Alerts and your journal",
+             "Price Alerts can notify you when a ticker reaches a price you choose while Market Insight is open. Trading Journal lets you record closed trades and review your own results. Neither feature places trades for you."),
+            ("7. Make the app yours",
+             "Settings contains appearance, colour themes, trading platform, risk calculator and update preferences. Your Alpaca API credentials are used to retrieve market data. Keep them private and never share your secret key.")
+        ]
+        win = ctk.CTkToplevel(self)
+        self._tutorial_window = win
+        win.title("Getting started · Market Insight")
+        win.geometry("720x560")
+        win.minsize(620, 500)
+        win.configure(fg_color=(palette_color("#F1F0EC"), palette_color("#20211F")))
+        win.transient(self)
+        win.protocol("WM_DELETE_WINDOW", lambda: self._close_beginner_tutorial(win))
+        try:
+            icon_path = APP_DIR / "market_insight.ico"
+            if icon_path.exists():
+                win.iconbitmap(str(icon_path))
+        except Exception:
+            pass
+
+        panel = ctk.CTkFrame(win, corner_radius=24, fg_color=(palette_color("#F8F7F3"), palette_color("#30332F")))
+        panel.pack(fill="both", expand=True, padx=20, pady=20)
+        ctk.CTkLabel(panel, text="MARKET INSIGHT  ·  QUICK START",
+                     font=ctk.CTkFont(size=12, weight="bold"),
+                     text_color=(palette_color("#738875"), palette_color("#B4C4B1"))).pack(anchor="w", padx=28, pady=(26, 10))
+        title = ctk.CTkLabel(panel, text="", font=ctk.CTkFont(size=27, weight="bold"),
+                             justify="left", anchor="w", wraplength=610)
+        title.pack(fill="x", padx=28, pady=(8, 12))
+        body = ctk.CTkLabel(panel, text="", font=ctk.CTkFont(size=16),
+                            justify="left", anchor="nw", wraplength=610)
+        body.pack(fill="both", expand=True, padx=28, pady=(4, 14))
+        progress = ctk.CTkLabel(panel, text="", font=ctk.CTkFont(size=12, weight="bold"),
+                                text_color=(palette_color("#777D75"), palette_color("#AEB1A8")))
+        progress.pack(anchor="w", padx=28, pady=(0, 8))
+        buttons = ctk.CTkFrame(panel, fg_color="transparent")
+        buttons.pack(fill="x", padx=24, pady=(0, 22))
+        back_button = ctk.CTkButton(buttons, text="Back", width=100, state="disabled")
+        back_button.pack(side="left", padx=4)
+        skip_button = ctk.CTkButton(buttons, text="Close tour", width=110, fg_color="transparent",
+                                    text_color=(palette_color("#647B68"), palette_color("#B8C2B5")),
+                                    command=lambda: self._close_beginner_tutorial(win))
+        skip_button.pack(side="right", padx=4)
+        next_button = ctk.CTkButton(buttons, text="Next", width=130)
+        next_button.pack(side="right", padx=4)
+        state = {"index": 0}
+
+        def render():
+            index = state["index"]
+            heading, description = steps[index]
+            title.configure(text=heading)
+            body.configure(text=description)
+            progress.configure(text="STEP {} OF {}".format(index + 1, len(steps)))
+            back_button.configure(state="normal" if index else "disabled")
+            next_button.configure(text="Finish" if index == len(steps) - 1 else "Next")
+
+        def go_back():
+            state["index"] = max(0, state["index"] - 1)
+            render()
+
+        def go_next():
+            if state["index"] >= len(steps) - 1:
+                self._close_beginner_tutorial(win)
+                return
+            state["index"] += 1
+            render()
+
+        back_button.configure(command=go_back)
+        next_button.configure(command=go_next)
+        render()
+        win.update_idletasks()
+        try:
+            win.grab_set()
+            win.focus_force()
+        except Exception:
+            pass
+
+    def _close_beginner_tutorial(self, window):
+        try:
+            window.grab_release()
+        except Exception:
+            pass
+        try:
+            window.destroy()
+        except Exception:
+            pass
+        self._tutorial_window = None
 
     def apply_startup_window_mode(self):
         """Apply the saved display mode after the main window has been mapped."""
