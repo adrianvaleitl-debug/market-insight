@@ -23,6 +23,18 @@ if (Test-Path $exe) {
 }
 $link.WorkingDirectory = $folder
 $link.Description = "Open Market Insight"
-$icon = Join-Path $folder "market_insight.ico"
-if (Test-Path $icon) { $link.IconLocation = "$icon,0" }
+
+# PyInstaller 6 stores --add-data files in the _internal directory.
+# Keep the shortcut icon path aligned with the packaged application layout.
+$iconCandidates = @(
+    (Join-Path $folder "_internal\market_insight.ico"),
+    (Join-Path $folder "market_insight.ico")
+)
+$icon = $iconCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+if ($icon) {
+    $link.IconLocation = "$icon,0"
+} elseif (Test-Path $exe) {
+    # The executable also contains the same icon as its application resource.
+    $link.IconLocation = "$exe,0"
+}
 $link.Save()
