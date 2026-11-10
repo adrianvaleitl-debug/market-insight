@@ -1,6 +1,7 @@
 import json
 import math
 import os
+import hashlib
 import sys
 import subprocess
 import threading
@@ -1282,12 +1283,18 @@ class MarketInsightApp(ctk.CTk):
             if version_tuple(latest_tag) <= version_tuple(APP_VERSION):
                 self.after(0, lambda: self._show_update_status("You're up to date · {}".format(APP_VERSION)))
                 return
+            expected_name = "Market_Insight_Setup_{}.exe".format(latest_tag)
             assets = release.get("assets") or []
-            asset = next((item for item in assets if str(item.get("name", "")).endswith(".zip")), None)
-            if not asset or not str(asset.get("browser_download_url", "")).startswith("https://github.com/adrianvaleitl-debug/market-insight/releases/download/"):
-                self.after(0, lambda: self._show_update_status("A newer release is available, but its ZIP download couldn't be verified. Open GitHub releases."))
+            asset = next((item for item in assets if item.get("name") == expected_name), None)
+            url = str(asset.get("browser_download_url", "")) if asset else ""
+            digest = str(asset.get("digest", "")) if asset else ""
+            size = int(asset.get("size", 0)) if asset else 0
+            if (not asset or not url.startswith("https://github.com/adrianvaleitl-debug/market-insight/releases/download/")
+                    or not digest.startswith("sha256:") or size <= 0):
+                self.after(0, lambda: self._show_update_status("The update is available, but its installer could not be verified. Open GitHub releases."))
                 return
-            self.after(0, lambda tag=latest_tag, url=asset["browser_download_url"], name=asset["name"]: self._offer_update_download(tag, url, name))
+            self.after(0, lambda tag=latest_tag, download_url=url, name=expected_name, expected_size=size, expected_digest=digest.split(":", 1)[1]:
+                       self._offer_update_download(tag, download_url, name, expected_size, expected_digest))
         except Exception:
             self.after(0, lambda: self._show_update_status("Couldn't check GitHub right now. Check your connection and try again."))
         finally:
@@ -1297,47 +1304,90 @@ class MarketInsightApp(ctk.CTk):
         if hasattr(self, "update_status"):
             self.update_status.configure(text=message)
 
-    def _offer_update_download(self, tag, url, filename):
+    def _offer_update_download(self, tag, url, filename, expected_size, expected_digest):
         from tkinter import messagebox
         if not messagebox.askyesno(
             "Market Insight update available",
-            "A newer version is available: {}\n\nYou have: {}\n\nDownload the official update ZIP now?".format(tag, APP_VERSION),
+            "A newer version is available: {}\\n\\nYou have: {}\\n\\nInstall this update now? Market Insight will close briefly and reopen automatically. Your saved settings and credentials will be kept.".format(tag, APP_VERSION),
             parent=self
         ):
             self._show_update_status("Update {} is available on GitHub.".format(tag))
             return
-        self._show_update_status("Downloading {}…".format(tag))
-        threading.Thread(target=self._download_update_worker, args=(url, filename, tag), daemon=True).start()
+        self._show_update_status("Downloading and verifying {}…".format(tag))
+        threading.Thread(
+            target=self._download_update_worker,
+            args=(url, filename, tag, expected_size, expected_digest),
+            daemon=True
+        ).start()
 
-    def _download_update_worker(self, url, filename, tag):
+    def _download_update_worker(self, url, filename, tag, expected_size, expected_digest):
         try:
-            response = requests.get(url, stream=True, timeout=(15, 90))
+            response = requests.get(url, stream=True, timeout=(15, 120))
             response.raise_for_status()
-            downloads = Path.home() / "Downloads"
-            downloads.mkdir(parents=True, exist_ok=True)
-            destination = downloads / filename
+            update_dir = Path(os.environ.get("TEMP", str(Path.home() / "AppData" / "Local" / "Temp"))) / "Market Insight Updates"
+            update_dir.mkdir(parents=True, exist_ok=True)
+            destination = update_dir / filename
             temporary = destination.with_suffix(destination.suffix + ".part")
+            digest = hashlib.sha256()
+            downloaded = 0
             with temporary.open("wb") as output:
-                for chunk in response.iter_content(chunk_size=1024 * 128):
+                for chunk in response.iter_content(chunk_size=1024 * 256):
                     if chunk:
                         output.write(chunk)
+                        digest.update(chunk)
+                        downloaded += len(chunk)
+            if downloaded != expected_size or digest.hexdigest().lower() != expected_digest.lower():
+                temporary.unlink(missing_ok=True)
+                raise ValueError("The downloaded installer did not match GitHub's published size and SHA-256 checksum.")
             temporary.replace(destination)
-            self.after(0, lambda path=destination, version=tag: self._update_download_complete(path, version))
-        except Exception:
-            self.after(0, lambda: self._show_update_status("The update download failed. Please try again or use GitHub releases."))
+            self.after(0, lambda path=destination, version=tag: self._begin_update_install(path, version))
+        except Exception as exc:
+            message = "The update download or verification failed: {}".format(exc)
+            self.after(0, lambda msg=message: self._show_update_status(msg))
 
-    def _update_download_complete(self, path, tag):
-        self._show_update_status("Downloaded {} to Downloads. Close the app and extract the ZIP to update.".format(tag))
-        try:
-            os.startfile(str(path.parent))
-        except Exception:
-            pass
+    def _begin_update_install(self, installer_path, tag):
         from tkinter import messagebox
-        messagebox.showinfo(
-            "Update downloaded",
-            "Market Insight {} has been downloaded to your Downloads folder.\n\nClose Market Insight, extract the ZIP, and replace the old app files with the new ones.".format(tag),
-            parent=self
-        )
+        try:
+            if not getattr(sys, "frozen", False):
+                raise RuntimeError("Automatic installation is available in the installed Windows version of Market Insight.")
+            app_exe = APP_DIR / "Market Insight.exe"
+            if not app_exe.exists():
+                raise FileNotFoundError("The installed Market Insight executable could not be found.")
+            helper = installer_path.with_suffix(".vbs")
+            def vb_quote(value):
+                return str(value).replace('"', '""')
+            installer_command = '"{}" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP- /DIR="{}"'.format(
+                vb_quote(installer_path), vb_quote(APP_DIR)
+            )
+            app_command = '"{}"'.format(vb_quote(app_exe))
+            script = (
+                'Set shell = CreateObject("WScript.Shell")\\r\\n'
+                'Set wmi = GetObject("winmgmts:\\\\\\\\.\\\\root\\\\cimv2")\\r\\n'
+                'Do\\r\\n'
+                '  Set matches = wmi.ExecQuery("SELECT * FROM Win32_Process WHERE ProcessId = {}")\\r\\n'
+                '  If matches.Count = 0 Then Exit Do\\r\\n'
+                '  WScript.Sleep 500\\r\\n'
+                'Loop\\r\\n'
+                'result = shell.Run("{}" , 0, True)\\r\\n'
+                'If result = 0 Then\\r\\n'
+                '  shell.Run "{}", 0, False\\r\\n'
+                'Else\\r\\n'
+                '  MsgBox "The update installer could not complete (code " & result & "). You can run the downloaded installer manually.", 16, "Market Insight update"\\r\\n'
+                'End If\\r\\n'
+                'Set fso = CreateObject("Scripting.FileSystemObject")\\r\\n'
+                'fso.DeleteFile WScript.ScriptFullName, True\\r\\n'
+            ).format(os.getpid(), vb_quote(installer_command), vb_quote(app_command))
+            helper.write_text(script, encoding="utf-8")
+            subprocess.Popen(["wscript.exe", str(helper)], close_fds=True)
+            self._show_update_status("Installing {}… Market Insight will reopen automatically.".format(tag))
+            self.after(150, self.destroy)
+        except Exception as exc:
+            messagebox.showerror(
+                "Market Insight update",
+                "The update was downloaded, but automatic installation couldn't start. You can run this installer manually:\\n\\n{}\\n\\n{}".format(installer_path, exc),
+                parent=self
+            )
+            self._show_update_status("Couldn't start the update installer.")
 
     def change_appearance(self, value):
         self.settings["appearance"] = value
