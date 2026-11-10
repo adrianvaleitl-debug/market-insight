@@ -1952,14 +1952,16 @@ class MarketInsightApp(ctk.CTk):
     def _scan_worker(self):
         output = {}
         symbols = list(self.settings.get("watchlist", DEFAULT_TICKERS))
+        total = len(symbols)
+        self.after(0, lambda count=total: self.scan_info.configure(text=f"{count}/{count} left"))
         api_key, secret_key = get_alpaca_credentials()
         for i, symbol in enumerate(symbols):
             try:
                 output[symbol] = scan_symbol(symbol, api_key, secret_key)
             except Exception as exc:
                 output[symbol] = {"error": str(exc)}
-            if (i + 1) % 5 == 0 or i + 1 == len(symbols):
-                self.after(0, lambda n=i+1, total=len(symbols): self.scan_info.configure(text=f"Scanned {n}/{total}"))
+            remaining = total - (i + 1)
+            self.after(0, lambda left=remaining, count=total: self.scan_info.configure(text=f"{left}/{count} left"))
         market_context = fetch_market_context()
         self.after(0, lambda: self._finish_scan(output, market_context))
 
