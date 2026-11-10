@@ -12,6 +12,9 @@ It is a research aid, not an automated trading system.
 ## Features
 
 - Market overview with the strongest result from the latest scan.
+- Dedicated Market Hours section with UK-local forex sessions, session overlaps and major stock-exchange hours.
+- Automatic GMT/BST and overseas daylight-saving time conversion for the market timetable.
+- Educational reference windows for commonly active trading periods.
 - Watchlist editor with support for up to 100 ticker symbols.
 - 50 starter US stock and ETF symbols included.
 - Technical indicators including EMA 20, EMA 50, RSI, MACD, and ATR.
@@ -57,6 +60,10 @@ If Windows displays a security prompt, check that you downloaded the ZIP from th
 5. The main scanner opens after the setup steps are complete.
 
 Your Alpaca credentials are stored using Windows Credential Manager via the Python `keyring` package. App preferences and diagnostic logs are stored in your Windows user AppData folder, separately from the program files. The app icon is loaded automatically when the Python file starts and is generated if it is missing. Do not share your API keys or include them in screenshots, support messages, or public posts.
+
+## Market Hours
+
+Open **Market Hours** in the left-hand navigation to view the Sydney, Tokyo, London and New York forex sessions, key session overlaps, and regular trading hours for the London, New York, Tokyo and Hong Kong stock exchanges. Times are converted to UK local time and refreshed using the relevant time-zone rules, including daylight-saving changes. The timetable shows standard weekday hours; exchange holidays, special sessions and early closes can differ. Suggested active windows are educational context, not trading signals or guarantees.
 
 ## Using the scanner
 
