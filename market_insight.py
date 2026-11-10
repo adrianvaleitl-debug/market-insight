@@ -48,7 +48,7 @@ RELEASE_NOTES = [
             "Filter positive and negative movers, scores of 70+, and caution warnings.",
             "Export scan results and key indicators to CSV.",
             "YouTube and TikTok creator links are both available in the app.",
-            "Choose between five font styles and switch bold text on or off in Settings.",
+            "Choose between five font styles, switch bold text on or off, and select your account currency.",
         ],
     },
     {
@@ -59,7 +59,7 @@ RELEASE_NOTES = [
             "Economic Calendar with upcoming events and UK-local times.",
             "Price Alerts for chosen ticker price levels while the app is running.",
             "Trading Journal for closed trades and performance review.",
-            "11 colour themes and improved first-launch tutorial.",
+            "Five distinctive colour themes and improved first-launch tutorial.",
         ],
     },
 ]
@@ -222,6 +222,7 @@ DEFAULTS = {
     "threshold": 70,
     "watchlist": DEFAULT_TICKERS,
     "balance": 1000.0,
+    "currency": "USD",
     "risk_percent": 1.0,
     "selected_platform": "",
     "custom_platform_url": "",
@@ -236,24 +237,44 @@ DEFAULTS = {
 }
 
 
-# Pastel accent palettes. The hue changes while each colour's lightness is retained,
-# so the existing light/dark contrast and the app's restrained visual style remain.
-ACTIVE_COLOUR_THEME = "Sage"
+# Five high-contrast accent identities. The hue is applied consistently across
+# cards, controls and highlights while preserving each surface's lightness.
+ACTIVE_COLOUR_THEME = "Emerald"
 ACTIVE_FONT_FAMILY = "Segoe UI"
 ACTIVE_BOLD_TEXT = True
 COLOUR_THEME_HUES = {
-    "Sage": 132,
-    "Lavender": 266,
-    "Ocean": 204,
-    "Rose": 345,
-    "Sand": 38,
-    "Teal": 174,
-    "Sky": 215,
-    "Indigo": 240,
-    "Plum": 286,
-    "Berry": 315,
-    "Citrus": 75,
+    "Emerald": 150,
+    "Sapphire": 218,
+    "Violet": 276,
+    "Crimson": 350,
+    "Amber": 42,
 }
+CURRENCY_OPTIONS = {
+    "USD": "USD ($)",
+    "GBP": "GBP (£)",
+    "EUR": "EUR (€)",
+    "CAD": "CAD ($)",
+    "AUD": "AUD ($)",
+    "JPY": "JPY (¥)",
+    "CHF": "CHF (Fr)",
+}
+CURRENCY_SYMBOLS = {
+    "USD": "$", "GBP": "£", "EUR": "€", "CAD": "C$",
+    "AUD": "A$", "JPY": "¥", "CHF": "Fr",
+}
+
+def currency_to_usd_rate(currency):
+    """Return the latest available units-to-USD FX rate using Yahoo Finance."""
+    if currency == "USD":
+        return 1.0
+    history = yf.Ticker("{}USD=X".format(currency)).history(period="5d")
+    if history.empty or "Close" not in history:
+        raise ValueError("The {} to USD exchange rate is currently unavailable.".format(currency))
+    rate = safe_num(history["Close"].dropna().iloc[-1], 0)
+    if rate <= 0:
+        raise ValueError("The {} to USD exchange rate is currently unavailable.".format(currency))
+    return rate
+
 
 def palette_color(value):
     """Tint the existing interface colours for the selected pastel palette."""
@@ -268,7 +289,9 @@ def palette_color(value):
         if saturation > 0.24 and (degrees < 48 or degrees > 330):
             return value
         if saturation < 0.10:
-            saturation = min(0.13, saturation + 0.045)
+            saturation = 0.22
+        elif saturation < 0.24:
+            saturation = 0.28
         hue = target
         red, green, blue = colorsys.hls_to_rgb(hue, lightness, saturation)
         return "#{:02X}{:02X}{:02X}".format(round(red * 255), round(green * 255), round(blue * 255))
@@ -526,14 +549,17 @@ class MarketInsightApp(ctk.CTk):
         super().__init__()
         self.settings = load_settings()
         global ACTIVE_COLOUR_THEME
-        ACTIVE_COLOUR_THEME = self.settings.get("colour_theme", "Sage")
+        ACTIVE_COLOUR_THEME = self.settings.get("colour_theme", "Emerald")
         global ACTIVE_FONT_FAMILY, ACTIVE_BOLD_TEXT
         ACTIVE_FONT_FAMILY = self.settings.get("font_family", "Segoe UI")
         ACTIVE_BOLD_TEXT = bool(self.settings.get("bold_text", True))
         if ACTIVE_FONT_FAMILY not in ("Segoe UI", "Arial", "Verdana", "Trebuchet MS", "Georgia"):
             ACTIVE_FONT_FAMILY = "Segoe UI"
         if ACTIVE_COLOUR_THEME not in COLOUR_THEME_HUES:
-            ACTIVE_COLOUR_THEME = "Sage"
+            ACTIVE_COLOUR_THEME = "Emerald"
+        self.settings["colour_theme"] = ACTIVE_COLOUR_THEME
+        if self.settings.get("currency") not in CURRENCY_OPTIONS:
+            self.settings["currency"] = "USD"
         ctk.set_appearance_mode(self.settings["appearance"].lower())
         ctk.set_default_color_theme("green")
         apply_ctk_palette_theme()
@@ -1156,8 +1182,20 @@ class MarketInsightApp(ctk.CTk):
         calculator = self.card(right_column, "Position size calculator",
                                "Estimate how many shares may fit your balance and risk limit. This is a guide only; it does not place trades.",
                                wraplength=270)
-        ctk.CTkLabel(calculator, text="Account balance (USD)",
-                     text_color=(palette_color("#646D64"), palette_color("#C0C5BC"))).pack(anchor="w", padx=14, pady=(8, 3))
+        balance_heading = ctk.CTkFrame(calculator, fg_color="transparent")
+        balance_heading.pack(fill="x", padx=14, pady=(8, 3))
+        self.balance_label = ctk.CTkLabel(
+            balance_heading, text="Account balance ({})".format(self.settings.get("currency", "USD")),
+            text_color=(palette_color("#646D64"), palette_color("#C0C5BC"))
+        )
+        self.balance_label.pack(side="left")
+        self.currency_menu = styled_settings_dropdown(
+            balance_heading, values=list(CURRENCY_OPTIONS.values()),
+            command=self.change_calculator_currency
+        )
+        selected_currency = self.settings.get("currency", "USD")
+        self.currency_menu.set(CURRENCY_OPTIONS.get(selected_currency, CURRENCY_OPTIONS["USD"]))
+        self.currency_menu.pack(side="right")
         self.balance_entry = ctk.CTkEntry(calculator, placeholder_text="e.g. 1000")
         self.balance_entry.insert(0, str(self.settings["balance"]))
         self.balance_entry.pack(fill="x", padx=14, pady=(0, 8))
@@ -2182,7 +2220,7 @@ class MarketInsightApp(ctk.CTk):
         """Apply a palette immediately and rebuild the UI so every surface updates."""
         global ACTIVE_COLOUR_THEME
         if value not in COLOUR_THEME_HUES:
-            value = "Sage"
+            value = "Emerald"
         self.settings["colour_theme"] = value
         ACTIVE_COLOUR_THEME = value
         apply_ctk_palette_theme()
@@ -2275,6 +2313,13 @@ class MarketInsightApp(ctk.CTk):
         self.alpaca_status.configure(text="Your saved Alpaca keys have been removed.")
         self.status.configure(text="Your Alpaca keys have been removed.")
 
+    def change_calculator_currency(self, selected_label):
+        currency = next((code for code, label in CURRENCY_OPTIONS.items() if label == selected_label), "USD")
+        self.settings["currency"] = currency
+        if hasattr(self, "balance_label"):
+            self.balance_label.configure(text="Account balance ({})".format(currency))
+        save_settings(self.settings)
+
     def save_calculator_settings(self):
         balance = safe_num(self.balance_entry.get(), 1000)
         risk = safe_num(self.risk_entry.get(), 1)
@@ -2283,6 +2328,9 @@ class MarketInsightApp(ctk.CTk):
             return
         self.settings["balance"] = balance
         self.settings["risk_percent"] = risk
+        self.settings["currency"] = next(
+            (code for code, label in CURRENCY_OPTIONS.items() if label == self.currency_menu.get()), "USD"
+        )
         save_settings(self.settings)
         valid = [(symbol, data) for symbol, data in self.results.items() if "error" not in data]
         if valid:
@@ -2563,9 +2611,19 @@ class MarketInsightApp(ctk.CTk):
         target = price + 2 * stop_distance
         balance = safe_num(self.settings["balance"], 1000)
         risk_pct = safe_num(self.settings["risk_percent"], 1)
+        currency = self.settings.get("currency", "USD")
+        symbol_mark = CURRENCY_SYMBOLS.get(currency, "$")
+        try:
+            balance_usd = balance * currency_to_usd_rate(currency)
+        except Exception as exc:
+            self.calc_output.configure(text="{}\n\n{}".format(
+                symbol, str(exc) + " The calculator will update when the rate is available."
+            ))
+            return
         risk_cash = balance * risk_pct / 100
-        shares = min(risk_cash / stop_distance, balance / price)
-        self.calc_output.configure(text=f"{symbol} example levels\nStop loss: ${stop:.2f}  |  Take profit: ${target:.2f}\nApprox. shares: {math.floor(shares)}  |  Risk budget: ${risk_cash:.2f}\nBased on a stop distance of 1.5 × ATR and a potential 2:1 reward-to-risk ratio.")
+        risk_cash_usd = balance_usd * risk_pct / 100
+        shares = min(risk_cash_usd / stop_distance, balance_usd / price)
+        self.calc_output.configure(text=f"{symbol} example levels\nStop loss: ${stop:.2f} USD  |  Take profit: ${target:.2f} USD\nApprox. shares: {math.floor(shares)}  |  Risk budget: {symbol_mark}{risk_cash:,.2f} {currency}\nBased on a stop distance of 1.5 × ATR and a potential 2:1 reward-to-risk ratio. FX conversion uses the latest available rate.")
 
     def open_top_result(self):
         valid = [(s, d) for s, d in self.results.items() if "error" not in d]
