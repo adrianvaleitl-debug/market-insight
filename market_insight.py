@@ -26,7 +26,7 @@ APP_NAME = "Market Insight"
 APP_VERSION = "V1.3"
 # Temporary QA switch: replay first-launch onboarding on every startup.
 # Existing credentials and preferences are preserved.
-ONBOARDING_TEST_MODE = True
+ONBOARDING_TEST_MODE = False
 # v1.2.24 resolves the bundled icon from PyInstaller's runtime resource folder.
 GITHUB_RELEASES_API = "https://api.github.com/repos/adrianvaleitl-debug/market-insight/releases/latest"
 GITHUB_RELEASES_PAGE = "https://github.com/adrianvaleitl-debug/market-insight/releases/latest"
@@ -186,6 +186,7 @@ DEFAULTS = {
     "custom_platform_url": "",
     "auto_open_platform": False,
     "shortcut_prompted": False,
+    "tutorial_completed": False,
     "create_desktop_shortcut": False,
     "run_on_windows_startup": False,
     "check_for_updates": True,
@@ -663,9 +664,9 @@ class MarketInsightApp(ctk.CTk):
         # Apply the selected window mode only after Tk has mapped the main window.
         self.after(250, self.apply_startup_window_mode)
         self.after(700, self._maybe_prompt_shortcut)
-        # Show the beginner walkthrough on every launch for testing; it does not
-        # alter saved preferences and can be closed at any time.
-        self.after(1200, self.show_beginner_tutorial)
+        # Show the beginner walkthrough once, on the user's first successful launch.
+        if not self.settings.get("tutorial_completed", False):
+            self.after(1200, self.show_beginner_tutorial)
         if self.settings.get("check_for_updates", True):
             self.after(3000, self.check_for_updates)
         if self.settings.get("auto_scan"):
@@ -780,6 +781,9 @@ class MarketInsightApp(ctk.CTk):
         except Exception:
             pass
         self._tutorial_window = None
+        if not self.settings.get("tutorial_completed", False):
+            self.settings["tutorial_completed"] = True
+            save_settings(self.settings)
 
     def apply_startup_window_mode(self):
         """Apply the saved display mode after the main window has been mapped."""
