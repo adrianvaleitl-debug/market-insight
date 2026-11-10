@@ -48,7 +48,7 @@ RELEASE_NOTES = [
             "Filter positive and negative movers, scores of 70+, and caution warnings.",
             "Export scan results and key indicators to CSV.",
             "YouTube and TikTok creator links are both available in the app.",
-            "Choose between five font styles, switch bold text on or off, and select your account currency.",
+            "Choose between five font styles, switch bold text on or off, select your account currency, and choose from five distinctive colour themes.",
         ],
     },
     {
@@ -59,7 +59,7 @@ RELEASE_NOTES = [
             "Economic Calendar with upcoming events and UK-local times.",
             "Price Alerts for chosen ticker price levels while the app is running.",
             "Trading Journal for closed trades and performance review.",
-            "Five distinctive colour themes and improved first-launch tutorial.",
+            "11 colour themes and improved first-launch tutorial.",
         ],
     },
 ]
@@ -211,7 +211,7 @@ STOCK_NAMES = {
 
 DEFAULTS = {
     "appearance": "Dark",
-    "colour_theme": "Sage",
+    "colour_theme": "Emerald",
     "font_family": "Segoe UI",
     "bold_text": True,
     "startup_window_mode": "Maximised",
@@ -283,7 +283,7 @@ def palette_color(value):
             return value
         red, green, blue = (int(value[i:i + 2], 16) / 255 for i in (1, 3, 5))
         hue, lightness, saturation = colorsys.rgb_to_hls(red, green, blue)
-        target = COLOUR_THEME_HUES.get(ACTIVE_COLOUR_THEME, COLOUR_THEME_HUES["Sage"]) / 360
+        target = COLOUR_THEME_HUES.get(ACTIVE_COLOUR_THEME, COLOUR_THEME_HUES["Emerald"]) / 360
         degrees = hue * 360
         # Preserve meaningful warning/status colours (reds and oranges).
         if saturation > 0.24 and (degrees < 48 or degrees > 330):
@@ -1725,7 +1725,7 @@ class MarketInsightApp(ctk.CTk):
             values=list(COLOUR_THEME_HUES.keys()),
             command=self.change_colour_theme
         )
-        self.colour_theme_menu.set(self.settings.get("colour_theme", "Sage"))
+        self.colour_theme_menu.set(self.settings.get("colour_theme", "Emerald"))
         self.colour_theme_menu.pack(anchor="w", padx=18, pady=(0, 5))
         colour_theme_note = ctk.CTkLabel(
             preferences,
