@@ -10,7 +10,8 @@ import colorsys
 import webbrowser
 import requests
 import keyring
-from datetime import datetime
+from datetime import datetime, date, time
+from zoneinfo import ZoneInfo
 from pathlib import Path
 
 import customtkinter as ctk
@@ -20,7 +21,7 @@ import ctypes
 import winreg
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V1.1"
+APP_VERSION = "V1.2"
 # v1.2.24 resolves the bundled icon from PyInstaller's runtime resource folder.
 GITHUB_RELEASES_API = "https://api.github.com/repos/adrianvaleitl-debug/market-insight/releases/latest"
 GITHUB_RELEASES_PAGE = "https://github.com/adrianvaleitl-debug/market-insight/releases/latest"
@@ -388,6 +389,29 @@ def scan_symbol(symbol, api_key, secret_key):
     indicators["trade_time"] = live["trade_time"]
     return indicators
 
+
+def _uk_market_time(day, zone, hour, minute=0):
+    local = datetime.combine(day, time(hour, minute), tzinfo=ZoneInfo(zone))
+    return local.astimezone(ZoneInfo("Europe/London"))
+
+
+def _uk_market_range(day, zone, start, end):
+    a = _uk_market_time(day, zone, *start)
+    b = _uk_market_time(day, zone, *end)
+    def clock(value):
+        suffix = " (+1 day)" if value.date() > day else ""
+        return value.strftime("%H:%M") + suffix
+    return clock(a) + "–" + clock(b)
+
+
+def _uk_market_overlap(day, zone_a, zone_b):
+    a = (_uk_market_time(day, zone_a, 8), _uk_market_time(day, zone_a, 17))
+    b = (_uk_market_time(day, zone_b, 8), _uk_market_time(day, zone_b, 17))
+    start, end = max(a[0], b[0]), min(a[1], b[1])
+    if end <= start:
+        return "No overlap today"
+    return start.strftime("%H:%M") + "–" + end.strftime("%H:%M")
+
 class MarketInsightApp(ctk.CTk):
     def __init__(self):
         # Set the Windows taskbar identity before creating the Tk window.
@@ -721,7 +745,7 @@ class MarketInsightApp(ctk.CTk):
         ctk.CTkLabel(self.sidebar, text="MARKET\nINSIGHT", font=ctk.CTkFont(size=25, weight="bold"),
                      text_color=(palette_color("#3C453F"), palette_color("#D4D8D2")), justify="left").pack(anchor="w", padx=22, pady=(28, 30))
         self.nav_buttons = {}
-        for label in ["Overview", "Watchlist", "Settings", "About"]:
+        for label in ["Overview", "Market Hours", "Watchlist", "Settings", "About"]:
             btn = ctk.CTkButton(self.sidebar, text=label, anchor="w", height=42, corner_radius=12,
                                 fg_color="transparent", text_color=(palette_color("#4A514B"), palette_color("#D8E3DE")),
                                 hover_color=(palette_color("#D8DAD4"), palette_color("#303B36")),
@@ -788,11 +812,12 @@ class MarketInsightApp(ctk.CTk):
         self.status.grid(row=0, column=1, sticky="e")
 
         self.pages = {}
-        for name in ["Overview", "Watchlist", "Settings", "About"]:
+        for name in ["Overview", "Market Hours", "Watchlist", "Settings", "About"]:
             frame = ctk.CTkScrollableFrame(self.main, corner_radius=20, fg_color=(palette_color("#F8F7F3"), palette_color("#292B28")))
             frame.grid(row=1, column=0, sticky="nsew")
             self.pages[name] = frame
         self._build_overview()
+        self._build_market_hours()
         self._build_watchlist()
         self._build_settings()
         self._build_about()
@@ -913,6 +938,122 @@ class MarketInsightApp(ctk.CTk):
             hover_color=(palette_color("#E4E4DC"), palette_color("#35443C")),
             command=lambda: webbrowser.open("https://www.tiktok.com/@adrianvaleitl")
         ).pack(side="right")
+
+
+    def _build_market_hours(self):
+        page = self.pages["Market Hours"]
+        self.fx_schedule_frame = self.card(
+            page, "Forex sessions",
+            "The global forex market runs around the clock on weekdays. Session times below are converted into UK local time."
+        )
+        self.fx_overlap_frame = self.card(
+            page, "Key forex overlaps",
+            "Overlaps often bring more participation and liquidity, but can also mean faster price moves and higher risk."
+        )
+        self.stock_schedule_frame = self.card(
+            page, "Major stock exchanges",
+            "Regular cash-market hours, excluding exchange holidays and special early closes."
+        )
+        tips = self.card(
+            page, "Commonly watched trading windows",
+            "These are educational reference periods, not guaranteed profitable entry times. Suitability depends on the instrument, strategy, news and risk limits."
+        )
+        notes = [
+            ("London open", "08:00–10:00 UK", "Often active for GBP, EUR and European markets."),
+            ("London–New York overlap", "Shown above; shifts with daylight saving", "Often the busiest forex period for major pairs such as EUR/USD and GBP/USD."),
+            ("US stock open", "First 60–90 minutes after the open", "Often elevated volume and volatility; the first move can be erratic."),
+            ("US stock close", "Final 60 minutes", "Can see increased activity as traders adjust positions."),
+            ("Asian session", "Tokyo morning and Sydney–Tokyo overlap", "More relevant to JPY, AUD and NZD pairs.")
+        ]
+        for heading, period, detail in notes:
+            row = ctk.CTkFrame(tips, fg_color="transparent")
+            row.pack(fill="x", padx=18, pady=5)
+            ctk.CTkLabel(row, text=heading, width=180, anchor="w",
+                         font=ctk.CTkFont(size=13, weight="bold")).pack(side="left")
+            ctk.CTkLabel(row, text=period, width=235, anchor="w",
+                         font=ctk.CTkFont(size=13, weight="bold")).pack(side="left")
+            label = ctk.CTkLabel(row, text=detail, anchor="w", justify="left",
+                         font=ctk.CTkFont(size=12),
+                         text_color=(palette_color("#777D75"), palette_color("#A7AAA1")))
+            label.pack(side="left", fill="x", expand=True)
+            self._fit_text_to_width(label, row, 440, 150)
+        warning = ctk.CTkLabel(
+            tips, text="Higher activity is not the same as a better trade. Check spreads, scheduled economic news, instrument-specific hours and your risk plan.",
+            font=ctk.CTkFont(size=12), justify="left",
+            text_color=(palette_color("#947B75"), palette_color("#D0A99E"))
+        )
+        warning.pack(anchor="w", fill="x", padx=18, pady=(8, 14))
+        self._fit_text_to_width(warning, tips, 40)
+        ctk.CTkButton(page, text="Refresh market times", height=38,
+                      command=self.refresh_market_hours).pack(anchor="e", padx=18, pady=8)
+        self.market_hours_updated = ctk.CTkLabel(page, text="", font=ctk.CTkFont(size=12),
+            text_color=(palette_color("#777D75"), palette_color("#A7AAA1")))
+        self.market_hours_updated.pack(anchor="e", padx=20, pady=(0, 14))
+        self.refresh_market_hours()
+
+    def refresh_market_hours(self):
+        if not hasattr(self, "fx_schedule_frame"):
+            return
+        for frame in (self.fx_schedule_frame, self.fx_overlap_frame, self.stock_schedule_frame):
+            for child in frame.winfo_children():
+                child.destroy()
+        now = datetime.now(ZoneInfo("Europe/London"))
+        today = now.date()
+        ctk.CTkLabel(self.fx_schedule_frame, text="UK time • " + now.strftime("%A %d %B %Y"),
+                     font=ctk.CTkFont(size=12, weight="bold")).pack(anchor="w", padx=14, pady=(0, 6))
+        sessions = [
+            ("Sydney", "Australia/Sydney", (7, 0), (16, 0), "AUD / NZD"),
+            ("Tokyo", "Asia/Tokyo", (9, 0), (18, 0), "JPY / AUD / NZD"),
+            ("London", "Europe/London", (8, 0), (17, 0), "GBP / EUR / CHF"),
+            ("New York", "America/New_York", (8, 0), (17, 0), "USD / CAD")
+        ]
+        for name, zone, start, end, pairs in sessions:
+            row = ctk.CTkFrame(self.fx_schedule_frame, corner_radius=12,
+                fg_color=(palette_color("#E7E8E1"), palette_color("#353A34")))
+            row.pack(fill="x", padx=10, pady=3)
+            ctk.CTkLabel(row, text=name, width=115, anchor="w",
+                         font=ctk.CTkFont(size=14, weight="bold")).pack(side="left", padx=12, pady=10)
+            ctk.CTkLabel(row, text=_uk_market_range(today, zone, start, end), width=190,
+                         anchor="w", font=ctk.CTkFont(size=14, weight="bold")).pack(side="left")
+            ctk.CTkLabel(row, text="Main pairs: " + pairs, anchor="w",
+                         font=ctk.CTkFont(size=12),
+                         text_color=(palette_color("#777D75"), palette_color("#A7AAA1"))).pack(side="left", padx=8)
+
+        overlaps = [
+            ("Sydney–Tokyo", "Australia/Sydney", "Asia/Tokyo", "AUD / NZD / JPY pairs"),
+            ("Tokyo–London", "Asia/Tokyo", "Europe/London", "JPY pairs / European handover"),
+            ("London–New York", "Europe/London", "America/New_York", "EUR / GBP / USD major pairs")
+        ]
+        for name, zone_a, zone_b, pairs in overlaps:
+            row = ctk.CTkFrame(self.fx_overlap_frame, corner_radius=12,
+                fg_color=(palette_color("#E7E8E1"), palette_color("#353A34")))
+            row.pack(fill="x", padx=10, pady=3)
+            ctk.CTkLabel(row, text=name, width=155, anchor="w",
+                         font=ctk.CTkFont(size=14, weight="bold")).pack(side="left", padx=12, pady=10)
+            ctk.CTkLabel(row, text=_uk_market_overlap(today, zone_a, zone_b), width=160,
+                         anchor="w", font=ctk.CTkFont(size=14, weight="bold")).pack(side="left")
+            ctk.CTkLabel(row, text=pairs, anchor="w", font=ctk.CTkFont(size=12),
+                         text_color=(palette_color("#777D75"), palette_color("#A7AAA1"))).pack(side="left", padx=8)
+
+        exchanges = [
+            ("London Stock Exchange", "Europe/London", [((8, 0), (16, 30))], "FTSE 100 / UK shares", "08:00–09:30 and 15:30–16:30 UK"),
+            ("NYSE / Nasdaq", "America/New_York", [((9, 30), (16, 0))], "S&P 500 / Nasdaq 100 / US shares", "First 60–90 minutes and final hour"),
+            ("Tokyo Stock Exchange", "Asia/Tokyo", [((9, 0), (11, 30)), ((12, 30), (15, 30))], "Nikkei 225 / Japanese shares", "First 60–90 minutes or final hour"),
+            ("Hong Kong Exchange", "Asia/Hong_Kong", [((9, 30), (12, 0)), ((13, 0), (16, 0))], "Hang Seng / Hong Kong shares", "First 60–90 minutes or final hour")
+        ]
+        for name, zone, periods, instruments, best in exchanges:
+            hours = " / ".join(_uk_market_range(today, zone, start, end) for start, end in periods)
+            row = ctk.CTkFrame(self.stock_schedule_frame, corner_radius=12,
+                fg_color=(palette_color("#E7E8E1"), palette_color("#353A34")))
+            row.pack(fill="x", padx=10, pady=4)
+            ctk.CTkLabel(row, text=name, font=ctk.CTkFont(size=14, weight="bold"),
+                         anchor="w").pack(anchor="w", padx=12, pady=(9, 2))
+            ctk.CTkLabel(row, text="Open: " + hours + " UK",
+                         font=ctk.CTkFont(size=13, weight="bold"), anchor="w").pack(anchor="w", padx=12)
+            ctk.CTkLabel(row, text=instruments + " • Commonly watched: " + best,
+                         font=ctk.CTkFont(size=12), anchor="w", justify="left",
+                         text_color=(palette_color("#777D75"), palette_color("#A7AAA1"))).pack(anchor="w", padx=12, pady=(2, 9))
+        self.market_hours_updated.configure(text="Times refreshed: " + now.strftime("%H:%M:%S UK"))
 
     def _build_watchlist(self):
         page = self.pages["Watchlist"]
@@ -1224,7 +1365,9 @@ class MarketInsightApp(ctk.CTk):
         for frame in self.pages.values():
             frame.grid_remove()
         self.pages[name].grid()
-        self.page_title.configure(text={"Overview":"Market overview","Watchlist":"Watchlist","Settings":"Settings","About":"About"}[name])
+        self.page_title.configure(text={"Overview":"Market overview","Market Hours":"Market hours","Watchlist":"Watchlist","Settings":"Settings","About":"About"}[name])
+        if name == "Market Hours":
+            self.refresh_market_hours()
         for label, button in self.nav_buttons.items():
             button.configure(fg_color=(palette_color("#D8DED5"), palette_color("#424A43")) if label == name else "transparent")
 
