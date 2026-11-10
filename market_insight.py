@@ -1130,11 +1130,11 @@ class MarketInsightApp(ctk.CTk):
         creator_links = ctk.CTkFrame(footer, fg_color="transparent")
         creator_links.pack(side="right")
         ctk.CTkButton(
-            creator_links, text="@adrianvaleitl  ↗", width=125, height=28,
+            creator_links, text="@Adrianvaleitl  ↗", width=125, height=28,
             corner_radius=12, fg_color="transparent",
             text_color=(palette_color("#647B68"), palette_color("#B8C2B5")),
             hover_color=(palette_color("#E4E4DC"), palette_color("#35443C")),
-            command=lambda: webbrowser.open("https://www.tiktok.com/@adrianvaleitl")
+            command=lambda: webbrowser.open("https://www.youtube.com/@Adrianvaleitl")
         ).pack(side="right", padx=(6, 0))
         ctk.CTkButton(
             creator_links, text="☕ Donate on Ko-fi  ↗", width=150, height=28,
@@ -1739,7 +1739,7 @@ class MarketInsightApp(ctk.CTk):
             ("Alpaca market data guide", "https://docs.alpaca.markets/docs/about-market-data-api"),
             ("Yahoo Finance market overview", "https://finance.yahoo.com/"),
             ("TradingView charts", "https://www.tradingview.com/"),
-            ("TikTok  ·  @adrianvaleitl", "https://www.tiktok.com/@adrianvaleitl"),
+            ("YouTube  ·  @Adrianvaleitl", "https://www.youtube.com/@Adrianvaleitl"),
             ("Donate  ·  Ko-fi", "https://ko-fi.com/marketinsight"),
             ("Official website", "https://adrianvaleitl-debug.github.io/market-insight/"),
             ("GitHub repository", "https://github.com/adrianvaleitl-debug/market-insight")
