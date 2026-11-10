@@ -1074,6 +1074,253 @@ class MarketInsightApp(ctk.CTk):
         self.results_text = ctk.CTkScrollableFrame(results, height=520, corner_radius=12, fg_color=(palette_color("#F8F7F3"), palette_color("#292B28")))
         self.results_text.pack(fill="x", padx=16, pady=(8, 16))
 
+
+    def _build_economic_calendar(self):
+        page = self.pages["Economic Calendar"]
+        card = self.card(page, "Economic calendar", "Upcoming public economic releases, converted to UK local time.")
+        controls = ctk.CTkFrame(card, fg_color="transparent")
+        controls.pack(fill="x", padx=16, pady=8)
+        ctk.CTkButton(controls, text="Refresh calendar", command=self.refresh_economic_calendar).pack(side="left")
+        self.calendar_status = ctk.CTkLabel(controls, text="Ready to load events")
+        self.calendar_status.pack(side="left", padx=12)
+        self.calendar_frame = ctk.CTkFrame(page, fg_color="transparent")
+        self.calendar_frame.pack(fill="x", padx=14, pady=8)
+        self.card(page, "Trading around news", "High-impact releases can increase volatility and spreads. This calendar is informational, may be revised or unavailable, and is not a trading signal.")
+
+    def refresh_economic_calendar(self):
+        if getattr(self, "_calendar_loading", False):
+            return
+        self._calendar_loading = True
+        self.calendar_status.configure(text="Loading upcoming events…")
+        threading.Thread(target=self._calendar_worker, daemon=True).start()
+
+    def _calendar_worker(self):
+        try:
+            response = requests.get("https://nfs.faireconomy.media/ff_calendar_thisweek.json", timeout=15)
+            response.raise_for_status()
+            payload = response.json()
+            rows = []
+            now = datetime.now(ZoneInfo("Europe/London"))
+            for event in payload if isinstance(payload, list) else []:
+                try:
+                    moment = datetime.fromisoformat(str(event["date"]).replace("Z", "+00:00"))
+                    if moment.tzinfo is None:
+                        moment = moment.replace(tzinfo=ZoneInfo("UTC"))
+                    moment = moment.astimezone(ZoneInfo("Europe/London"))
+                    if moment >= now:
+                        rows.append((moment, str(event.get("impact", "Unknown")), str(event.get("country", "")),
+                                     str(event.get("title", "Economic release")),
+                                     str(event.get("forecast", "—") or "—"), str(event.get("previous", "—") or "—")))
+                except (KeyError, TypeError, ValueError):
+                    continue
+            rows.sort(key=lambda row: row[0])
+            self.after(0, lambda data=rows: self._show_calendar_events(data))
+        except Exception:
+            self.after(0, lambda: self.calendar_status.configure(text="Calendar unavailable. Check your connection and retry."))
+        finally:
+            self._calendar_loading = False
+
+    def _show_calendar_events(self, rows):
+        for child in self.calendar_frame.winfo_children():
+            child.destroy()
+        if not rows:
+            ctk.CTkLabel(self.calendar_frame, text="No upcoming events were returned for this week.").pack(anchor="w", padx=10, pady=12)
+        for moment, impact, country, title, forecast, previous in rows[:80]:
+            tile = ctk.CTkFrame(self.calendar_frame, corner_radius=12, fg_color=(palette_color("#EFEEE8"), palette_color("#30332F")))
+            tile.pack(fill="x", padx=4, pady=4)
+            ctk.CTkLabel(tile, text=moment.strftime("%a %d %b · %H:%M") + "  ·  " + impact.upper(),
+                         font=ctk.CTkFont(size=12, weight="bold")).pack(anchor="w", padx=12, pady=(8, 2))
+            ctk.CTkLabel(tile, text=country + " · " + title, font=ctk.CTkFont(size=14, weight="bold"),
+                         justify="left", anchor="w").pack(fill="x", anchor="w", padx=12, pady=2)
+            ctk.CTkLabel(tile, text="Forecast: " + forecast + "    Previous: " + previous,
+                         font=ctk.CTkFont(size=12), justify="left", anchor="w").pack(fill="x", anchor="w", padx=12, pady=(0, 8))
+        self._calendar_loaded = True
+        self.calendar_status.configure(text="Updated " + datetime.now().strftime("%H:%M") + " · " + str(len(rows)) + " upcoming events")
+
+    def _build_price_alerts(self):
+        page = self.pages["Price Alerts"]
+        card = self.card(page, "Create a price alert", "Choose a ticker and target. Alerts check Alpaca IEX snapshots about once per minute while the app is open.")
+        form = ctk.CTkFrame(card, fg_color="transparent")
+        form.pack(fill="x", padx=14, pady=8)
+        self.alert_symbol = ctk.CTkEntry(form, width=125, placeholder_text="Ticker")
+        self.alert_symbol.pack(side="left", padx=4)
+        self.alert_direction = styled_settings_dropdown(form, ["Rises to or above", "Falls to or below"])
+        self.alert_direction.configure(width=175)
+        self.alert_direction.pack(side="left", padx=4)
+        self.alert_target = ctk.CTkEntry(form, width=135, placeholder_text="Target USD")
+        self.alert_target.pack(side="left", padx=4)
+        ctk.CTkButton(form, text="Add alert", command=self.add_price_alert).pack(side="left", padx=4)
+        self.alert_list = ctk.CTkFrame(page, fg_color="transparent")
+        self.alert_list.pack(fill="x", padx=14, pady=8)
+        self.render_price_alerts()
+        self.card(page, "Alert information", "Requires valid Alpaca credentials and Market Insight to remain open. IEX snapshots are not tick-by-tick data. Alerts do not place trades.")
+
+    def add_price_alert(self):
+        symbol = self.alert_symbol.get().strip().upper()
+        target = safe_num(self.alert_target.get(), 0)
+        if not symbol or not symbol.replace(".", "").replace("-", "").isalnum() or target <= 0:
+            self.status.configure(text="Enter a valid ticker and a target price above zero.")
+            return
+        alerts = self.settings.setdefault("price_alerts", [])
+        alerts.append({"symbol": symbol, "direction": self.alert_direction.get(), "target": target,
+                       "triggered": False, "id": datetime.now().isoformat(timespec="microseconds")})
+        self.settings["price_alerts"] = alerts[-100:]
+        save_settings(self.settings)
+        self.alert_symbol.delete(0, "end")
+        self.alert_target.delete(0, "end")
+        self.render_price_alerts()
+        self.status.configure(text="Price alert saved for " + symbol + ".")
+
+    def render_price_alerts(self):
+        if not hasattr(self, "alert_list"):
+            return
+        for child in self.alert_list.winfo_children():
+            child.destroy()
+        alerts = self.settings.get("price_alerts", [])
+        if not alerts:
+            ctk.CTkLabel(self.alert_list, text="No alerts saved yet.").pack(anchor="w", padx=10, pady=12)
+        for index, alert in enumerate(alerts):
+            row = ctk.CTkFrame(self.alert_list, corner_radius=12, fg_color=(palette_color("#EFEEE8"), palette_color("#30332F")))
+            row.pack(fill="x", padx=4, pady=4)
+            state = "TRIGGERED" if alert.get("triggered") else "WAITING"
+            label = "{} · {} USD {:.4f} · {}".format(alert.get("symbol", "?"), alert.get("direction", "Rises to or above"), safe_num(alert.get("target")), state)
+            ctk.CTkLabel(row, text=label, font=ctk.CTkFont(size=13, weight="bold")).pack(side="left", padx=12, pady=10)
+            ctk.CTkButton(row, text="Remove", width=76, height=28, command=lambda i=index: self.remove_price_alert(i)).pack(side="right", padx=10, pady=7)
+
+    def remove_price_alert(self, index):
+        alerts = self.settings.get("price_alerts", [])
+        if 0 <= index < len(alerts):
+            alerts.pop(index)
+            save_settings(self.settings)
+            self.render_price_alerts()
+
+    def _check_price_alerts(self):
+        self.after(60000, self._check_price_alerts)
+        alerts = self.settings.get("price_alerts", [])
+        if not alerts or getattr(self, "_alerts_checking", False):
+            return
+        key, secret = get_alpaca_credentials()
+        if not key or not secret:
+            return
+        self._alerts_checking = True
+        threading.Thread(target=self._price_alert_worker, args=(key, secret, list(alerts)), daemon=True).start()
+
+    def _price_alert_worker(self, key, secret, alerts):
+        triggered = []
+        headers = {"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret}
+        for alert in alerts:
+            if alert.get("triggered"):
+                continue
+            try:
+                response = requests.get("https://data.alpaca.markets/v2/stocks/{}/snapshot".format(alert["symbol"]),
+                                         headers=headers, params={"feed": "iex"}, timeout=10)
+                response.raise_for_status()
+                snapshot = response.json()
+                price = safe_num((snapshot.get("latestTrade") or {}).get("p"), 0)
+                target = safe_num(alert.get("target"), 0)
+                direction = alert.get("direction", "Rises to or above")
+                if price > 0 and target > 0 and (price >= target if direction == "Rises to or above" else price <= target):
+                    triggered.append({"symbol": alert["symbol"], "price": price, "target": target, "id": alert.get("id")})
+            except Exception:
+                continue
+        self.after(0, lambda items=triggered: self._finish_price_alert_check(items))
+
+    def _finish_price_alert_check(self, triggered):
+        self._alerts_checking = False
+        if not triggered:
+            return
+        for item in triggered:
+            for alert in self.settings.get("price_alerts", []):
+                if alert.get("id") == item["id"]:
+                    alert["triggered"] = True
+                    break
+        save_settings(self.settings)
+        self.render_price_alerts()
+        from tkinter import messagebox
+        messagebox.showinfo("Market Insight price alert", "\n".join(
+            "{} reached USD {:.4f} (target USD {:.4f})".format(x["symbol"], x["price"], x["target"])
+            for x in triggered
+        ), parent=self)
+
+    def _build_trading_journal(self):
+        page = self.pages["Trading Journal"]
+        card = self.card(page, "Log a completed trade", "Record closed trades. Profit/loss is calculated from entry, exit and quantity, before fees.")
+        form = ctk.CTkFrame(card, fg_color="transparent")
+        form.pack(fill="x", padx=14, pady=8)
+        self.journal_symbol = ctk.CTkEntry(form, width=105, placeholder_text="Ticker")
+        self.journal_symbol.pack(side="left", padx=3)
+        self.journal_side = styled_settings_dropdown(form, ["Long", "Short"])
+        self.journal_side.configure(width=90)
+        self.journal_side.pack(side="left", padx=3)
+        self.journal_entry = ctk.CTkEntry(form, width=115, placeholder_text="Entry USD")
+        self.journal_entry.pack(side="left", padx=3)
+        self.journal_exit = ctk.CTkEntry(form, width=115, placeholder_text="Exit USD")
+        self.journal_exit.pack(side="left", padx=3)
+        self.journal_quantity = ctk.CTkEntry(form, width=95, placeholder_text="Quantity")
+        self.journal_quantity.pack(side="left", padx=3)
+        self.journal_notes = ctk.CTkEntry(card, placeholder_text="Notes (optional)")
+        self.journal_notes.pack(fill="x", padx=16, pady=(0, 8))
+        ctk.CTkButton(card, text="Save trade", command=self.add_journal_trade).pack(anchor="e", padx=16, pady=(0, 14))
+        self.journal_summary = ctk.CTkLabel(page, text="", font=ctk.CTkFont(size=15, weight="bold"))
+        self.journal_summary.pack(anchor="w", padx=20, pady=(8, 4))
+        self.journal_list = ctk.CTkFrame(page, fg_color="transparent")
+        self.journal_list.pack(fill="x", padx=14, pady=8)
+        self.render_journal()
+
+    def add_journal_trade(self):
+        symbol = self.journal_symbol.get().strip().upper()
+        entry = safe_num(self.journal_entry.get(), 0)
+        exit_price = safe_num(self.journal_exit.get(), 0)
+        quantity = safe_num(self.journal_quantity.get(), 0)
+        side = self.journal_side.get()
+        if not symbol or not symbol.replace(".", "").replace("-", "").isalnum() or min(entry, exit_price, quantity) <= 0:
+            self.status.configure(text="Enter a ticker and positive entry, exit and quantity values.")
+            return
+        pnl = (exit_price - entry) * quantity * (1 if side == "Long" else -1)
+        self.settings.setdefault("trade_journal", []).insert(0, {
+            "symbol": symbol, "side": side, "entry": entry, "exit": exit_price, "quantity": quantity,
+            "pnl": pnl, "notes": self.journal_notes.get().strip(),
+            "closed": datetime.now().isoformat(timespec="seconds")
+        })
+        self.settings["trade_journal"] = self.settings["trade_journal"][:500]
+        save_settings(self.settings)
+        for field in (self.journal_symbol, self.journal_entry, self.journal_exit, self.journal_quantity, self.journal_notes):
+            field.delete(0, "end")
+        self.render_journal()
+        self.status.configure(text="Trade saved to your journal.")
+
+    def render_journal(self):
+        if not hasattr(self, "journal_list"):
+            return
+        for child in self.journal_list.winfo_children():
+            child.destroy()
+        trades = self.settings.get("trade_journal", [])
+        total = sum(safe_num(t.get("pnl")) for t in trades)
+        wins = sum(1 for t in trades if safe_num(t.get("pnl")) > 0)
+        self.journal_summary.configure(text="{} trades · Net P/L: USD {:+,.2f} · {} wins".format(len(trades), total, wins))
+        if not trades:
+            ctk.CTkLabel(self.journal_list, text="Your saved trades will appear here.").pack(anchor="w", padx=10, pady=12)
+        for index, trade in enumerate(trades):
+            pnl = safe_num(trade.get("pnl"))
+            tile = ctk.CTkFrame(self.journal_list, corner_radius=12, fg_color=(palette_color("#EFEEE8"), palette_color("#30332F")))
+            tile.pack(fill="x", padx=4, pady=4)
+            ctk.CTkLabel(tile, text="{} {} · Entry {:.4f} → Exit {:.4f} · Qty {} · P/L {:+,.2f} USD".format(
+                trade.get("symbol", "?"), trade.get("side", "Long"), safe_num(trade.get("entry")),
+                safe_num(trade.get("exit")), safe_num(trade.get("quantity")), pnl
+            ), font=ctk.CTkFont(size=13, weight="bold"), justify="left").pack(anchor="w", padx=12, pady=(8, 2))
+            if trade.get("notes"):
+                ctk.CTkLabel(tile, text=trade["notes"], font=ctk.CTkFont(size=12), justify="left").pack(anchor="w", padx=12, pady=2)
+            ctk.CTkLabel(tile, text=trade.get("closed", "").replace("T", " ")[:16],
+                         font=ctk.CTkFont(size=11), text_color=(palette_color("#777D75"), palette_color("#A7AAA1"))).pack(anchor="w", padx=12, pady=(0, 6))
+            ctk.CTkButton(tile, text="Delete", width=72, height=26, command=lambda i=index: self.remove_journal_trade(i)).pack(anchor="e", padx=10, pady=(0, 8))
+
+    def remove_journal_trade(self, index):
+        trades = self.settings.get("trade_journal", [])
+        if 0 <= index < len(trades):
+            trades.pop(index)
+            save_settings(self.settings)
+            self.render_journal()
+
     def _build_settings(self):
         page = self.pages["Settings"]
 
@@ -1377,6 +1624,12 @@ class MarketInsightApp(ctk.CTk):
         self.page_title.configure(text={"Overview":"Market overview","Market Hours":"Market hours","Watchlist":"Watchlist","Economic Calendar":"Economic calendar","Price Alerts":"Price alerts","Trading Journal":"Trading journal","Settings":"Settings","About":"About"}[name])
         if name == "Market Hours":
             self.refresh_market_hours()
+        elif name == "Economic Calendar" and not getattr(self, "_calendar_loaded", False):
+            self.refresh_economic_calendar()
+        elif name == "Price Alerts":
+            self.render_price_alerts()
+        elif name == "Trading Journal":
+            self.render_journal()
         for label, button in self.nav_buttons.items():
             button.configure(fg_color=(palette_color("#D8DED5"), palette_color("#424A43")) if label == name else "transparent")
 
