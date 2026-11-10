@@ -16,6 +16,16 @@ from zoneinfo import ZoneInfo
 from pathlib import Path
 
 import customtkinter as ctk
+
+# Apply bold typography globally, including widgets that use CustomTkinter's
+# built-in default font (such as sidebar buttons and small helper/status text).
+_original_ctkfont_init = ctk.CTkFont.__init__
+
+def _bold_ctkfont_init(self, *args, **kwargs):
+    kwargs["weight"] = "bold"
+    _original_ctkfont_init(self, *args, **kwargs)
+
+ctk.CTkFont.__init__ = _bold_ctkfont_init
 import pandas as pd
 import yfinance as yf
 import ctypes
