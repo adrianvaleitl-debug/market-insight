@@ -1,5 +1,23 @@
 # Market Insight
 
+## What's New
+
+### V1.4 — Scanner improvements and creator links
+
+The V1.4 update adds five improvements to make scan results easier to review:
+
+- **Scan snapshot:** see the average score, strongest and weakest daily moves, and highest-volume stock at a glance.
+- **Search:** find scan results by ticker symbol or company name.
+- **Sorting:** organise results by score, daily gain, daily loss, RSI, or volume.
+- **Filters:** narrow results to positive or negative movers, scores of 70+, or stocks with caution warnings.
+- **CSV export:** export scan results and key indicators for your own review.
+
+The website and app project links now point to the official YouTube channel: [@Adrianvaleitl](https://www.youtube.com/@Adrianvaleitl).
+
+[View all releases](https://github.com/adrianvaleitl-debug/market-insight/releases) · [Open the website](https://adrianvaleitl-debug.github.io/market-insight/)
+
+---
+
 A Windows desktop market scanner for watchlists, technical indicators, and market research using Alpaca IEX snapshots and Yahoo Finance historical data.
 
 ## Overview
