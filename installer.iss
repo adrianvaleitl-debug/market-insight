@@ -34,8 +34,8 @@ Source: "Start_Market_Insight.vbs"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Create_Desktop_Shortcut.ps1"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{autoprograms}\Market Insight"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"
-Name: "{autodesktop}\Market Insight"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; Tasks: desktopicon
+Name: "{autoprograms}\Market Insight"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\market_insight.ico"; IconIndex: 0; WorkingDir: "{app}"
+Name: "{autodesktop}\Market Insight"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\market_insight.ico"; IconIndex: 0; WorkingDir: "{app}"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "Launch Market Insight"; Flags: postinstall nowait skipifsilent
