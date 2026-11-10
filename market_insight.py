@@ -21,7 +21,7 @@ import ctypes
 import winreg
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V1.2"
+APP_VERSION = "V1.3"
 # v1.2.24 resolves the bundled icon from PyInstaller's runtime resource folder.
 GITHUB_RELEASES_API = "https://api.github.com/repos/adrianvaleitl-debug/market-insight/releases/latest"
 GITHUB_RELEASES_PAGE = "https://github.com/adrianvaleitl-debug/market-insight/releases/latest"
@@ -147,6 +147,8 @@ DEFAULTS = {
     "create_desktop_shortcut": False,
     "run_on_windows_startup": False,
     "check_for_updates": True,
+    "price_alerts": [],
+    "trade_journal": [],
 }
 
 
@@ -748,7 +750,7 @@ class MarketInsightApp(ctk.CTk):
         ctk.CTkLabel(self.sidebar, text="MARKET\nINSIGHT", font=ctk.CTkFont(size=25, weight="bold"),
                      text_color=(palette_color("#3C453F"), palette_color("#D4D8D2")), justify="left").pack(anchor="w", padx=22, pady=(28, 30))
         self.nav_buttons = {}
-        for label in ["Overview", "Market Hours", "Watchlist", "Settings", "About"]:
+        for label in ["Overview", "Market Hours", "Watchlist", "Economic Calendar", "Price Alerts", "Trading Journal", "Settings", "About"]:
             btn = ctk.CTkButton(self.sidebar, text=label, anchor="w", height=42, corner_radius=12,
                                 fg_color="transparent", text_color=(palette_color("#4A514B"), palette_color("#D8E3DE")),
                                 hover_color=(palette_color("#D8DAD4"), palette_color("#303B36")),
@@ -815,16 +817,20 @@ class MarketInsightApp(ctk.CTk):
         self.status.grid(row=0, column=1, sticky="e")
 
         self.pages = {}
-        for name in ["Overview", "Market Hours", "Watchlist", "Settings", "About"]:
+        for name in ["Overview", "Market Hours", "Watchlist", "Economic Calendar", "Price Alerts", "Trading Journal", "Settings", "About"]:
             frame = ctk.CTkScrollableFrame(self.main, corner_radius=20, fg_color=(palette_color("#F8F7F3"), palette_color("#292B28")))
             frame.grid(row=1, column=0, sticky="nsew")
             self.pages[name] = frame
         self._build_overview()
         self._build_market_hours()
         self._build_watchlist()
+        self._build_economic_calendar()
+        self._build_price_alerts()
+        self._build_trading_journal()
         self._build_settings()
         self._build_about()
         self.show_page("Overview")
+        self.after(15000, self._check_price_alerts)
         # Global bindings work even when a child control has keyboard focus.
         self.bind_all("<F11>", self._toggle_fullscreen)
         self.bind_all("<Escape>", self._exit_fullscreen)
@@ -1368,7 +1374,7 @@ class MarketInsightApp(ctk.CTk):
         for frame in self.pages.values():
             frame.grid_remove()
         self.pages[name].grid()
-        self.page_title.configure(text={"Overview":"Market overview","Market Hours":"Market hours","Watchlist":"Watchlist","Settings":"Settings","About":"About"}[name])
+        self.page_title.configure(text={"Overview":"Market overview","Market Hours":"Market hours","Watchlist":"Watchlist","Economic Calendar":"Economic calendar","Price Alerts":"Price alerts","Trading Journal":"Trading journal","Settings":"Settings","About":"About"}[name])
         if name == "Market Hours":
             self.refresh_market_hours()
         for label, button in self.nav_buttons.items():
