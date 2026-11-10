@@ -161,6 +161,12 @@ COLOUR_THEME_HUES = {
     "Ocean": 204,
     "Rose": 345,
     "Sand": 38,
+    "Teal": 174,
+    "Sky": 215,
+    "Indigo": 240,
+    "Plum": 286,
+    "Berry": 315,
+    "Citrus": 75,
 }
 
 def palette_color(value):
