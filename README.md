@@ -118,6 +118,7 @@ You are responsible for your own research and decisions. Past market behaviour d
 - **Website:** https://adrianvaleitl-debug.github.io/market-insight/
 - **Latest download:** https://github.com/adrianvaleitl-debug/market-insight/releases/latest
 - **Source code:** https://github.com/adrianvaleitl-debug/market-insight
+- **TikTok:** https://www.tiktok.com/@adrianvaleitl
 
 
 ## Support Market Insight
