@@ -391,15 +391,18 @@ def scan_symbol(symbol, api_key, secret_key):
 
 
 def _uk_market_time(day, zone, hour, minute=0):
-    local = datetime.combine(day, time(hour, minute), tzinfo=ZoneInfo(zone))
-    return local.astimezone(ZoneInfo("Europe/London"))
+    uk_zone = ZoneInfo("Europe/London")
+    uk_now = datetime.now(uk_zone)
+    market_day = uk_now.astimezone(ZoneInfo(zone)).date() if uk_now.date() == day else day
+    local = datetime.combine(market_day, time(hour, minute), tzinfo=ZoneInfo(zone))
+    return local.astimezone(uk_zone)
 
 
 def _uk_market_range(day, zone, start, end):
     a = _uk_market_time(day, zone, *start)
     b = _uk_market_time(day, zone, *end)
     def clock(value):
-        suffix = " (+1 day)" if value.date() > day else ""
+        suffix = " (+1 day)" if value.date() > day else (" (prev. day)" if value.date() < day else "")
         return value.strftime("%H:%M") + suffix
     return clock(a) + "–" + clock(b)
 
