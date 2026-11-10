@@ -946,13 +946,23 @@ class MarketInsightApp(ctk.CTk):
             font=ctk.CTkFont(size=13, weight="bold"),
             text_color=(palette_color("#646D64"), palette_color("#C0C5BC"))
         ).pack(side="left")
+        creator_links = ctk.CTkFrame(footer, fg_color="transparent")
+        creator_links.pack(side="right")
         ctk.CTkButton(
-            footer, text="@adrianvaleitl  ↗", width=125, height=26,
+            creator_links, text="@adrianvaleitl  ↗", width=125, height=28,
             corner_radius=12, fg_color="transparent",
             text_color=(palette_color("#647B68"), palette_color("#B8C2B5")),
             hover_color=(palette_color("#E4E4DC"), palette_color("#35443C")),
             command=lambda: webbrowser.open("https://www.tiktok.com/@adrianvaleitl")
-        ).pack(side="right")
+        ).pack(side="right", padx=(6, 0))
+        ctk.CTkButton(
+            creator_links, text="☕ Donate on Ko-fi  ↗", width=150, height=28,
+            corner_radius=12,
+            fg_color=(palette_color("#D8DAD4"), palette_color("#414841")),
+            hover_color=(palette_color("#C8CBC2"), palette_color("#50564F")),
+            text_color=(palette_color("#414841"), palette_color("#E5E4DE")),
+            command=lambda: webbrowser.open("https://ko-fi.com/marketinsight")
+        ).pack(side="right", padx=(6, 0))
 
 
     def _build_market_hours(self):
@@ -1509,6 +1519,7 @@ class MarketInsightApp(ctk.CTk):
             ("Yahoo Finance market overview", "https://finance.yahoo.com/"),
             ("TradingView charts", "https://www.tradingview.com/"),
             ("TikTok  ·  @adrianvaleitl", "https://www.tiktok.com/@adrianvaleitl"),
+            ("Donate  ·  Ko-fi", "https://ko-fi.com/marketinsight"),
             ("Official website", "https://adrianvaleitl-debug.github.io/market-insight/"),
             ("GitHub repository", "https://github.com/adrianvaleitl-debug/market-insight")
         ]:
