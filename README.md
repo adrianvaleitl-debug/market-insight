@@ -11,6 +11,11 @@ It is a research aid, not an automated trading system.
 
 ## Features
 
+- Scan snapshot showing average score, strongest and weakest daily moves, and highest-volume result.
+- Search scan results by ticker symbol or company name.
+- Sort results by score, biggest daily gain, biggest daily loss, highest RSI, or highest volume.
+- Filter results by all stocks, positive or negative daily move, score 70+, or caution warnings.
+- Export scan results to CSV, including prices, changes, indicators, volume data, and warnings.
 - Market overview with the strongest result from the latest scan.
 - Dedicated Market Hours section with UK-local forex sessions, session overlaps and major stock-exchange hours.
 - Automatic GMT/BST and overseas daylight-saving time conversion for the market timetable.
