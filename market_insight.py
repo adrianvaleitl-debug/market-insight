@@ -1308,7 +1308,7 @@ class MarketInsightApp(ctk.CTk):
         from tkinter import messagebox
         if not messagebox.askyesno(
             "Market Insight update available",
-            "A newer version is available: {}\\n\\nYou have: {}\\n\\nInstall this update now? Market Insight will close briefly and reopen automatically. Your saved settings and credentials will be kept.".format(tag, APP_VERSION),
+            "A newer version is available: {}\n\nYou have: {}\n\nInstall this update now? Market Insight will close briefly and reopen automatically. Your saved settings and credentials will be kept.".format(tag, APP_VERSION),
             parent=self
         ):
             self._show_update_status("Update {} is available on GitHub.".format(tag))
@@ -1354,37 +1354,39 @@ class MarketInsightApp(ctk.CTk):
             if not app_exe.exists():
                 raise FileNotFoundError("The installed Market Insight executable could not be found.")
             helper = installer_path.with_suffix(".vbs")
-            def vb_quote(value):
-                return str(value).replace('"', '""')
+
+            def vbs_literal(value):
+                return '"' + str(value).replace('"', '""') + '"'
+
             installer_command = '"{}" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP- /DIR="{}"'.format(
-                vb_quote(installer_path), vb_quote(APP_DIR)
+                installer_path, APP_DIR
             )
-            app_command = '"{}"'.format(vb_quote(app_exe))
-            script = (
-                'Set shell = CreateObject("WScript.Shell")\\r\\n'
-                'Set wmi = GetObject("winmgmts:\\\\\\\\.\\\\root\\\\cimv2")\\r\\n'
-                'Do\\r\\n'
-                '  Set matches = wmi.ExecQuery("SELECT * FROM Win32_Process WHERE ProcessId = {}")\\r\\n'
-                '  If matches.Count = 0 Then Exit Do\\r\\n'
-                '  WScript.Sleep 500\\r\\n'
-                'Loop\\r\\n'
-                'result = shell.Run("{}" , 0, True)\\r\\n'
-                'If result = 0 Then\\r\\n'
-                '  shell.Run "{}", 0, False\\r\\n'
-                'Else\\r\\n'
-                '  MsgBox "The update installer could not complete (code " & result & "). You can run the downloaded installer manually.", 16, "Market Insight update"\\r\\n'
-                'End If\\r\\n'
-                'Set fso = CreateObject("Scripting.FileSystemObject")\\r\\n'
-                'fso.DeleteFile WScript.ScriptFullName, True\\r\\n'
-            ).format(os.getpid(), vb_quote(installer_command), vb_quote(app_command))
-            helper.write_text(script, encoding="utf-8")
+            app_command = '"{}"'.format(app_exe)
+            script_lines = [
+                'Set shell = CreateObject("WScript.Shell")',
+                'Set wmi = GetObject("winmgmts:\\\\.\\root\\cimv2")',
+                'Do',
+                '  Set matches = wmi.ExecQuery("SELECT * FROM Win32_Process WHERE ProcessId = {}")'.format(os.getpid()),
+                '  If matches.Count = 0 Then Exit Do',
+                '  WScript.Sleep 500',
+                'Loop',
+                'result = shell.Run({}, 0, True)'.format(vbs_literal(installer_command)),
+                'If result = 0 Then',
+                '  shell.Run {}, 0, False'.format(vbs_literal(app_command)),
+                'Else',
+                '  MsgBox "The update installer could not complete (code " & result & "). You can run the downloaded installer manually.", 16, "Market Insight update"',
+                'End If',
+                'Set fso = CreateObject("Scripting.FileSystemObject")',
+                'fso.DeleteFile WScript.ScriptFullName, True',
+            ]
+            helper.write_text("\r\n".join(script_lines) + "\r\n", encoding="utf-8")
             subprocess.Popen(["wscript.exe", str(helper)], close_fds=True)
             self._show_update_status("Installing {}… Market Insight will reopen automatically.".format(tag))
             self.after(150, self.destroy)
         except Exception as exc:
             messagebox.showerror(
                 "Market Insight update",
-                "The update was downloaded, but automatic installation couldn't start. You can run this installer manually:\\n\\n{}\\n\\n{}".format(installer_path, exc),
+                "The update was downloaded, but automatic installation couldn't start. You can run this installer manually:\n\n{}\n\n{}".format(installer_path, exc),
                 parent=self
             )
             self._show_update_status("Couldn't start the update installer.")
