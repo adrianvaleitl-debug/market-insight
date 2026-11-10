@@ -24,6 +24,9 @@ from tkinter import filedialog
 
 APP_NAME = "Market Insight"
 APP_VERSION = "V1.3"
+# Temporary QA switch: replay first-launch onboarding on every startup.
+# Existing credentials and preferences are preserved.
+ONBOARDING_TEST_MODE = True
 # v1.2.24 resolves the bundled icon from PyInstaller's runtime resource folder.
 GITHUB_RELEASES_API = "https://api.github.com/repos/adrianvaleitl-debug/market-insight/releases/latest"
 GITHUB_RELEASES_PAGE = "https://github.com/adrianvaleitl-debug/market-insight/releases/latest"
@@ -499,7 +502,11 @@ class MarketInsightApp(ctk.CTk):
         # Withdrawing the parent can also hide its CTkToplevel setup dialog on Windows.
         api_key, secret_key = get_alpaca_credentials()
         valid = self._validate_alpaca_credentials(api_key, secret_key)[0] if api_key and secret_key else False
-        if valid and self.settings.get("selected_platform"):
+        self.saved_alpaca_connection_valid = valid
+        if ONBOARDING_TEST_MODE:
+            # Replay first-run setup without deleting saved data.
+            self._show_alpaca_setup()
+        elif valid and self.settings.get("selected_platform"):
             self._launch_main_ui()
         elif valid:
             self._show_platform_setup()
@@ -571,6 +578,15 @@ class MarketInsightApp(ctk.CTk):
 
     def _show_alpaca_setup(self):
         win, panel = self._setup_window("Connect your Alpaca account", "To get live market prices, connect your Alpaca account. Enter your API details below and we'll check that they work before continuing.")
+        if getattr(self, "saved_alpaca_connection_valid", False):
+            ctk.CTkButton(
+                panel, text="Continue with my saved Alpaca connection", height=40,
+                command=self._continue_with_saved_alpaca
+            ).pack(fill="x", padx=30, pady=(0, 12))
+            ctk.CTkLabel(
+                panel, text="Or enter different API keys below to replace the saved connection.",
+                font=ctk.CTkFont(size=12), justify="left"
+            ).pack(anchor="w", padx=30, pady=(0, 8))
         ctk.CTkLabel(panel, text="API Key ID").pack(anchor="w", padx=30, pady=(0, 5))
         self.setup_key_entry = ctk.CTkEntry(panel, height=44, placeholder_text="Paste your Alpaca API Key ID here")
         self.setup_key_entry.pack(fill="x", padx=30, pady=(0, 13))
@@ -586,6 +602,11 @@ class MarketInsightApp(ctk.CTk):
         self._fit_text_to_width(self.setup_status, panel, 60)
         ctk.CTkButton(panel, text="Check keys and continue", height=45, command=self._validate_setup_keys).pack(fill="x", padx=30, pady=18)
         win.focus_force()
+
+    def _continue_with_saved_alpaca(self):
+        self.setup_window.grab_release()
+        self.setup_window.destroy()
+        self._show_platform_setup()
 
     def _validate_setup_keys(self):
         api_key = self.setup_key_entry.get().strip()
@@ -822,7 +843,7 @@ class MarketInsightApp(ctk.CTk):
         return "break"
 
     def _maybe_prompt_shortcut(self):
-        if self.settings.get("shortcut_prompted"):
+        if self.settings.get("shortcut_prompted") and not ONBOARDING_TEST_MODE:
             return
         from tkinter import messagebox
         self.settings["shortcut_prompted"] = True
