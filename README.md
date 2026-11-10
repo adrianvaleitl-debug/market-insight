@@ -2,7 +2,7 @@
 
 ## What's New
 
-### V1.4 — Scanner improvements and creator links
+### V1.4 — Scanner improvements, font choices and creator links
 
 The V1.4 update adds five improvements to make scan results easier to review:
 
@@ -12,6 +12,7 @@ The V1.4 update adds five improvements to make scan results easier to review:
 - **Filters:** narrow results to positive or negative movers, scores of 70+, or stocks with caution warnings.
 - **CSV export:** export scan results and key indicators for your own review.
 - **Live scan results:** each stock appears in the results list as soon as its check finishes, instead of waiting for the whole watchlist.
+- **Font choices:** choose from five font families in Settings while keeping bold text consistent throughout the app.
 
 Follow Market Insight on both platforms: [YouTube @Adrianvaleitl](https://www.youtube.com/@Adrianvaleitl) · [TikTok @adrianvaleitl](https://www.tiktok.com/@adrianvaleitl).
 
@@ -37,6 +38,8 @@ It is a research aid, not an automated trading system.
 - Export scan results to CSV, including prices, changes, indicators, volume data, and warnings.
 - Live scan progress: add each stock to the results list immediately after it has been checked.
 - In-app What's New page with version-by-version release notes.
+- Five selectable font families in Settings: Segoe UI, Arial, Verdana, Trebuchet MS, and Georgia.
+- Bold typography consistently applied across the app, including the sidebar and smaller labels.
 - Market overview with the strongest result from the latest scan.
 - Dedicated Market Hours section with UK-local forex sessions, session overlaps and major stock-exchange hours.
 - Automatic GMT/BST and overseas daylight-saving time conversion for the market timetable.
