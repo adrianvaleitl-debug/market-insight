@@ -39,7 +39,7 @@ It is a research aid, not an automated trading system.
 - Live scan progress: add each stock to the results list immediately after it has been checked.
 - In-app What's New page with version-by-version release notes.
 - Five selectable font families in Settings: Segoe UI, Arial, Verdana, Trebuchet MS, and Georgia.
-- Bold typography consistently applied across the app, including the sidebar and smaller labels.
+- Optional bold typography setting to switch between bold and regular text throughout the app, including the sidebar and smaller labels.
 - Market overview with the strongest result from the latest scan.
 - Dedicated Market Hours section with UK-local forex sessions, session overlaps and major stock-exchange hours.
 - Automatic GMT/BST and overseas daylight-saving time conversion for the market timetable.
