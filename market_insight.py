@@ -43,13 +43,12 @@ RELEASE_NOTES = [
         "date": "November 2026",
         "items": [
             "Scan snapshot with average score, strongest and weakest daily moves, and highest-volume stock.",
-            "Live scan results: each stock appears in the results list as soon as its check finishes.",
             "Search scan results by ticker symbol or company name.",
             "Sort results by score, daily gain, daily loss, RSI, or volume.",
             "Filter positive and negative movers, scores of 70+, and caution warnings.",
             "Export scan results and key indicators to CSV.",
             "YouTube and TikTok creator links are both available in the app.",
-            "Choose between five font styles in Settings; bold typography remains consistent across the whole app.",
+            "Choose between five font styles and switch bold text on or off in Settings.",
         ],
     },
     {
@@ -214,6 +213,7 @@ DEFAULTS = {
     "appearance": "Dark",
     "colour_theme": "Sage",
     "font_family": "Segoe UI",
+    "bold_text": True,
     "startup_window_mode": "Maximised",
     "auto_scan": True,
     "scan_interval": 5,
@@ -240,6 +240,7 @@ DEFAULTS = {
 # so the existing light/dark contrast and the app's restrained visual style remain.
 ACTIVE_COLOUR_THEME = "Sage"
 ACTIVE_FONT_FAMILY = "Segoe UI"
+ACTIVE_BOLD_TEXT = True
 COLOUR_THEME_HUES = {
     "Sage": 132,
     "Lavender": 266,
@@ -295,7 +296,7 @@ def apply_ctk_palette_theme():
 def app_font(*args, **kwargs):
     """Create a consistently bold app font using the user-selected font family."""
     kwargs.setdefault("family", ACTIVE_FONT_FAMILY)
-    kwargs.setdefault("weight", "bold")
+    kwargs.setdefault("weight", "bold" if ACTIVE_BOLD_TEXT else "normal")
     return ctk.CTkFont(*args, **kwargs)
 
 
@@ -526,8 +527,9 @@ class MarketInsightApp(ctk.CTk):
         self.settings = load_settings()
         global ACTIVE_COLOUR_THEME
         ACTIVE_COLOUR_THEME = self.settings.get("colour_theme", "Sage")
-        global ACTIVE_FONT_FAMILY
+        global ACTIVE_FONT_FAMILY, ACTIVE_BOLD_TEXT
         ACTIVE_FONT_FAMILY = self.settings.get("font_family", "Segoe UI")
+        ACTIVE_BOLD_TEXT = bool(self.settings.get("bold_text", True))
         if ACTIVE_FONT_FAMILY not in ("Segoe UI", "Arial", "Verdana", "Trebuchet MS", "Georgia"):
             ACTIVE_FONT_FAMILY = "Segoe UI"
         if ACTIVE_COLOUR_THEME not in COLOUR_THEME_HUES:
@@ -1707,10 +1709,25 @@ class MarketInsightApp(ctk.CTk):
             command=self.change_font_family
         )
         self.font_family_menu.set(self.settings.get("font_family", "Segoe UI"))
-        self.font_family_menu.pack(anchor="w", padx=18, pady=(0, 5))
+        self.font_family_menu.pack(anchor="w", padx=18, pady=(0, 8))
+
+        self.bold_text_var = ctk.BooleanVar(value=bool(self.settings.get("bold_text", True)))
+        self.bold_text_checkbox = ctk.CTkCheckBox(
+            preferences,
+            text="Use bold text throughout the app",
+            variable=self.bold_text_var,
+            command=self.change_bold_text,
+            font=app_font(size=13),
+            text_color=(palette_color("#555D54"), palette_color("#C0C5BC")),
+            fg_color=(palette_color("#8FAE8D"), palette_color("#789D79")),
+            hover_color=(palette_color("#789D79"), palette_color("#91B391")),
+            border_color=(palette_color("#AAB7A3"), palette_color("#71816D")),
+            checkmark_color="#FFFFFF"
+        )
+        self.bold_text_checkbox.pack(anchor="w", padx=18, pady=(0, 8))
         font_note = ctk.CTkLabel(
             preferences,
-            text="Choose from five font styles. Bold text stays enabled throughout the app, including the sidebar and smaller labels.",
+            text="Choose from five font styles and turn bold text on or off for the whole app, including the sidebar and smaller labels.",
             font=app_font(size=13), justify="left", anchor="w",
             text_color=(palette_color("#777D75"), palette_color("#A7AAA1"))
         )
@@ -2200,6 +2217,21 @@ class MarketInsightApp(ctk.CTk):
         self.show_page(current_page if current_page in self.pages else "Settings")
         self.status.configure(text="{} font applied and saved.".format(value))
 
+    def change_bold_text(self):
+        """Save and apply the user's bold/regular text preference app-wide."""
+        global ACTIVE_BOLD_TEXT
+        ACTIVE_BOLD_TEXT = bool(self.bold_text_var.get())
+        self.settings["bold_text"] = ACTIVE_BOLD_TEXT
+        save_settings(self.settings)
+        current_page = getattr(self, "current_page", "Settings")
+        for child in self.winfo_children():
+            child.destroy()
+        self.configure(fg_color=(palette_color("#F1F0EC"), palette_color("#20211F")))
+        self._build_ui()
+        self._refresh_watchlist_text()
+        self.show_page(current_page if current_page in self.pages else "Settings")
+        self.status.configure(text="Bold text {}.".format("enabled" if ACTIVE_BOLD_TEXT else "disabled"))
+
     def change_platform(self, value):
         self.settings["selected_platform"] = value
         save_settings(self.settings)
@@ -2289,10 +2321,6 @@ class MarketInsightApp(ctk.CTk):
             except Exception as exc:
                 output[symbol] = {"error": str(exc)}
             remaining = total - (i + 1)
-            # Add each stock to the visible results immediately after its
-            # check completes, rather than waiting for the entire watchlist.
-            self.after(0, lambda sym=symbol, result=output[symbol], left=remaining, count=total:
-                       self._add_scan_result(sym, result, left, count))
         market_context = fetch_market_context()
         self.after(0, lambda: self._finish_scan(output, market_context))
 
@@ -2392,19 +2420,6 @@ class MarketInsightApp(ctk.CTk):
         labels["best"].configure(text="{} {:+.1f}%".format(best[0], best[1].get("day_change", 0)))
         labels["worst"].configure(text="{} {:+.1f}%".format(worst[0], worst[1].get("day_change", 0)))
         labels["volume"].configure(text="{} {:.1f}x".format(high_volume[0], high_volume[1].get("volume_ratio", 0)))
-
-    def _add_scan_result(self, symbol, data, remaining, total):
-        """Show a stock in the results list as soon as its check completes."""
-        self.results[symbol] = data
-        self._scan_remaining = remaining
-        self._scan_total = total
-        self._refresh_results_view()
-        self.scan_info.configure(text=f"{remaining}/{total} left")
-        checked = total - remaining
-        if "error" in data:
-            self.status.configure(text=f"Checked {checked}/{total} stocks · {symbol} could not be loaded")
-        else:
-            self.status.configure(text=f"Loaded {checked}/{total} stocks · checking {remaining} left")
 
     def _refresh_results_view(self):
         if not hasattr(self, "results_text"):
