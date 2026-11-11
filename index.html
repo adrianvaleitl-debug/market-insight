@@ -52,6 +52,32 @@ main{max-width:var(--max)}
 @media(max-width:900px){body{padding-left:0}.site-rail{display:none}}
 
 </style>
+
+<style id="adrian-theme-system">
+:root{--av-accent:#9ebce9;--av-accent-soft:#dce8f8;--av-accent-ink:#1e2c43}
+html[data-av-accent="dollar"]{--av-accent:#e8c98f;--av-accent-soft:#f3e7d2;--av-accent-ink:#342719}
+html[data-av-accent="euro"]{--av-accent:#9ebce9;--av-accent-soft:#dce8f8;--av-accent-ink:#1e2c43}
+html[data-av-accent="pound"]{--av-accent:#c4afe7;--av-accent-soft:#e9e0f6;--av-accent-ink:#302443}
+html[data-av-accent="yen"]{--av-accent:#e9aebc;--av-accent-soft:#f6dfe5;--av-accent-ink:#43242d}
+html[data-av-accent="franc"]{--av-accent:#9fcbd0;--av-accent-soft:#dceef0;--av-accent-ink:#20383b}
+html[data-av-mode="dark"]{color-scheme:dark;--av-bg:#171820;--av-panel:#222530;--av-panel2:#292c38;--av-text:#f1f0f5;--av-muted:#a4a5b1;--av-line:#353846}
+html[data-av-mode="light"]{color-scheme:light;--av-bg:#f5f3f0;--av-panel:#fffdfa;--av-panel2:#eeedf0;--av-text:#252631;--av-muted:#6d6e79;--av-line:#dedce0}
+html[data-av-mode="light"] body{background:var(--av-bg)!important;color:var(--av-text)!important}
+html[data-av-mode="light"] .nav,html[data-av-mode="light"] .site-rail,html[data-av-mode="light"] .feature,html[data-av-mode="light"] .preview,html[data-av-mode="light"] .screen,html[data-av-mode="light"] .metric,html[data-av-mode="light"] .stock,html[data-av-mode="light"] .table,html[data-av-mode="light"] .step,html[data-av-mode="light"] .about-card,html[data-av-mode="light"] .cta,html[data-av-mode="light"] .download,html[data-av-mode="light"] .section,html[data-av-mode="light"] .notice{background:var(--av-panel)!important;color:var(--av-text)!important;border-color:var(--av-line)!important;box-shadow:none}
+html[data-av-mode="light"] p,html[data-av-mode="light"] .lead,html[data-av-mode="light"] .section p,html[data-av-mode="light"] .navlinks{color:var(--av-muted)!important}
+html[data-av-mode="light"] .site-rail{background:var(--av-panel)!important}
+html[data-av-mode="light"] .rail-links a,html[data-av-mode="light"] .rail-title{color:var(--av-text)!important}
+html[data-av-mode="light"] .hero h1 span,html[data-av-mode="light"] .eyebrow,html[data-av-mode="light"] .pill,html[data-av-mode="light"] .live,html[data-av-mode="light"] .feature-icon,html[data-av-mode="light"] .footer a{color:var(--av-accent-ink)!important}
+html[data-av-mode="light"] .btn.primary,html[data-av-mode="light"] .rail-download{background:var(--av-accent)!important;color:var(--av-accent-ink)!important}
+html[data-av-mode="light"] .feature-icon,html[data-av-mode="light"] .pill,html[data-av-mode="light"] .live{background:var(--av-accent-soft)!important}
+html[data-av-mode="light"] .footer{color:var(--av-muted)!important;border-color:var(--av-line)!important}
+html[data-av-mode="light"] .nav{background:var(--av-panel)!important}
+html[data-av-mode="light"] .market-ticker span{background:var(--av-panel2)!important;color:var(--av-muted)!important}
+.av-theme-tools{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:10px 0 18px;padding:10px 12px;border:1px solid var(--av-line,#353846);border-radius:12px;background:var(--av-panel,#222530);width:max-content;max-width:100%}
+.av-theme-tools button{cursor:pointer;border:1px solid var(--av-line,#353846);border-radius:8px;padding:7px 9px;background:var(--av-panel2,#292c38);color:var(--av-text,#f1f0f5);font:10px 'DM Mono',monospace}
+.av-theme-tools button[aria-pressed=true]{border-color:var(--av-accent);box-shadow:inset 0 0 0 1px var(--av-accent)}
+.av-theme-tools .av-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+
 </head>
 <body>
 <aside class="site-rail" aria-label="Market Insight website sidebar">
@@ -196,6 +222,10 @@ main{max-width:var(--max)}
     if(portable)document.querySelectorAll("[data-latest-portable]").forEach(link=>{link.href=portable.browser_download_url;link.setAttribute("download",portable.name);});
   }catch(error){/* Keep the current verified release links as a fallback. */}
 })();
+</script>
+
+<script id="adrian-theme-controls">
+(()=>{const root=document.documentElement,key='av-theme-'+location.pathname;let mode='dark',accent='euro';try{mode=localStorage.getItem(key+'-mode')||mode;accent=localStorage.getItem(key+'-accent')||accent}catch{}const valid=['dollar','euro','pound','yen','franc'];function apply(){root.dataset.avMode=mode;root.dataset.avAccent=valid.includes(accent)?accent:'euro';document.querySelector('meta[name="theme-color"]')?.setAttribute('content',mode==='dark'?'#171820':'#f5f3f0');const mb=document.getElementById('av-mode');if(mb){mb.textContent=mode==='dark'?'☀ Light':'☾ Dark';mb.setAttribute('aria-pressed',String(mode==='light'))}document.querySelectorAll('[data-av-choice]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.avChoice===accent)))}function persist(){try{localStorage.setItem(key+'-mode',mode);localStorage.setItem(key+'-accent',accent)}catch{}apply()}const tools=document.createElement('div');tools.className='av-theme-tools';tools.setAttribute('aria-label','Appearance settings');tools.innerHTML='<button id="av-mode" type="button">☀ Light</button>'+[['dollar','#e8c98f','Dollar'],['euro','#9ebce9','Euro'],['pound','#c4afe7','Pound'],['yen','#e9aebc','Yen'],['franc','#9fcbd0','Franc']].map(([n,col,label])=>'<button type="button" data-av-choice="'+n+'"><i class="av-dot" style="background:'+col+'"></i>'+label+'</button>').join('');const nav=document.querySelector('.nav');if(nav)nav.append(tools);else document.body.prepend(tools);document.getElementById('av-mode').addEventListener('click',()=>{mode=mode==='dark'?'light':'dark';persist()});tools.querySelectorAll('[data-av-choice]').forEach(b=>b.addEventListener('click',()=>{accent=b.dataset.avChoice;persist()}));apply()})();
 </script>
 </body>
 </html>
