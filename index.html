@@ -89,6 +89,14 @@ html[data-av-mode="light"] .navlinks a,html[data-av-mode="light"] .site-rail a,h
 html[data-av-mode="light"] .hero h1 span,html[data-av-mode="light"] .eyebrow,html[data-av-mode="light"] .num,html[data-av-mode="light"] .up,html[data-av-mode="light"] .tag{color:var(--av-accent-ink)!important}
 html[data-av-mode="light"] .btn.primary,html[data-av-mode="light"] .primary,html[data-av-mode="light"] .rail-download{background:var(--av-accent)!important;color:var(--av-accent-ink)!important}
 </style>
+
+<style id="horizontal-feature-rails">
+/* Feature collections become swipeable rails without changing the page's vertical flow. */
+.features{display:flex;gap:15px;overflow-x:auto;overflow-y:hidden;padding:2px 2px 16px;scroll-snap-type:x mandatory;scroll-padding-inline:2px;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--green) #1d2922}
+.features>.feature{flex:0 0 clamp(245px,28%,330px);min-width:0;scroll-snap-align:start}
+.features::-webkit-scrollbar{height:9px}.features::-webkit-scrollbar-track{background:#1d2922;border-radius:99px}.features::-webkit-scrollbar-thumb{background:var(--green);border:2px solid #1d2922;border-radius:99px}
+@media(max-width:560px){.features>.feature{flex-basis:min(84vw,330px)}}
+</style>
 </head>
 <body>
 <aside class="site-rail" aria-label="Market Insight website sidebar">
