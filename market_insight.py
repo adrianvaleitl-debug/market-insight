@@ -10,6 +10,7 @@ import traceback
 import colorsys
 import webbrowser
 import requests
+import certifi
 import keyring
 from datetime import datetime, date, time
 from zoneinfo import ZoneInfo
@@ -33,12 +34,12 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V1.7"
+APP_VERSION = "V1.8"
 
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
     {
-        "version": "V1.7",
+        "version": "V1.8",
         "title": "A more disciplined trading workspace",
         "date": "November 2026",
         "items": [
@@ -2340,7 +2341,7 @@ class MarketInsightApp(ctk.CTk):
 
     def _check_for_updates_worker(self):
         try:
-            response = requests.get(GITHUB_RELEASES_API, headers={"Accept": "application/vnd.github+json"}, timeout=12)
+            response = requests.get(GITHUB_RELEASES_API, headers={"Accept": "application/vnd.github+json", "User-Agent": "Market-Insight-Updater/1.8"}, timeout=(12, 25), verify=certifi.where())
             response.raise_for_status()
             release = response.json()
             latest_tag = str(release.get("tag_name", "")).strip()
@@ -2359,8 +2360,9 @@ class MarketInsightApp(ctk.CTk):
                 return
             self.after(0, lambda tag=latest_tag, download_url=url, name=expected_name, expected_size=size, expected_digest=digest.split(":", 1)[1]:
                        self._offer_update_download(tag, download_url, name, expected_size, expected_digest))
-        except Exception:
-            self.after(0, lambda: self._show_update_status("Couldn't check GitHub right now. Check your connection and try again."))
+        except Exception as exc:
+            detail = str(exc).replace("\n", " ")[:180]
+            self.after(0, lambda error=detail: self._show_update_status("GitHub update check failed: " + error))
         finally:
             self._update_check_running = False
 
