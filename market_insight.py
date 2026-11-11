@@ -640,7 +640,7 @@ class MarketInsightApp(ctk.CTk):
             set_windows_window_icon(self, icon_path)
         self.configure(fg_color=("#EDEDED", "#101010"))
         self.apply_liquid_glass()
-                self.results = {}
+        self.results = {}
         self.scanning = False
         self.after_id = None
         # Keep the root window mapped while onboarding dialogs are displayed.
