@@ -1,5 +1,13 @@
 # Changelog
 
+## V1.16 — 11 November 2026
+- Prevented live theme changes from resetting CustomTkinter's global theme manager.
+- Kept the existing accent palette refresh and rebuilt the interface without duplicating price-alert polling.
+- Removed per-resize Gaussian-blur image generation to improve interactive resizing.
+- Restored the 1380 × 900 default window and 1020 × 680 minimum/windowed sizing used by the other desktop app.
+- Preserved saved watchlists, scans, plans, alerts, credentials and journals.
+
+
 ## V1.15 — 11 November 2026
 - Rebuilt the Windows glass host using colour-key transparency so acrylic can appear behind Market Insight without fading text or controls.
 - Expanded the transparency control's tint range and reapply timing.
