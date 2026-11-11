@@ -2,6 +2,13 @@
 
 ## What's New
 
+### V1.16 — Stable colour themes and smoother window resizing
+
+- **Theme refresh:** removed live CustomTkinter theme resets that could leave existing widgets inconsistent during colour changes.
+- **Resize performance:** stopped rebuilding the full blurred spotlight bitmap on every window-size event.
+- **Window sizing:** returned the default and windowed dimensions to the 1380 × 900 / 1020 × 680 sizing used by the other desktop app.
+- **Research data preserved:** watchlists, scans, saved plans, alerts, credentials, journals and research data remain intact.
+
 ### V1.15 — A proper glass layer and clearer release history
 
 - **Windows glass host:** rebuilt the transparent host so the acrylic backdrop can show through without fading text or controls.
