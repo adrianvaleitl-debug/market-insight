@@ -1,5 +1,5 @@
 #define MyAppName "Market Insight"
-#define MyAppVersion "V1.15"
+#define MyAppVersion "V1.16"
 #define MyAppPublisher "Adrian Vale"
 #define MyAppExeName "Market Insight.exe"
 
