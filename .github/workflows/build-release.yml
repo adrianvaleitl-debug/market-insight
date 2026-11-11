@@ -63,26 +63,26 @@ jobs:
         shell: pwsh
         run: |
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
-          if (!(Test-Path "installer-output/Market_Insight_Setup_V1.16.exe")) { throw "The Windows installer was not created." }
+          if (!(Test-Path "installer-output/Market_Insight_Setup_V2.1.exe")) { throw "The Windows installer was not created." }
 
       - name: Assemble source ZIP for existing users
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path Market_Insight | Out-Null
           Copy-Item market_insight.py, requirements.txt, SETUP_AND_START.bat, Start_Market_Insight.vbs, market_insight.ico, START_IN_DIAGNOSTIC_MODE.bat, Create_Desktop_Shortcut.ps1, README.md -Destination Market_Insight
-          Compress-Archive -Path Market_Insight -DestinationPath Market_Insight_V1.16.zip -Force
+          Compress-Archive -Path Market_Insight -DestinationPath Market_Insight_V2.1.zip -Force
 
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: pwsh
         run: |
-          gh release view V1.16 --repo adrianvaleitl-debug/market-insight 2>$null
+          gh release view V2.1 --repo adrianvaleitl-debug/market-insight 2>$null
           if ($LASTEXITCODE -ne 0) {
-            gh release create V1.16 --repo adrianvaleitl-debug/market-insight --title "Market Insight V1.16" --notes "Market Insight V1.16 rebuilds the Windows acrylic backdrop and transparency layer, moves the accent spotlight onto the transparent host, and redesigns the in-app release history." --target main
-            if ($LASTEXITCODE -ne 0) { throw "Could not create the V1.16 GitHub release." }
+            gh release create V2.1 --repo adrianvaleitl-debug/market-insight --title "Market Insight V2.1" --notes "Market Insight V2.1 rebuilds the Windows acrylic backdrop and transparency layer, moves the accent spotlight onto the transparent host, and redesigns the in-app release history." --target main
+            if ($LASTEXITCODE -ne 0) { throw "Could not create the V2.1 GitHub release." }
           }
-          gh release upload V1.16 "installer-output/Market_Insight_Setup_V1.16.exe" "Market_Insight_V1.16.zip" --repo adrianvaleitl-debug/market-insight --clobber
-          if ($LASTEXITCODE -ne 0) { throw "Could not upload the V1.16 release assets." }
-          gh release edit V1.16 --repo adrianvaleitl-debug/market-insight --title "Market Insight V1.16" --notes "Market Insight V1.16 rebuilds the Windows acrylic backdrop and transparency layer, moves the accent spotlight onto the transparent host, and redesigns the in-app release history."
-          if ($LASTEXITCODE -ne 0) { throw "Could not update the V1.16 release notes." }
+          gh release upload V2.1 "installer-output/Market_Insight_Setup_V2.1.exe" "Market_Insight_V2.1.zip" --repo adrianvaleitl-debug/market-insight --clobber
+          if ($LASTEXITCODE -ne 0) { throw "Could not upload the V2.1 release assets." }
+          gh release edit V2.1 --repo adrianvaleitl-debug/market-insight --title "Market Insight V2.1" --notes "Market Insight V2.1 rebuilds the Windows acrylic backdrop and transparency layer, moves the accent spotlight onto the transparent host, and redesigns the in-app release history."
+          if ($LASTEXITCODE -ne 0) { throw "Could not update the V2.1 release notes." }
