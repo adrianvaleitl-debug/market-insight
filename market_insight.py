@@ -44,8 +44,8 @@ RELEASE_NOTES = [
         "title": "Black glass with optional accent colours",
         "date": "November 2026",
         "items": [
-            "Restored Black, Amber, Azure, Lavender, Rose and Teal accent choices in Settings, with Black as the default.",
-            "Kept the charcoal acrylic-glass surfaces neutral; selected colours are limited to interface accents and controls.",
+            "Restored six optional accent choices: Black, Amber, Azure, Lavender, Rose and Teal, with Black as the default.",
+            "Kept the charcoal acrylic-glass surfaces neutral; accent colours are limited to interface details and controls.",
             "Preserved existing watchlists, scans, saved plans, alerts, credentials and research data.",
         ],
     },
