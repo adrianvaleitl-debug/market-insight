@@ -19,6 +19,34 @@ from pathlib import Path
 import customtkinter as ctk
 from PIL import Image, ImageDraw, ImageFilter, ImageTk
 
+
+def install_accent_spotlight(window, accent, background="#101012"):
+    """Paint a restrained, blurred accent-colour glow behind the glass workspace."""
+    try:
+        if not isinstance(accent, str) or len(accent) != 7 or not accent.startswith("#"):
+            return
+        window.update_idletasks()
+        width = max(900, int(window.winfo_width()))
+        height = max(620, int(window.winfo_height()))
+        rgb = tuple(int(accent[index:index + 2], 16) for index in (1, 3, 5))
+        glow = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(glow)
+        draw.ellipse((int(width * .50), -int(height * .35), int(width * 1.25), int(height * .58)), fill=(*rgb, 34))
+        draw.ellipse((-int(width * .30), int(height * .55), int(width * .35), int(height * 1.20)), fill=(*rgb, 12))
+        glow = glow.filter(ImageFilter.GaussianBlur(max(72, int(min(width, height) * .17))))
+        photo = ImageTk.PhotoImage(glow)
+        previous = getattr(window, "_accent_spotlight_canvas", None)
+        if previous is not None:
+            previous.destroy()
+        canvas = tk.Canvas(window, width=width, height=height, highlightthickness=0, borderwidth=0, bg=background)
+        canvas.place(x=0, y=0, relwidth=1, relheight=1)
+        canvas.create_image(0, 0, anchor="nw", image=photo)
+        canvas.lower()
+        window._accent_spotlight_canvas = canvas
+        window._accent_spotlight_photo = photo
+    except Exception:
+        pass
+
 # Apply bold typography globally, including widgets that use CustomTkinter's
 # built-in default font (such as sidebar buttons and small helper/status text).
 _original_ctkfont_init = ctk.CTkFont.__init__
@@ -35,17 +63,20 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V1.12"
+APP_VERSION = "V1.13"
+PERSONAL_SITE = "https://adrianvaleitl-debug.github.io/"
+KOFI_URL = "https://ko-fi.com/marketinsight"
 
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
     {
-        "version": "V1.12",
-        "title": "Black glass with optional accent colours",
+        "version": "V1.13",
+        "title": "Accent-lit glass and creator shortcuts",
         "date": "November 2026",
         "items": [
-            "Restored six optional accent choices: Black, Amber, Azure, Lavender, Rose and Teal, with Black as the default.",
-            "Kept the charcoal acrylic-glass surfaces neutral; accent colours are limited to interface details and controls.",
+            "Added persistent Adrian Vale website and Donate · Ko-fi shortcuts to the desktop sidebar.",
+            "Added a soft blurred spotlight that follows the selected accent colour.",
+            "Reapplied Windows acrylic blur whenever the transparency slider changes.",
             "Preserved existing watchlists, scans, saved plans, alerts, credentials and research data.",
         ],
     },
@@ -1101,6 +1132,7 @@ class MarketInsightApp(ctk.CTk):
         webbrowser.open(url)
 
     def _build_ui(self):
+        install_accent_spotlight(self, COLOUR_ACCENTS.get(ACTIVE_COLOUR_THEME, COLOUR_ACCENTS["Black"])[0], "#F0F0F0" if ctk.get_appearance_mode()=="Light" else "#101012")
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
@@ -1159,7 +1191,17 @@ class MarketInsightApp(ctk.CTk):
                           ).pack(fill="x", padx=4, pady=2)
         ctk.CTkLabel(self.sidebar, text="Market Insight  •  Research only  •  Adrian Vale",
                      font=app_font(size=12, weight="bold"), text_color=(palette_color("#7F7F7F"), palette_color("#929292")),
-                     justify="left").pack(side="bottom", anchor="w", padx=14, pady=10)
+                     justify="left").pack(side="bottom", anchor="w", padx=14, pady=(8, 4))
+        creator_actions = ctk.CTkFrame(self.sidebar, fg_color="transparent")
+        creator_actions.pack(side="bottom", fill="x", padx=12, pady=(0, 8))
+        ctk.CTkButton(creator_actions, text="My website ↗", height=31, corner_radius=10,
+                      fg_color="transparent", hover_color=(palette_color("#D9D9D9"), palette_color("#383838")),
+                      text_color=(palette_color("#555555"), palette_color("#D7D7D7")),
+                      command=lambda: webbrowser.open(PERSONAL_SITE)).pack(fill="x", padx=2, pady=2)
+        ctk.CTkButton(creator_actions, text="Donate · Ko-fi ↗", height=31, corner_radius=10,
+                      fg_color=COLOUR_ACCENTS.get(ACTIVE_COLOUR_THEME, COLOUR_ACCENTS["Black"])[0],
+                      hover_color=COLOUR_ACCENTS.get(ACTIVE_COLOUR_THEME, COLOUR_ACCENTS["Black"])[1],
+                      text_color="#202020", command=lambda: webbrowser.open(KOFI_URL)).pack(fill="x", padx=2, pady=2)
 
         self.main = ctk.CTkFrame(self, corner_radius=24, fg_color="transparent")
         self.main.grid(row=0, column=1, sticky="nsew", padx=(8, 14), pady=14)
@@ -2514,6 +2556,7 @@ class MarketInsightApp(ctk.CTk):
             self.attributes("-alpha", 1 - value / 100)
         except Exception:
             pass
+        self.apply_liquid_glass()
         save_settings(self.settings)
 
     def change_appearance(self, value):
