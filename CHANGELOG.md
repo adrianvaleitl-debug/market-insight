@@ -1,5 +1,6 @@
 # Changelog
 
 ## V1.12 — 11 November 2026
-- Refined the USD, EUR, GBP, JPY and CHF currency-inspired accent palettes across Light and Dark modes.
-- Retained the neutral acrylic-glass interface and existing market research, watchlist and Trade Planner features.
+- Restored six optional accent choices: Black, Amber, Azure, Lavender, Rose and Teal, with Black as the default.
+- Kept the charcoal acrylic-glass surfaces neutral; accent colours are limited to interface details and controls.
+- Preserved existing watchlists, scans, saved plans, alerts, credentials and research data.
