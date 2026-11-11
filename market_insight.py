@@ -40,6 +40,16 @@ APP_VERSION = "V1.10"
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
     {
+        "version": "V1.10",
+        "title": "A unified forest-glass workspace",
+        "date": "November 2026",
+        "items": [
+            "Rebuilt the desktop interface around the website's dark forest-green glass design.",
+            "Introduced a rounded floating sidebar, softly bordered research panels and champagne-gold controls.",
+            "Standardised dropdowns, buttons and settings surfaces while preserving saved watchlists, scans, credentials and trading tools.",
+        ],
+    },
+    {
         "version": "V1.9",
         "title": "Currency colours that feel right",
         "date": "November 2026",
