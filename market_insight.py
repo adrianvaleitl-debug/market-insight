@@ -471,9 +471,10 @@ def apply_ctk_palette_theme():
         "CTkCheckBox": {"fg_color": [primary, primary], "hover_color": [hover, hover], "border_color": ["#7F7F7F", "#7F7F7F"], "checkmark_color": ["#202020", "#202020"]},
         "CTkSwitch": {"fg_color": ["#434343", "#434343"], "progress_color": [primary, primary], "button_color": ["#F2F2F2", "#F2F2F2"], "button_hover_color": ["#FFFFFF", "#FFFFFF"]},
         "CTkOptionMenu": {"fg_color": ["#282828", "#282828"], "button_color": [primary, primary], "button_hover_color": [hover, hover], "text_color": ["#F2F2F2", "#F2F2F2"], "dropdown_fg_color": ["#1F1F1F", "#1F1F1F"], "dropdown_hover_color": ["#363636", "#363636"], "dropdown_text_color": ["#F2F2F2", "#F2F2F2"], "corner_radius": 13},
-        "CTkSlider": {"progress_color": [palette_color("#797979"), palette_color("#6E6E6E")], "button_color": [palette_color("#797979"), palette_color("#6E6E6E")], "button_hover_color": [palette_color("#676767"), palette_color("#515151")]},
-        "CTkProgressBar": {"progress_color": [palette_color("#797979"), palette_color("#6E6E6E")]},
-        "CTkRadioButton": {"fg_color": [palette_color("#797979"), palette_color("#6E6E6E")], "hover_color": [palette_color("#676767"), palette_color("#515151")]},
+        "CTkSlider": {"progress_color": [primary, primary], "button_color": [primary, primary], "button_hover_color": [hover, hover]},
+        "CTkProgressBar": {"progress_color": [primary, primary]},
+        "CTkRadioButton": {"fg_color": [primary, primary], "hover_color": [hover, hover]},
+        "CTkSegmentedButton": {"selected_color": [primary, primary], "selected_hover_color": [hover, hover]},
     }
     for widget_name, values in muted.items():
         if widget_name in theme:
