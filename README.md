@@ -2,9 +2,9 @@
 
 ## What's New
 
-### V1.5 — Research workspace upgrades
+### V1.6 — Research workspace upgrades
 
-The V1.5 update adds five new research and organisation tools:
+The V1.6 update adds five new research and organisation tools:
 
 - **Watchlist folders:** group tickers into custom lists such as Tech, ETFs and Long-term without removing them from the main scan.
 - **Scan history:** keep the latest 20 completed scan summaries and compare the strongest results from each run.
