@@ -33,10 +33,20 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V1.6"
+APP_VERSION = "V1.7"
 
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
+    {
+        "version": "V1.7",
+        "title": "A more disciplined trading workspace",
+        "date": "November 2026",
+        "items": [
+            "Trade Planner with risk-based position sizing and reward-to-risk calculations.",
+            "Save up to 30 trade plans locally and revisit entry, stop and target assumptions.",
+            "Input guardrails to flag invalid price levels and excessive risk percentages.",
+        ],
+    },
     {
         "version": "V1.6",
         "title": "A more focused analyst workspace",
@@ -261,6 +271,7 @@ DEFAULTS = {
     "ticker_notes": {},
     "scan_presets": {},
     "daily_briefing": "",
+    "trade_plans": [],
 }
 
 
@@ -1157,6 +1168,10 @@ class MarketInsightApp(ctk.CTk):
         actions.pack(fill="x", padx=14, pady=(12, 0))
         ctk.CTkButton(actions, text="Scan watchlist", height=42, corner_radius=16,
                       command=self.start_scan).pack(side="left")
+        ctk.CTkButton(actions, text="Trade planner", height=40, corner_radius=12,
+                      fg_color=(palette_color("#E4E4DC"), palette_color("#35443C")),
+                      text_color=(palette_color("#586D5C"), palette_color("#D6E8DC")),
+                      command=self.open_trade_planner).pack(side="left", padx=8)
         ctk.CTkButton(actions, text="Open highest-rated stock", height=40, corner_radius=12,
                       fg_color=(palette_color("#E4E4DC"), palette_color("#35443C")), text_color=(palette_color("#586D5C"), palette_color("#D6E8DC")),
                       command=self.open_top_result).pack(side="left", padx=8)
@@ -1638,6 +1653,48 @@ class MarketInsightApp(ctk.CTk):
             self.settings["daily_briefing"] = message
             save_settings(self.settings)
 
+
+    def open_trade_planner(self):
+        window=ctk.CTkToplevel(self)
+        window.title("Trade Planner")
+        window.geometry("760x650")
+        window.minsize(650,560)
+        window.transient(self)
+        window.configure(fg_color=(palette_color("#F1F0EC"),palette_color("#20211F")))
+        self.card(window,"Trade Planner","Plan risk, stop distance and potential reward before placing an order.")
+        form=ctk.CTkFrame(window,fg_color="transparent")
+        form.pack(fill="x",padx=20,pady=12)
+        fields={}
+        for label,default in [("Account balance",str(self.settings.get("balance",1000))),("Risk per trade (%)",str(self.settings.get("risk_percent",1))),("Entry price","100"),("Stop-loss price","96"),("Target price","112")]:
+            row=ctk.CTkFrame(form,fg_color="transparent");row.pack(fill="x",pady=5)
+            ctk.CTkLabel(row,text=label,width=190,anchor="w",font=app_font(size=13,weight="bold")).pack(side="left")
+            entry=ctk.CTkEntry(row,width=220);entry.insert(0,default);entry.pack(side="left")
+            fields[label]=entry
+        result=ctk.CTkLabel(window,text="Enter your assumptions and calculate a plan.",font=app_font(size=14,weight="bold"),justify="left")
+        result.pack(anchor="w",padx=24,pady=14)
+        def calculate(save=False):
+            try:
+                balance=float(fields["Account balance"].get());risk=float(fields["Risk per trade (%)"].get())
+                entry=float(fields["Entry price"].get());stop=float(fields["Stop-loss price"].get());target=float(fields["Target price"].get())
+                if min(balance,risk,entry,stop,target)<=0 or risk>100 or not stop<entry<target:raise ValueError
+                risk_cash=balance*risk/100;distance=entry-stop;shares=int(risk_cash/distance)
+                reward=target-entry;ratio=reward/distance;position=shares*entry
+                result.configure(text=f"Suggested size: {shares:,} shares\nPosition value: {position:,.2f} {self.settings.get('currency','USD')}\nRisk at stop: {shares*distance:,.2f}\nPotential reward: {shares*reward:,.2f}\nReward-to-risk: {ratio:.2f}:1")
+                if save:
+                    self.settings.setdefault("trade_plans",[]).insert(0,{"date":datetime.now().strftime("%Y-%m-%d %H:%M"),"entry":entry,"stop":stop,"target":target,"shares":shares,"ratio":round(ratio,2)})
+                    self.settings["trade_plans"]=self.settings["trade_plans"][:30]
+                    save_settings(self.settings)
+                    messagebox.showinfo(APP_NAME,"Trade plan saved on this device.",parent=window)
+            except (ValueError,ZeroDivisionError):
+                result.configure(text="Check your inputs. Use positive numbers and a long setup where stop < entry < target.")
+        actions=ctk.CTkFrame(window,fg_color="transparent");actions.pack(anchor="w",padx=20,pady=8)
+        ctk.CTkButton(actions,text="Calculate",command=calculate).pack(side="left",padx=5)
+        ctk.CTkButton(actions,text="Save plan",command=lambda:calculate(True)).pack(side="left",padx=5)
+        history=self.card(window,"Recent saved plans","Stored locally in your Market Insight settings.")
+        for plan in self.settings.get("trade_plans",[])[:8]:
+            ctk.CTkLabel(history,text=f"{plan.get('date','')} · {plan.get('shares')} shares · {plan.get('ratio')}:1 reward/risk",font=app_font(size=12,weight="bold")).pack(anchor="w",padx=16,pady=4)
+        if not self.settings.get("trade_plans"):
+            ctk.CTkLabel(history,text="No saved plans yet.",font=app_font(size=12)).pack(anchor="w",padx=16,pady=(0,12))
 
     def _build_economic_calendar(self):
         page = self.pages["Economic Calendar"]
