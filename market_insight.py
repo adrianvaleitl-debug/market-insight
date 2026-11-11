@@ -12,6 +12,7 @@ import webbrowser
 import requests
 import certifi
 import keyring
+import tkinter as tk
 from datetime import datetime, date, time
 from zoneinfo import ZoneInfo
 from pathlib import Path
