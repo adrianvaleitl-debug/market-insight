@@ -684,7 +684,7 @@ class MarketInsightApp(ctk.CTk):
             dark=ctk.get_appearance_mode()=="Dark"
             base="#101612" if dark else "#F1F0EC"
             accent=COLOUR_THEME_HUES.get(ACTIVE_COLOUR_THEME,COLOUR_THEME_HUES["Dollar"])
-            accents=["#"+format(int(accent),"02X")+"B98A","#8EBDA8","#9EBCE9"]
+            hue=accent/360\n            rgb=colorsys.hls_to_rgb(hue,0.62,0.34)\n            theme_glow="#"+"".join(f"{round(channel*255):02X}" for channel in rgb)\n            accents=[theme_glow,"#8EBDA8","#9EBCE9"]
             canvas=tk.Canvas(self,highlightthickness=0,bd=0,bg=base)
             canvas.place(x=0,y=0,relwidth=1,relheight=1)
             self._spotlight_canvas=canvas
