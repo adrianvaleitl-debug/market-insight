@@ -791,14 +791,30 @@ class MarketInsightApp(ctk.CTk):
             print(details)
 
     def _fit_text_to_width(self, label, parent, horizontal_padding=36, minimum=150):
-        """Wrap paragraph-style labels to the space actually available in their parent."""
-        def update_wrap(_event=None):
+        """Debounce paragraph wrapping so resize drags do not trigger dozens of redraws."""
+        state = {"job": None, "width": None}
+
+        def update_wrap():
+            state["job"] = None
             try:
+                if not label.winfo_exists() or not parent.winfo_exists():
+                    return
                 available = max(minimum, parent.winfo_width() - horizontal_padding)
-                label.configure(wraplength=available)
+                if available != state["width"]:
+                    state["width"] = available
+                    label.configure(wraplength=available)
             except Exception:
                 pass
-        parent.bind("<Configure>", update_wrap, add="+")
+
+        def schedule_wrap(_event=None):
+            try:
+                if state["job"] is not None:
+                    parent.after_cancel(state["job"])
+                state["job"] = parent.after(45, update_wrap)
+            except Exception:
+                pass
+
+        parent.bind("<Configure>", schedule_wrap, add="+")
         label.after(100, update_wrap)
 
     def _validate_alpaca_credentials(self, api_key, secret_key):
