@@ -1,19 +1,20 @@
 # Changelog
 
+## V1.15 — 11 November 2026
+- Rebuilt the Windows glass host using colour-key transparency so acrylic can appear behind Market Insight without fading text or controls.
+- Expanded the transparency control's tint range and reapply timing.
+- Moved the accent-colour nebula spotlight onto the transparent host layer.
+- Replaced the plain What's New list with a featured release and clearer version timeline.
+- Preserved watchlists, scans, saved plans, alerts, credentials, journals and research data.
+
 ## V1.14 — 11 November 2026
-- Fixed accent-colour spotlight rendering with a multi-layer, softly blurred nebula effect that redraws on resize.
-- Improved Windows 11 acrylic/transient backdrop handling and retained a legacy acrylic fallback.
-- Kept app content crisp by avoiding whole-window opacity changes for transparency adjustments.
-- Deferred accent refresh work to prevent the interface from being torn down before its replacement is ready.
-- Preserved existing watchlists, scans, saved plans, alerts, credentials and research data.
+- Added the accent-colour spotlight and persistent Adrian Vale / Ko-fi shortcuts.
+- Introduced the initial Windows transparency integration; the backdrop implementation is refined in V1.15.
 
 ## V1.13 — 11 November 2026
-- Added persistent Adrian Vale website and Donate · Ko-fi links to the desktop sidebar.
-- Added a soft, blurred spotlight that follows the selected accent colour.
-- Reapplied Windows acrylic blur whenever the transparency slider changes.
-- Preserved existing watchlists, scans, saved plans, alerts, credentials and research data.
+- Added persistent creator links to the desktop sidebar.
+- Added the first accent-colour spotlight layer.
 
 ## V1.12 — 11 November 2026
-- Restored six optional accent choices: Black, Amber, Azure, Lavender, Rose and Teal, with Black as the default.
-- Kept the charcoal acrylic-glass surfaces neutral; accent colours are limited to interface details and controls.
-- Preserved existing watchlists, scans, saved plans, alerts, credentials and research data.
+- Restored six optional accent choices: Black, Amber, Azure, Lavender, Rose and Teal.
+- Kept charcoal surfaces neutral and preserved saved watchlists, plans, alerts and credentials.
