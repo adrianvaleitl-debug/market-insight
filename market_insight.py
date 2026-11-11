@@ -35,7 +35,7 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V1.9"
+APP_VERSION = "V1.10"
 
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
@@ -328,26 +328,8 @@ def currency_to_usd_rate(currency):
 
 
 def palette_color(value):
-    """Tint the existing interface colours for the selected pastel palette."""
-    try:
-        if not isinstance(value, str) or not value.startswith("#") or len(value) != 7:
-            return value
-        red, green, blue = (int(value[i:i + 2], 16) / 255 for i in (1, 3, 5))
-        hue, lightness, saturation = colorsys.rgb_to_hls(red, green, blue)
-        target = COLOUR_THEME_HUES.get(ACTIVE_COLOUR_THEME, COLOUR_THEME_HUES["Dollar"]) / 360
-        degrees = hue * 360
-        # Preserve meaningful warning/status colours (reds and oranges).
-        if saturation > 0.24 and (degrees < 48 or degrees > 330):
-            return value
-        if saturation < 0.10:
-            saturation = 0.22
-        elif saturation < 0.24:
-            saturation = 0.28
-        hue = target
-        red, green, blue = colorsys.hls_to_rgb(hue, lightness, saturation)
-        return "#{:02X}{:02X}{:02X}".format(round(red * 255), round(green * 255), round(blue * 255))
-    except Exception:
-        return value
+    """Keep the forest-green glass surfaces neutral; accents are applied by controls."""
+    return value
 
 def apply_ctk_palette_theme():
     """Update CustomTkinter's built-in accent colours for the active palette."""
@@ -1199,7 +1181,7 @@ class MarketInsightApp(ctk.CTk):
 
         self.pages = {}
         for name in ["Overview", "What's New", "Market Hours", "Watchlist", "Economic Calendar", "Price Alerts", "Trading Journal", "Settings", "About"]:
-            frame = ctk.CTkScrollableFrame(self.main, corner_radius=24, border_width=1, border_color=(palette_color("#E0E3DA"), palette_color("#354238")), fg_color=(palette_color("#F4F5EF"), palette_color("#202922")))
+            frame = ctk.CTkScrollableFrame(self.main, corner_radius=24, border_width=1, border_color=(palette_color("#E0E3DA"), palette_color("#354238")), fg_color=("#E9EEE8", "#0D1912"))
             frame.grid(row=1, column=0, sticky="nsew", padx=(0, 2), pady=(0, 2))
             self.pages[name] = frame
         self._build_overview()
