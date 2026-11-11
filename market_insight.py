@@ -2015,7 +2015,7 @@ class MarketInsightApp(ctk.CTk):
             preferences, from_=0, to=35, number_of_steps=35,
             command=self.change_transparency
         )
-        self.transparency_slider.set(int(self.settings.get("transparency", 94)))
+        self.transparency_slider.set(int(self.settings.get("transparency", 8)))
         self.transparency_slider.pack(fill="x", padx=18, pady=(0, 14))
 
         ctk.CTkLabel(
@@ -2496,7 +2496,7 @@ class MarketInsightApp(ctk.CTk):
 
     def change_transparency(self, value):
         """Apply and persist the user's window opacity preference."""
-        value = round(max(78, min(100, float(value))))
+        value = round(max(0, min(35, float(value))))
         self.settings["transparency"] = value
         if hasattr(self, "transparency_value"):
             self.transparency_value.configure(text="{}%".format(value))
