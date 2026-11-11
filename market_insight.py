@@ -682,12 +682,12 @@ class MarketInsightApp(ctk.CTk):
         """Add blurred currency-colour spotlights behind the market workspace."""
         try:
             dark=ctk.get_appearance_mode()=="Dark"
-            base="#101612" if dark else "#F1F0EC"
+            base="#090F16" if dark else "#F1F0EC"
             accent=COLOUR_THEME_HUES.get(ACTIVE_COLOUR_THEME,COLOUR_THEME_HUES["Dollar"])
             hue=accent/360
             rgb=colorsys.hls_to_rgb(hue,0.62,0.34)
             theme_glow="#"+"".join(f"{round(channel*255):02X}" for channel in rgb)
-            accents=[theme_glow,"#8EBDA8","#9EBCE9"]
+            accents=[theme_glow,"#75A8E8","#B69AE8","#76C6C0"]
             canvas=tk.Canvas(self,highlightthickness=0,bd=0,bg=base)
             canvas.place(x=0,y=0,relwidth=1,relheight=1)
             self._spotlight_canvas=canvas
@@ -695,11 +695,11 @@ class MarketInsightApp(ctk.CTk):
                 if event is not None and event.widget is not self:return
                 w=max(480,self.winfo_width());h=max(360,self.winfo_height())
                 glow=Image.new("RGBA",(w,h),(0,0,0,0));draw=ImageDraw.Draw(glow)
-                alpha=78 if dark else 34
-                for x,y,r,color in [(-.12,-.10,.76,accents[0]),(.82,.12,.66,accents[1]),(.45,.92,.72,accents[2])]:
+                alpha=178 if dark else 82
+                for x,y,r,color in [(-.08,-.10,.66,accents[0]),(.84,.12,.58,accents[1]),(.48,.92,.64,accents[2]),(.10,.62,.42,accents[3])]:
                     rgb=tuple(int(color[i:i+2],16) for i in (1,3,5));cx,cy=x*w,y*h;rad=r*min(w,h)
                     draw.ellipse((cx-rad,cy-rad,cx+rad,cy+rad),fill=(*rgb,alpha))
-                glow=glow.filter(ImageFilter.GaussianBlur(max(65,int(min(w,h)*.17))))
+                glow=glow.filter(ImageFilter.GaussianBlur(max(85,int(min(w,h)*.14))))
                 image=Image.new("RGBA",(w,h),base);image.alpha_composite(glow)
                 self._spotlight_photo=ImageTk.PhotoImage(image.convert("RGB"))
                 canvas.delete("all");canvas.create_image(0,0,anchor="nw",image=self._spotlight_photo);canvas.lower()
