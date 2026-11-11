@@ -2667,8 +2667,7 @@ class MarketInsightApp(ctk.CTk):
         self.settings["transparency"] = value
         if hasattr(self, "transparency_value"):
             self.transparency_value.configure(text="{}%".format(value))
-        try:
-            self.after_idle(self.apply_liquid_glass)
+        self.after_idle(self.apply_liquid_glass)
         save_settings(self.settings)
 
     def change_appearance(self, value):
