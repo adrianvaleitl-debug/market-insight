@@ -126,13 +126,8 @@ def install_accent_spotlight(window, accent, background="#101012"):
         canvas.lower()
         window._accent_spotlight_canvas = canvas
         window._accent_spotlight_photo = photo
-        if not getattr(window, "_accent_spotlight_resize_bound", False):
-            def redraw(event):
-                if event.widget is window:
-                    window.after_idle(lambda: install_accent_spotlight(
-                        window, getattr(window, "_active_spotlight_colour", accent), background))
-            window.bind("<Configure>", redraw, add="+")
-            window._accent_spotlight_resize_bound = True
+        # Do not regenerate a blurred full-window bitmap for every resize event.
+        # Keeping the glow static removes expensive image processing while dragging.
         window._active_spotlight_colour = accent
     except Exception:
         # A decorative layer must never interrupt app startup or navigation.
@@ -154,14 +149,14 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V1.15"
+APP_VERSION = "V1.16"
 PERSONAL_SITE = "https://adrianvaleitl-debug.github.io/"
 KOFI_URL = "https://ko-fi.com/marketinsight"
 
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
     {
-        "version": "V1.15",
+        "version": "V1.16",
         "title": "A proper glass layer and a redesigned release history",
         "date": "11 November 2026",
         "items": [
@@ -467,7 +462,8 @@ def palette_color(value):
 
 def apply_ctk_palette_theme():
     """Update CustomTkinter's built-in accent colours for the active palette."""
-    ctk.set_default_color_theme("green")
+    # The base CustomTkinter theme is loaded once at startup. Do not replace
+    # ThemeManager during a live palette change; update its existing entries.
     theme = ctk.ThemeManager.theme
     primary, hover = COLOUR_ACCENTS.get(ACTIVE_COLOUR_THEME, COLOUR_ACCENTS["Black"])
     muted = {
@@ -745,8 +741,8 @@ class MarketInsightApp(ctk.CTk):
                 pass
         screen_w = self.winfo_screenwidth()
         screen_h = self.winfo_screenheight()
-        self.geometry(f"{min(1180, max(900, screen_w - 80))}x{min(760, max(620, screen_h - 100))}")
-        self.minsize(min(960, max(860, screen_w - 80)), min(640, max(580, screen_h - 100)))
+        self.geometry(f"{min(1380, max(1080, screen_w - 80))}x{min(900, max(720, screen_h - 100))}")
+        self.minsize(1020, 680)
         # Apply native Windows icon handles after the window has a real HWND.
         if icon_path and icon_path.exists():
             self.update_idletasks()
@@ -930,6 +926,9 @@ class MarketInsightApp(ctk.CTk):
         self._refresh_watchlist_text()
         # Apply the selected window mode only after Tk has mapped the main window.
         self.after(250, self.apply_startup_window_mode)
+        if not getattr(self, "_price_alert_poll_started", False):
+            self._price_alert_poll_started = True
+            self.after(15000, self._check_price_alerts)
         self.after(700, self._maybe_prompt_shortcut)
         # Show the beginner walkthrough once, on the user's first successful launch.
         if not self.settings.get("tutorial_completed", False):
@@ -1061,7 +1060,7 @@ class MarketInsightApp(ctk.CTk):
                 self.attributes("-fullscreen", True)
             elif mode == "Windowed":
                 self.state("normal")
-                self.geometry("1180x760")
+                self.geometry("1380x900")
             else:
                 self.state("zoomed")
         except Exception:
