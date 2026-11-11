@@ -2708,7 +2708,19 @@ class MarketInsightApp(ctk.CTk):
         current_page = getattr(self, "current_page", "Settings")
         def rebuild_with_new_accent():
             try:
+                def cancel_render_jobs(widget):
+                    try:
+                        job = getattr(widget, "_render_job", None)
+                        if job:
+                            widget.after_cancel(job)
+                            widget._render_job = None
+                        for nested in widget.winfo_children():
+                            cancel_render_jobs(nested)
+                    except Exception:
+                        pass
+
                 for child in self.winfo_children():
+                    cancel_render_jobs(child)
                     child.destroy()
                 self.configure(fg_color=GLASS_KEY if sys.platform=="win32" else (palette_color("#F0F0F0"), palette_color("#101012")))
                 self._build_ui()
