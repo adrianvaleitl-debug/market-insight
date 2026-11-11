@@ -123,7 +123,7 @@ RELEASE_NOTES = [
             "Filter positive and negative movers, scores of 70+, and caution warnings.",
             "Export scan results and key indicators to CSV.",
             "YouTube and TikTok creator links are both available in the app.",
-            "Choose between five font styles, switch bold text on or off, select your account currency, and choose from five distinctive colour themes.",
+            "Choose between five font styles, switch bold text on or off, select your account currency, and choose from six accent colours, including a neutral black default.",
         ],
     },
     {
@@ -134,7 +134,7 @@ RELEASE_NOTES = [
             "Economic Calendar with upcoming events and UK-local times.",
             "Price Alerts for chosen ticker price levels while the app is running.",
             "Trading Journal for closed trades and performance review.",
-            "11 colour themes and improved first-launch tutorial.",
+            "Six accent colours with a neutral black default and improved first-launch tutorial.",
         ],
     },
 ]
