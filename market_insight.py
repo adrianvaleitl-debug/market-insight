@@ -40,6 +40,17 @@ APP_VERSION = "V1.11"
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
     {
+        "version": "V1.11",
+        "title": "A quieter, more Mac-like glass workspace",
+        "date": "November 2026",
+        "items": [
+            "Replaced the currency colour themes and coloured spotlights with a restrained monochrome black acrylic-glass interface.",
+            "Added an adjustable window transparency slider in Settings, saved between sessions.",
+            "Applied softly tinted charcoal surfaces, neutral controls and blurred Windows acrylic behind the app.",
+            "Preserved existing watchlists, scans, credentials, alerts, journals and trading tools.",
+        ],
+    },
+    {
         "version": "V1.10",
         "title": "A unified forest-glass workspace",
         "date": "November 2026",
