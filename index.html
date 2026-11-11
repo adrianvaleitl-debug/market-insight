@@ -32,9 +32,48 @@ body{background:radial-gradient(ellipse at 82% -8%,#294333 0,transparent 36%),li
 @media(max-width:900px){.features{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{grid-template-columns:1fr}.market-ticker{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){.features,.market-ticker{grid-template-columns:1fr}.nav{position:relative;top:auto;flex-wrap:wrap;gap:12px}.hero{padding:45px 0 30px}.hero h1{font-size:44px}}
 
+
+/* Website side rail: fills the desktop canvas with useful navigation and quick context. */
+body{padding-left:252px}
+.site-rail{position:fixed;z-index:30;left:18px;top:18px;bottom:18px;width:214px;padding:24px 17px;display:flex;flex-direction:column;border:1px solid #a9dfbd25;border-radius:25px;background:linear-gradient(165deg,#1a2a20,#101812);box-shadow:0 22px 65px #0007;color:#edf4f0}
+.rail-kicker{font-size:9px;letter-spacing:.17em;font-weight:800;color:#a9dfbd;opacity:.85}
+.rail-title{font-size:21px;font-weight:850;letter-spacing:-.045em;margin-top:8px}
+.rail-rule{height:1px;background:#ffffff18;margin:21px 0 15px}
+.rail-links{display:grid;gap:7px}
+.rail-links a{display:block;padding:11px 12px;border-radius:12px;color:#aab9b0;font-size:12px;font-weight:650;transition:background .18s,color .18s}
+.rail-links a:hover{background:#ffffff12;color:#fff}
+.rail-bottom{margin-top:auto}
+.rail-stat{display:flex;flex-direction:column;gap:3px;padding:12px 0;border-bottom:1px solid #ffffff13}
+.rail-stat span{font-size:9px;letter-spacing:.12em;color:#91a49a}
+.rail-stat b{font-size:13px;color:#eef5ef}
+.rail-download{display:flex;justify-content:center;align-items:center;margin-top:17px;padding:12px;border-radius:13px;background:#a9dfbd;color:#122017;font-size:12px;font-weight:850}
+body>.wrap.nav,body>header.wrap.nav{width:calc(100% - 40px);max-width:var(--max)}
+main{max-width:var(--max)}
+@media(max-width:900px){body{padding-left:0}.site-rail{display:none}}
+
 </style>
 </head>
 <body>
+<aside class="site-rail" aria-label="Market Insight website sidebar">
+  <div class="rail-kicker">MARKET DESK</div>
+  <div class="rail-title">Market Insight</div>
+  <div class="rail-rule"></div>
+  <nav class="rail-links" aria-label="Page navigation">
+    <a href="#">Overview</a>
+    <a href="#whats-new">What's new</a>
+    <a href="#all-features">All features</a>
+    <a href="#setup">Getting started</a>
+    <a href="#support">Support</a>
+  </nav>
+  <div class="rail-bottom">
+    <div class="rail-kicker">QUICK VIEW</div>
+    <div class="rail-stat"><span>SCAN UNIVERSE</span><b>50 stocks</b></div>
+    <div class="rail-stat"><span>RESEARCH</span><b>Watchlists</b></div>
+    <div class="rail-stat"><span>UPDATES</span><b>V1.6</b></div>
+    <a class="rail-download" href="https://github.com/adrianvaleitl-debug/market-insight/releases/latest">Get the app ↗</a>
+  </div>
+</aside>
+
 <header class="wrap nav">
 <a class="brand" href="#"><span class="mark"><svg viewBox="0 0 1254 1254" aria-hidden="true"><rect width="1254" height="1254" rx="145" fill="#2d2e2d"/><path d="M334 406H439L624 598 810 406H914V830H800V570L624 752 448 570V830H334Z" fill="#aeafb1"/></svg></span><span>Market Insight</span></a>
 <nav class="navlinks"><a href="#whats-new">What's new</a><a href="#all-features">All features</a><a href="#setup">Getting started</a><a href="https://github.com/adrianvaleitl-debug/market-insight">GitHub</a><a href="#support">Support</a></nav>
