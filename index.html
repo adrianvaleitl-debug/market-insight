@@ -267,9 +267,13 @@ body>footer.wrap.footer{display:flex!important;flex-wrap:wrap!important;justify-
     if(!response.ok)throw new Error("Release lookup failed");
     const release=await response.json();
     const assets=release.assets||[];
-    const installer=assets.find(a=>/^market_insight_setup_.*\.exe$/i.test(a.name));
-    const portable=assets.find(a=>/^market_insight_.*\.zip$/i.test(a.name));
     const version=(release.tag_name||release.name||"Latest").replace(/^v/i,"");
+    const token=version.toLowerCase();
+    const newest=list=>[...list].sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true})).pop();
+    const installers=assets.filter(a=>/^market_insight_setup_.*\.exe$/i.test(a.name));
+    const archives=assets.filter(a=>/^market_insight_.*\.zip$/i.test(a.name));
+    const installer=installers.find(a=>a.name.toLowerCase().includes(token))||newest(installers);
+    const portable=archives.find(a=>a.name.toLowerCase().includes(token))||newest(archives);
     document.querySelectorAll("[data-latest-installer]").forEach(link=>{
       link.href=installer?.browser_download_url||fallback;
       link.removeAttribute("download");
