@@ -40,6 +40,16 @@ APP_VERSION = "V1.12"
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
     {
+        "version": "V1.12",
+        "title": "Black glass with optional accent colours",
+        "date": "November 2026",
+        "items": [
+            "Restored Black, Amber, Azure, Lavender, Rose and Teal accent choices in Settings, with Black as the default.",
+            "Kept the charcoal acrylic-glass surfaces neutral; selected colours are limited to interface accents and controls.",
+            "Preserved existing watchlists, scans, saved plans, alerts, credentials and research data.",
+        ],
+    },
+    {
         "version": "V1.11",
         "title": "A quieter, more Mac-like glass workspace",
         "date": "November 2026",
