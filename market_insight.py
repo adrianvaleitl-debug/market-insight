@@ -354,10 +354,10 @@ def apply_ctk_palette_theme():
     ctk.set_default_color_theme("green")
     theme = ctk.ThemeManager.theme
     muted = {
-        "CTkButton": {"fg_color": [palette_color("#747B70"), palette_color("#596158")], "hover_color": [palette_color("#62695F"), palette_color("#4B534A")], "text_color": [palette_color("#F5F4EF"), palette_color("#F1F0EA")]},
-        "CTkCheckBox": {"fg_color": [palette_color("#747B70"), palette_color("#596158")], "hover_color": [palette_color("#62695F"), palette_color("#4B534A")], "border_color": [palette_color("#92968B"), palette_color("#858A80")], "checkmark_color": [palette_color("#F5F4EF"), palette_color("#F1F0EA")]},
-        "CTkSwitch": {"fg_color": [palette_color("#C8C9C0"), palette_color("#454941")], "progress_color": [palette_color("#747B70"), palette_color("#687164")], "button_color": [palette_color("#F5F4EF"), palette_color("#D9D9D0")], "button_hover_color": [palette_color("#E1E1D9"), palette_color("#C4C6BB")]},
-        "CTkOptionMenu": {"fg_color": [palette_color("#747B70"), palette_color("#596158")], "button_color": [palette_color("#62695F"), palette_color("#4B534A")], "button_hover_color": [palette_color("#555D53"), palette_color("#414940")], "text_color": [palette_color("#F5F4EF"), palette_color("#F1F0EA")], "dropdown_fg_color": [palette_color("#F1F0EC"), palette_color("#292B28")], "dropdown_hover_color": [palette_color("#E2E3DC"), palette_color("#3C413A")], "dropdown_text_color": [palette_color("#343832"), palette_color("#E8E8E1")]},
+        "CTkButton": {"fg_color": ["#DDB47E", "#DDB47E"], "hover_color": ["#E9C594", "#E9C594"], "text_color": ["#182319", "#182319"], "corner_radius": 13},
+        "CTkCheckBox": {"fg_color": ["#DDB47E", "#DDB47E"], "hover_color": ["#E9C594", "#E9C594"], "border_color": ["#6D8572", "#6D8572"], "checkmark_color": ["#182319", "#182319"]},
+        "CTkSwitch": {"fg_color": ["#34483A", "#34483A"], "progress_color": ["#DDB47E", "#DDB47E"], "button_color": ["#EDF4EE", "#EDF4EE"], "button_hover_color": ["#FFFFFF", "#FFFFFF"]},
+        "CTkOptionMenu": {"fg_color": ["#1B2D21", "#1B2D21"], "button_color": ["#DDB47E", "#DDB47E"], "button_hover_color": ["#E9C594", "#E9C594"], "text_color": ["#EDF4EE", "#EDF4EE"], "dropdown_fg_color": ["#14231A", "#14231A"], "dropdown_hover_color": ["#263B2D", "#263B2D"], "dropdown_text_color": ["#EDF4EE", "#EDF4EE"], "corner_radius": 13},
         "CTkSlider": {"progress_color": [palette_color("#747B70"), palette_color("#687164")], "button_color": [palette_color("#747B70"), palette_color("#687164")], "button_hover_color": [palette_color("#62695F"), palette_color("#4B534A")]},
         "CTkProgressBar": {"progress_color": [palette_color("#747B70"), palette_color("#687164")]},
         "CTkRadioButton": {"fg_color": [palette_color("#747B70"), palette_color("#687164")], "hover_color": [palette_color("#62695F"), palette_color("#4B534A")]},
@@ -634,7 +634,7 @@ class MarketInsightApp(ctk.CTk):
         if icon_path and icon_path.exists():
             self.update_idletasks()
             set_windows_window_icon(self, icon_path)
-        self.configure(fg_color=(palette_color("#F1F0EC"), palette_color("#20211F")))
+        self.configure(fg_color=("#E9EEE8", "#09120D"))
         self.apply_liquid_glass()
         self.apply_spotlight_background()
         self.results = {}
@@ -1125,8 +1125,8 @@ class MarketInsightApp(ctk.CTk):
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self.sidebar = ctk.CTkFrame(self, width=224, corner_radius=0, fg_color=(palette_color("#E5E8E0"), palette_color("#171E19")), border_width=0)
-        self.sidebar.grid(row=0, column=0, sticky="nsew")
+        self.sidebar = ctk.CTkFrame(self, width=224, corner_radius=26, fg_color=("#F0F4EE", "#111F17"), border_width=1, border_color=("#D3DED2", "#304638"))
+        self.sidebar.grid(row=0, column=0, sticky="nsew", padx=(14, 8), pady=14)
         self.sidebar.grid_propagate(False)
         ctk.CTkLabel(self.sidebar, text="MARKET\nINSIGHT", font=app_font(size=25, weight="bold"),
                      text_color=(palette_color("#3C453F"), palette_color("#D4D8D2")), justify="left").pack(anchor="w", padx=22, pady=(28, 30))
@@ -1182,8 +1182,8 @@ class MarketInsightApp(ctk.CTk):
                      font=app_font(size=12, weight="bold"), text_color=(palette_color("#75827B"), palette_color("#87958E")),
                      justify="left").pack(side="bottom", anchor="w", padx=14, pady=10)
 
-        self.main = ctk.CTkFrame(self, corner_radius=0, fg_color="transparent")
-        self.main.grid(row=0, column=1, sticky="nsew", padx=24, pady=22)
+        self.main = ctk.CTkFrame(self, corner_radius=24, fg_color="transparent")
+        self.main.grid(row=0, column=1, sticky="nsew", padx=(8, 14), pady=14)
         self.main.grid_columnconfigure(0, weight=1)
         self.main.grid_rowconfigure(1, weight=1)
 
@@ -1200,7 +1200,7 @@ class MarketInsightApp(ctk.CTk):
         self.pages = {}
         for name in ["Overview", "What's New", "Market Hours", "Watchlist", "Economic Calendar", "Price Alerts", "Trading Journal", "Settings", "About"]:
             frame = ctk.CTkScrollableFrame(self.main, corner_radius=24, border_width=1, border_color=(palette_color("#E0E3DA"), palette_color("#354238")), fg_color=(palette_color("#F4F5EF"), palette_color("#202922")))
-            frame.grid(row=1, column=0, sticky="nsew")
+            frame.grid(row=1, column=0, sticky="nsew", padx=(0, 2), pady=(0, 2))
             self.pages[name] = frame
         self._build_overview()
         self._build_whats_new()
@@ -1218,7 +1218,7 @@ class MarketInsightApp(ctk.CTk):
         self.bind_all("<Escape>", self._exit_fullscreen)
 
     def card(self, parent, title, subtitle=None, wraplength=None):
-        frame = ctk.CTkFrame(parent, corner_radius=24, border_width=1, border_color=(palette_color("#E1E3DA"), palette_color("#3B463D")), fg_color=(palette_color("#EBEEE6"), palette_color("#28332B")))
+        frame = ctk.CTkFrame(parent, corner_radius=24, border_width=1, border_color=("#304638", "#304638"), fg_color=("#FAFCF8", "#14231A"))
         frame.pack(fill="x", padx=14, pady=10)
         heading = ctk.CTkLabel(frame, text=title, font=app_font(size=19, weight="bold"),
                                text_color=(palette_color("#414841"), palette_color("#D8DDD7")), justify="left")
