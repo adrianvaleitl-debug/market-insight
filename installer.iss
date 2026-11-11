@@ -35,8 +35,8 @@ Source: "Create_Desktop_Shortcut.ps1"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\Uninstall Market Insight"; Filename: "{uninstallexe}"; WorkingDir: "{app}"
-Name: "{autoprograms}\Market Insight"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\_internal\market_insight.ico"; IconIndex: 0; WorkingDir: "{app}"
-Name: "{autodesktop}\Market Insight"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\_internal\market_insight.ico"; IconIndex: 0; WorkingDir: "{app}"; Tasks: desktopicon
+Name: "{autoprograms}\Market Insight"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\_internal\market_insight.ico"; IconIndex: 0; AppUserModelID: "AdrianVale.MarketInsight"; WorkingDir: "{app}"
+Name: "{autodesktop}\Market Insight"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\_internal\market_insight.ico"; IconIndex: 0; AppUserModelID: "AdrianVale.MarketInsight"; WorkingDir: "{app}"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "Launch Market Insight"; Flags: postinstall nowait skipifsilent
