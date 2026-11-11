@@ -157,13 +157,13 @@ KOFI_URL = "https://ko-fi.com/marketinsight"
 RELEASE_NOTES = [
     {
         "version": "V1.16",
-        "title": "A proper glass layer and a redesigned release history",
+        "title": "Reliable colour themes and smoother resizing",
         "date": "11 November 2026",
         "items": [
-            "Rebuilt the Windows acrylic host so the desktop backdrop can show through without fading text or controls.",
-            "Expanded the transparency slider's acrylic tint range and reapply timing.",
-            "Moved the accent-colour nebula glow onto the transparent host layer.",
-            "Replaced the plain release-note list with a featured release and clearer version timeline.",
+            "Stopped resetting CustomTkinter's global theme manager during live accent changes.",
+            "Removed repeated full-window spotlight image processing during interactive resizing.",
+            "Restored a consistent 1380 × 900 default window and 1020 × 680 minimum size.",
+            "Prevented theme refreshes from scheduling duplicate price-alert polling.",
             "Preserved watchlists, scans, saved plans, alerts, credentials and research data.",
         ],
     },
