@@ -79,8 +79,10 @@ jobs:
         run: |
           gh release view V1.15 --repo adrianvaleitl-debug/market-insight 2>$null
           if ($LASTEXITCODE -ne 0) {
-            gh release create V1.15 --repo adrianvaleitl-debug/market-insight --title "Market Insight V1.15" --notes "Market Insight V1.15 adds an accent-colour blurred spotlight, responsive acrylic transparency and persistent Adrian Vale / Ko-fi shortcuts." --target main
+            gh release create V1.15 --repo adrianvaleitl-debug/market-insight --title "Market Insight V1.15" --notes "Market Insight V1.15 rebuilds the Windows acrylic backdrop and transparency layer, moves the accent spotlight onto the transparent host, and redesigns the in-app release history." --target main
             if ($LASTEXITCODE -ne 0) { throw "Could not create the V1.15 GitHub release." }
           }
           gh release upload V1.15 "installer-output/Market_Insight_Setup_V1.15.exe" "Market_Insight_V1.15.zip" --repo adrianvaleitl-debug/market-insight --clobber
           if ($LASTEXITCODE -ne 0) { throw "Could not upload the V1.15 release assets." }
+          gh release edit V1.15 --repo adrianvaleitl-debug/market-insight --title "Market Insight V1.15" --notes "Market Insight V1.15 rebuilds the Windows acrylic backdrop and transparency layer, moves the accent spotlight onto the transparent host, and redesigns the in-app release history."
+          if ($LASTEXITCODE -ne 0) { throw "Could not update the V1.15 release notes." }
