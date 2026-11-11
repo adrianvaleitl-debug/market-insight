@@ -1269,7 +1269,7 @@ class MarketInsightApp(ctk.CTk):
 
         self.pages = {}
         for name in ["Overview", "What's New", "Market Hours", "Watchlist", "Economic Calendar", "Price Alerts", "Trading Journal", "Settings", "About"]:
-            frame = ctk.CTkScrollableFrame(self.main, corner_radius=24, border_width=1, border_color=(palette_color("#E2E2E2"), palette_color("#3F3F3F")), fg_color=("#EDEDED", "#161616"))
+            frame = ctk.CTkScrollableFrame(self.main, corner_radius=24, border_width=1, border_color=(palette_color("#E2E2E2"), palette_color("#3F3F3F")), fg_color="transparent")
             frame.grid(row=1, column=0, sticky="nsew", padx=(0, 2), pady=(0, 2))
             self.pages[name] = frame
         self._build_overview()
@@ -1282,6 +1282,7 @@ class MarketInsightApp(ctk.CTk):
         self._build_settings()
         self._build_about()
         self.show_page("Overview")
+        self.after(350, self.apply_liquid_glass)
         self.after(15000, self._check_price_alerts)
         # Global bindings work even when a child control has keyboard focus.
         self.bind_all("<F11>", self._toggle_fullscreen)
