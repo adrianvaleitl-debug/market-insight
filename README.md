@@ -2,7 +2,7 @@
 
 ## What's New
 
-### V1.12 — Black glass with optional accent colours
+### V1.13 — Black glass with optional accent colours
 
 - **Six accent choices:** Black, Amber, Azure, Lavender, Rose and Teal are available in Settings, with Black as the default.
 - **Neutral acrylic glass:** accent colours are limited to interface details and controls rather than tinting charcoal surfaces.
