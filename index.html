@@ -269,17 +269,17 @@ body>footer.wrap.footer{display:flex!important;flex-wrap:wrap!important;justify-
     const assets=release.assets||[];
     const version=(release.tag_name||release.name||"Latest").replace(/^v/i,"");
     const token=version.toLowerCase();
-    const newest=list=>[...list].sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true})).pop();
+    const versionOf=name=>(String(name||"").match(/\d+(?:\.\d+)+/)||[])[0]||"";
     const installers=assets.filter(a=>/^market_insight_setup_.*\.exe$/i.test(a.name));
     const archives=assets.filter(a=>/^market_insight_.*\.zip$/i.test(a.name));
-    const installer=installers.find(a=>a.name.toLowerCase().includes(token))||newest(installers);
-    const portable=archives.find(a=>a.name.toLowerCase().includes(token))||newest(archives);
+    const installer=installers.find(a=>versionOf(a.name)===version)||null;
+    const portable=archives.find(a=>versionOf(a.name)===version)||null;
     document.querySelectorAll("[data-latest-installer]").forEach(link=>{
-      link.href=installer?.browser_download_url||fallback;
+      link.href=installer?.browser_download_url||release.html_url||fallback;
       link.removeAttribute("download");
       link.textContent=installer?"↓ Download "+version+" for Windows":"↓ View latest download";
     });
-    document.querySelectorAll("[data-latest-portable]").forEach(link=>{link.href=portable?.browser_download_url||fallback;});
+    document.querySelectorAll("[data-latest-portable]").forEach(link=>{link.href=portable?.browser_download_url||release.html_url||fallback;});
     document.querySelectorAll("[data-latest-release]").forEach(link=>{link.href=release.html_url||fallback;link.textContent="View "+version+" release ↗";});
     document.querySelectorAll("[data-release-version]").forEach(el=>el.textContent=version);
   }catch(error){
