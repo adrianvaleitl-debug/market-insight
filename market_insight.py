@@ -1491,7 +1491,7 @@ class MarketInsightApp(ctk.CTk):
         self.preset_name_entry = ctk.CTkEntry(preset_row, placeholder_text="Preset name", width=190)
         self.preset_name_entry.pack(side="left", padx=(0, 8))
         ctk.CTkButton(preset_row, text="Save current setup", command=self._save_scan_preset).pack(side="left", padx=4)
-        self.preset_menu = styled_settings_dropdown(presets, values=sorted(self.settings.get("scan_presets", {}).keys()), command=self._apply_scan_preset)
+        self.preset_menu = styled_settings_dropdown(presets, values=sorted(self.settings.get("scan_presets", {}).keys()) or ["No presets saved"], command=self._apply_scan_preset)
         self.preset_menu.pack(anchor="w", padx=16, pady=(4, 12))
 
         notes = self.card(page, "Ticker research notes", "Keep your own research notes locally against a ticker. Notes are not trading advice or a signal.")
@@ -1610,7 +1610,7 @@ class MarketInsightApp(ctk.CTk):
         valid = [(symbol, data) for symbol, data in results.items() if isinstance(data, dict) and "error" not in data]
         valid.sort(key=lambda item: item[1].get("score", 0), reverse=True)
         if not valid:
-            message = "Your daily briefing will appear here after your first successful scan."
+            message = self.settings.get("daily_briefing") or "Your daily briefing will appear here after your first successful scan."
         else:
             advancing = sum(1 for _, data in valid if data.get("day_change", 0) > 0)
             declining = sum(1 for _, data in valid if data.get("day_change", 0) < 0)
@@ -1624,6 +1624,9 @@ class MarketInsightApp(ctk.CTk):
         self.daily_briefing_text.delete("1.0", "end")
         self.daily_briefing_text.insert("1.0", message)
         self.daily_briefing_text.configure(state="disabled")
+        if valid:
+            self.settings["daily_briefing"] = message
+            save_settings(self.settings)
 
 
     def _build_economic_calendar(self):
