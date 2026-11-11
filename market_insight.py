@@ -156,45 +156,42 @@ KOFI_URL = "https://ko-fi.com/marketinsight"
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
     {
-        "version": "V1.14",
-        "title": "Nebula accent and true acrylic backdrop",
-        "date": "November 2026",
+        "version": "V1.15",
+        "title": "A proper glass layer and a redesigned release history",
+        "date": "11 November 2026",
         "items": [
-            "Added persistent Adrian Vale website and Donate · Ko-fi shortcuts to the desktop sidebar.",
-            "Added a soft blurred spotlight that follows the selected accent colour.",
-            "Reapplied Windows acrylic blur whenever the transparency slider changes.",
-            "Preserved existing watchlists, scans, saved plans, alerts, credentials and research data.",
+            "Rebuilt the Windows acrylic host so the desktop backdrop can show through without fading text or controls.",
+            "Expanded the transparency slider's acrylic tint range and reapply timing.",
+            "Moved the accent-colour nebula glow onto the transparent host layer.",
+            "Replaced the plain release-note list with a featured release and clearer version timeline.",
+            "Preserved watchlists, scans, saved plans, alerts, credentials and research data.",
+        ],
+    },
+    {
+        "version": "V1.15",
+        "title": "Accent spotlight and creator shortcuts",
+        "date": "11 November 2026",
+        "items": [
+            "Added an accent-colour spotlight and persistent Adrian Vale / Ko-fi shortcuts.",
+            "Introduced the initial transparency control; the Windows backdrop implementation is refined in V1.15.",
         ],
     },
     {
         "version": "V1.11",
-        "title": "A quieter, more Mac-like glass workspace",
+        "title": "A quieter, more Mac-like workspace",
         "date": "November 2026",
         "items": [
-            "Replaced the currency colour themes and coloured spotlights with a restrained monochrome black acrylic-glass interface.",
-            "Added an adjustable window transparency slider in Settings, saved between sessions.",
-            "Applied softly tinted charcoal surfaces, neutral controls and blurred Windows acrylic behind the app.",
-            "Preserved existing watchlists, scans, credentials, alerts, journals and trading tools.",
+            "Introduced adjustable transparency preferences and neutral charcoal surfaces.",
+            "Standardised the app's typography, panels and settings controls.",
         ],
     },
     {
         "version": "V1.10",
-        "title": "A unified forest-glass workspace",
+        "title": "A unified analyst workspace",
         "date": "November 2026",
         "items": [
-            "Rebuilt the desktop interface around the website's dark forest-green glass design.",
-            "Introduced a rounded floating sidebar, softly bordered research panels and champagne-gold controls.",
-            "Standardised dropdowns, buttons and settings surfaces while preserving saved watchlists, scans, credentials and trading tools.",
-        ],
-    },
-    {
-        "version": "V1.9",
-        "title": "Currency colours that feel right",
-        "date": "November 2026",
-        "items": [
-            "Refined the five currency accent palettes to better match each currency visual identity.",
-            "USD now uses calm banknote green, EUR a clear European blue, GBP a richer royal violet, JPY a cherry-blossom rose, and CHF a warm Swiss alpine amber.",
-            "Updated Light and Dark modes while keeping saved theme choices and warning/status colours intact.",
+            "Reworked the desktop interface around a floating sidebar and rounded research panels.",
+            "Standardised navigation, market context and watchlist surfaces.",
         ],
     },
     {
@@ -202,9 +199,8 @@ RELEASE_NOTES = [
         "title": "A more disciplined trading workspace",
         "date": "November 2026",
         "items": [
-            "Trade Planner with risk-based position sizing and reward-to-risk calculations.",
-            "Save up to 30 trade plans locally and revisit entry, stop and target assumptions.",
-            "Input guardrails to flag invalid price levels and excessive risk percentages.",
+            "Added the Trade Planner with risk-based position sizing and reward-to-risk calculations.",
+            "Saved trade plans locally and added input guardrails for price levels and risk.",
         ],
     },
     {
@@ -212,9 +208,8 @@ RELEASE_NOTES = [
         "title": "A more focused analyst workspace",
         "date": "November 2026",
         "items": [
-            "A refreshed terminal-style workspace with clearer navigation and denser market information.",
-            "Refined page hierarchy, rounded research panels and a more consistent status system.",
-            "A redesigned layout that keeps scan actions, market context and watchlist research easier to reach.",
+            "Refined page hierarchy, scan actions, market context and watchlist research.",
+            "Introduced a denser terminal-style layout for market information.",
         ],
     },
     {
@@ -222,11 +217,8 @@ RELEASE_NOTES = [
         "title": "Deeper research and smarter organisation",
         "date": "November 2026",
         "items": [
-            "Organise watchlist symbols into named folders without changing your full scan list.",
-            "Keep a local history of completed scans and compare top-scoring symbols.",
-            "Save private research notes against individual ticker symbols.",
-            "Create and reuse scan presets with your preferred score threshold and watchlist.",
-            "Generate a daily market briefing from your latest completed scan, including leaders, breadth and caution flags.",
+            "Added watchlist folders, saved scan history, ticker notes and reusable scan presets.",
+            "Added a daily market briefing from the latest completed scan.",
         ],
     },
     {
@@ -234,24 +226,8 @@ RELEASE_NOTES = [
         "title": "Scanner improvements",
         "date": "November 2026",
         "items": [
-            "Scan snapshot with average score, strongest and weakest daily moves, and highest-volume stock.",
-            "Search scan results by ticker symbol or company name.",
-            "Sort results by score, daily gain, daily loss, RSI, or volume.",
-            "Filter positive and negative movers, scores of 70+, and caution warnings.",
-            "Export scan results and key indicators to CSV.",
-            "YouTube and TikTok creator links are both available in the app.",
-            "Choose between five font styles, switch bold text on or off, select your account currency, and choose from six accent colours, including a neutral black default.",
-        ],
-    },
-    {
-        "version": "V1.3",
-        "title": "More trading tools and personalisation",
-        "date": "Previous release",
-        "items": [
-            "Economic Calendar with upcoming events and UK-local times.",
-            "Price Alerts for chosen ticker price levels while the app is running.",
-            "Trading Journal for closed trades and performance review.",
-            "Six accent colours with a neutral black default and improved first-launch tutorial.",
+            "Added scan snapshots, ticker search, sorting, filters and CSV export.",
+            "Added font, bold-text, currency and accent-colour preferences.",
         ],
     },
 ]
@@ -1460,42 +1436,93 @@ class MarketInsightApp(ctk.CTk):
 
     def _build_whats_new(self):
         page = self.pages["What's New"]
-        self.card(
-            page,
-            "What's new in Market Insight",
-            "Release notes for the latest versions. This page is updated with each major app release."
+        hero = ctk.CTkFrame(
+            page, corner_radius=24,
+            fg_color=(palette_color("#EEEEEE"), palette_color("#292929")),
+            border_width=1,
+            border_color=(palette_color("#DADADA"), palette_color("#414141"))
         )
-        for release in RELEASE_NOTES:
+        hero.pack(fill="x", padx=14, pady=(14, 18))
+        head = ctk.CTkFrame(hero, fg_color="transparent")
+        head.pack(fill="x", padx=22, pady=(20, 8))
+        ctk.CTkLabel(
+            head, text=RELEASE_NOTES[0]["version"],
+            font=app_font(size=26, weight="bold"),
+            text_color=COLOUR_ACCENTS.get(ACTIVE_COLOUR_THEME, COLOUR_ACCENTS["Black"])[0]
+        ).pack(side="left")
+        ctk.CTkLabel(
+            head, text="LATEST RELEASE",
+            font=app_font(size=10, weight="bold"),
+            text_color=(palette_color("#777777"), palette_color("#B8B8B8"))
+        ).pack(side="right")
+        ctk.CTkLabel(
+            hero, text=RELEASE_NOTES[0]["title"],
+            font=app_font(size=19, weight="bold"),
+            text_color=(palette_color("#303030"), palette_color("#EEEEEE"))
+        ).pack(anchor="w", padx=22, pady=(0, 4))
+        ctk.CTkLabel(
+            hero, text=RELEASE_NOTES[0]["date"] + "  ·  Windows desktop",
+            font=app_font(size=11, weight="bold"),
+            text_color=(palette_color("#777777"), palette_color("#AFAFAF"))
+        ).pack(anchor="w", padx=22)
+        ctk.CTkLabel(
+            hero,
+            text="A focused summary of what changed, why it matters and which earlier releases introduced the tools you already use.",
+            font=app_font(size=12, weight="bold"),
+            justify="left", anchor="w", wraplength=850,
+            text_color=(palette_color("#686868"), palette_color("#C3C3C3"))
+        ).pack(fill="x", padx=22, pady=(12, 14))
+        for item in RELEASE_NOTES[0]["items"]:
+            row = ctk.CTkFrame(hero, fg_color="transparent")
+            row.pack(fill="x", padx=22, pady=3)
+            ctk.CTkLabel(
+                row, text="✓", width=22, anchor="w",
+                font=app_font(size=12, weight="bold"),
+                text_color=COLOUR_ACCENTS.get(ACTIVE_COLOUR_THEME, COLOUR_ACCENTS["Black"])[0]
+            ).pack(side="left")
+            ctk.CTkLabel(
+                row, text=item, anchor="w", justify="left", wraplength=820,
+                font=app_font(size=11, weight="bold"),
+                text_color=(palette_color("#555555"), palette_color("#D0D0D0"))
+            ).pack(side="left", fill="x", expand=True)
+        ctk.CTkFrame(hero, height=10, fg_color="transparent").pack()
+        ctk.CTkLabel(
+            page, text="RELEASE HISTORY",
+            font=app_font(size=10, weight="bold"),
+            text_color=(palette_color("#777777"), palette_color("#AFAFAF"))
+        ).pack(anchor="w", padx=18, pady=(0, 5))
+        for release in RELEASE_NOTES[1:]:
             card = ctk.CTkFrame(
-                page, corner_radius=20,
-                fg_color=(palette_color("#EEEEEE"), palette_color("#323232"))
+                page, corner_radius=18,
+                fg_color=(palette_color("#F0F0F0"), palette_color("#242424")),
+                border_width=1,
+                border_color=(palette_color("#E0E0E0"), palette_color("#3A3A3A"))
             )
-            card.pack(fill="x", padx=14, pady=9)
+            card.pack(fill="x", padx=14, pady=5)
             header = ctk.CTkFrame(card, fg_color="transparent")
-            header.pack(fill="x", padx=18, pady=(15, 5))
+            header.pack(fill="x", padx=18, pady=(13, 4))
             ctk.CTkLabel(
                 header, text=release["version"],
-                font=app_font(size=18, weight="bold"),
-                text_color=(palette_color("#666666"), palette_color("#CCCCCC"))
+                font=app_font(size=14, weight="bold"),
+                text_color=COLOUR_ACCENTS.get(ACTIVE_COLOUR_THEME, COLOUR_ACCENTS["Black"])[0]
             ).pack(side="left")
             ctk.CTkLabel(
                 header, text=release["date"],
-                font=app_font(size=12, weight="bold"),
-                text_color=(palette_color("#7B7B7B"), palette_color("#A9A9A9"))
+                font=app_font(size=10, weight="bold"),
+                text_color=(palette_color("#888888"), palette_color("#A9A9A9"))
             ).pack(side="right")
             ctk.CTkLabel(
                 card, text=release["title"],
-                font=app_font(size=16, weight="bold"),
-                text_color=(palette_color("#464646"), palette_color("#DCDCDC"))
-            ).pack(anchor="w", padx=18, pady=(2, 6))
+                font=app_font(size=13, weight="bold"),
+                text_color=(palette_color("#414141"), palette_color("#DEDEDE"))
+            ).pack(anchor="w", padx=18, pady=(0, 5))
             for item in release["items"]:
                 ctk.CTkLabel(
                     card, text="•  " + item, justify="left", anchor="w",
-                    wraplength=850,
-                    font=app_font(size=13, weight="bold"),
+                    wraplength=850, font=app_font(size=11, weight="bold"),
                     text_color=(palette_color("#686868"), palette_color("#C3C3C3"))
-                ).pack(fill="x", padx=22, pady=3)
-            ctk.CTkFrame(card, height=10, fg_color="transparent").pack()
+                ).pack(fill="x", padx=22, pady=2)
+            ctk.CTkFrame(card, height=9, fg_color="transparent").pack()
 
     def _build_market_hours(self):
         page = self.pages["Market Hours"]
