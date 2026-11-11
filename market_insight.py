@@ -615,8 +615,10 @@ class MarketInsightApp(ctk.CTk):
                 self.iconbitmap(str(icon_path))
             except Exception:
                 pass
-        self.geometry("1180x760")
-        self.minsize(960, 640)
+        screen_w = self.winfo_screenwidth()
+        screen_h = self.winfo_screenheight()
+        self.geometry(f"{min(1180, max(900, screen_w - 80))}x{min(760, max(620, screen_h - 100))}")
+        self.minsize(min(960, max(860, screen_w - 80)), min(640, max(580, screen_h - 100)))
         # Apply native Windows icon handles after the window has a real HWND.
         if icon_path and icon_path.exists():
             self.update_idletasks()
