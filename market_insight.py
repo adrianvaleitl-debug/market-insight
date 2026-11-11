@@ -200,6 +200,15 @@ RELEASE_NOTES = [
         ],
     },
     {
+        "version": "V1.9",
+        "title": "Currency colours that feel right",
+        "date": "November 2026",
+        "items": [
+            "Refined the five currency accent palettes to better match each currency visual identity.",
+            "Updated Light and Dark modes while keeping saved theme choices and status colours intact.",
+        ],
+    },
+    {
         "version": "V1.8",
         "title": "A more disciplined trading workspace",
         "date": "November 2026",
