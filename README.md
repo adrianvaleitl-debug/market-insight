@@ -2,11 +2,19 @@
 
 ## What's New
 
-### V1.13 — Black glass with optional accent colours
+### V1.15 — A proper glass layer and clearer release history
 
-- **Six accent choices:** Black, Amber, Azure, Lavender, Rose and Teal are available in Settings, with Black as the default.
-- **Neutral acrylic glass:** accent colours are limited to interface details and controls rather than tinting charcoal surfaces.
-- **Research data preserved:** existing watchlists, scans, saved plans, alerts, credentials and research data remain intact.
+- **Windows glass host:** rebuilt the transparent host so the acrylic backdrop can show through without fading text or controls.
+- **Adjustable tint:** expanded the transparency slider's acrylic tint range and apply timing.
+- **Accent nebula:** moved the accent-colour glow onto the transparent host layer.
+- **Release history:** redesigned the in-app What's New page around a featured latest release and a version timeline.
+- **Research data preserved:** existing watchlists, scans, saved plans, alerts, credentials, journals and research data remain intact.
+
+### V1.14 — Accent spotlight and creator shortcuts
+
+- Added the accent-colour spotlight and persistent Adrian Vale / Ko-fi shortcuts.
+- Introduced the initial transparency control, refined in V1.15.
+
 
 ## Features
 
