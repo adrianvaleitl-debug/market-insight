@@ -34,16 +34,16 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V2.0"
+APP_VERSION = "V1.9"
 
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
     {
-        "version": "V2.0",
-        "title": "Liquid glass and softer currency themes",
+        "version": "V1.9",
+        "title": "Currency colours that feel right",
         "date": "November 2026",
         "items": [
-            "Added a tinted liquid-glass window effect and stronger, softer pastel currency accents across controls.",
+            "Refined the five currency accent palettes to better match each currency visual identity.",
             "USD now uses calm banknote green, EUR a clear European blue, GBP a richer royal violet, JPY a cherry-blossom rose, and CHF a warm Swiss alpine amber.",
             "Updated Light and Dark modes while keeping saved theme choices and warning/status colours intact.",
         ],
@@ -338,16 +338,10 @@ def palette_color(value):
         # Preserve meaningful warning/status colours (reds and oranges).
         if saturation > 0.24 and (degrees < 48 or degrees > 330):
             return value
-        # Make the selected currency palette clearly visible on controls and surfaces,
-        # while keeping the result muted enough to avoid neon-bright buttons.
         if saturation < 0.10:
-            saturation = 0.34
+            saturation = 0.22
         elif saturation < 0.24:
-            saturation = 0.38
-        else:
-            saturation = min(0.44, max(0.34, saturation * 0.82))
-        # Slightly soften very bright/dark source colours for a consistent pastel finish.
-        lightness = min(0.76, max(0.34, lightness))
+            saturation = 0.28
         hue = target
         red, green, blue = colorsys.hls_to_rgb(hue, lightness, saturation)
         return "#{:02X}{:02X}{:02X}".format(round(red * 255), round(green * 255), round(blue * 255))
@@ -359,7 +353,7 @@ def apply_ctk_palette_theme():
     ctk.set_default_color_theme("green")
     theme = ctk.ThemeManager.theme
     muted = {
-        "CTkButton": {"fg_color": [palette_color("#9CA99A"), palette_color("#71816F")], "hover_color": [palette_color("#879885"), palette_color("#82947E")], "text_color": [palette_color("#172019"), palette_color("#F5F5F0")]},
+        "CTkButton": {"fg_color": [palette_color("#747B70"), palette_color("#596158")], "hover_color": [palette_color("#62695F"), palette_color("#4B534A")], "text_color": [palette_color("#F5F4EF"), palette_color("#F1F0EA")]},
         "CTkCheckBox": {"fg_color": [palette_color("#747B70"), palette_color("#596158")], "hover_color": [palette_color("#62695F"), palette_color("#4B534A")], "border_color": [palette_color("#92968B"), palette_color("#858A80")], "checkmark_color": [palette_color("#F5F4EF"), palette_color("#F1F0EA")]},
         "CTkSwitch": {"fg_color": [palette_color("#C8C9C0"), palette_color("#454941")], "progress_color": [palette_color("#747B70"), palette_color("#687164")], "button_color": [palette_color("#F5F4EF"), palette_color("#D9D9D0")], "button_hover_color": [palette_color("#E1E1D9"), palette_color("#C4C6BB")]},
         "CTkOptionMenu": {"fg_color": [palette_color("#747B70"), palette_color("#596158")], "button_color": [palette_color("#62695F"), palette_color("#4B534A")], "button_hover_color": [palette_color("#555D53"), palette_color("#414940")], "text_color": [palette_color("#F5F4EF"), palette_color("#F1F0EA")], "dropdown_fg_color": [palette_color("#F1F0EC"), palette_color("#292B28")], "dropdown_hover_color": [palette_color("#E2E3DC"), palette_color("#3C413A")], "dropdown_text_color": [palette_color("#343832"), palette_color("#E8E8E1")]},
@@ -658,7 +652,6 @@ class MarketInsightApp(ctk.CTk):
             self._show_platform_setup()
         else:
             self._show_alpaca_setup()
-
 
     def apply_liquid_glass(self):
         """Use a subtle tinted acrylic window surface where Windows supports it."""
