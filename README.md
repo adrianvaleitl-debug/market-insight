@@ -2,9 +2,9 @@
 
 ## What's New
 
-### V1.4 — Scanner improvements, font choices and creator links
+### V1.5 — Scanner improvements, font choices and creator links
 
-The V1.4 update adds five improvements to make scan results easier to review:
+The V1.5 update adds five improvements to make scan results easier to review:
 
 - **Scan snapshot:** see the average score, strongest and weakest daily moves, and highest-volume stock at a glance.
 - **Search:** find scan results by ticker symbol or company name.
