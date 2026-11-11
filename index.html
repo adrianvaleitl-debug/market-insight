@@ -99,6 +99,14 @@ html[data-av-mode="light"] .btn.primary,html[data-av-mode="light"] .primary,html
 @media(max-width:800px){.other-projects .other-project-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.other-projects .other-project-grid{grid-template-columns:1fr}.other-projects .other-project-card{min-height:150px}}
 </style>
+<style id="market-insight-centred-chrome">
+/* Centre the site header and footer within the content canvas to the right of the sidebar. */
+body>.wrap.nav,body>header.wrap.nav,body>footer.wrap.footer{width:min(var(--max),calc(100% - 40px))!important;margin-left:auto!important;margin-right:auto!important}
+body>header.wrap.nav{justify-content:center!important;flex-wrap:wrap!important;gap:16px 28px!important}
+body>header.wrap.nav .av-theme-tools{margin:0 auto!important}
+body>footer.wrap.footer{justify-content:center!important;align-items:center!important;text-align:center!important;gap:12px 24px!important}
+@media(max-width:900px){body>.wrap.nav,body>header.wrap.nav,body>footer.wrap.footer{width:calc(100% - 40px)!important}}
+</style>
 </head>
 <body>
 <aside class="site-rail" aria-label="Market Insight website sidebar">
