@@ -22,7 +22,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageTk
 
 
 def install_accent_spotlight(window, accent, background="#101012"):
-    """Paint a restrained, blurred accent-colour glow behind the glass workspace."""
+    """Render a soft multi-layer nebula glow behind the app's glass surfaces."""
     try:
         if not isinstance(accent, str) or len(accent) != 7 or not accent.startswith("#"):
             return
@@ -32,20 +32,40 @@ def install_accent_spotlight(window, accent, background="#101012"):
         rgb = tuple(int(accent[index:index + 2], 16) for index in (1, 3, 5))
         glow = Image.new("RGBA", (width, height), (0, 0, 0, 0))
         draw = ImageDraw.Draw(glow)
-        draw.ellipse((int(width * .50), -int(height * .35), int(width * 1.25), int(height * .58)), fill=(*rgb, 34))
-        draw.ellipse((-int(width * .30), int(height * .55), int(width * .35), int(height * 1.20)), fill=(*rgb, 12))
-        glow = glow.filter(ImageFilter.GaussianBlur(max(72, int(min(width, height) * .17))))
+        # Broad atmospheric haze plus several softer nebula cores. Keep the
+        # edges diffuse so the colour never looks like a hard spotlight.
+        blobs = [
+            (0.76, 0.10, 0.48, 0.48, 34),
+            (0.92, 0.42, 0.34, 0.38, 22),
+            (0.18, 0.88, 0.42, 0.38, 18),
+            (0.46, 0.52, 0.34, 0.30, 10),
+        ]
+        for cx, cy, rx, ry, alpha in blobs:
+            bounds = (int((cx-rx)*width), int((cy-ry)*height),
+                      int((cx+rx)*width), int((cy+ry)*height))
+            draw.ellipse(bounds, fill=(*rgb, alpha))
+        glow = glow.filter(ImageFilter.GaussianBlur(max(90, int(min(width, height) * 0.19))))
         photo = ImageTk.PhotoImage(glow)
         previous = getattr(window, "_accent_spotlight_canvas", None)
-        if previous is not None:
+        if previous is not None and previous.winfo_exists():
             previous.destroy()
-        canvas = tk.Canvas(window, width=width, height=height, highlightthickness=0, borderwidth=0, bg=background)
+        canvas = tk.Canvas(window, width=width, height=height, highlightthickness=0,
+                           borderwidth=0, bg=background)
         canvas.place(x=0, y=0, relwidth=1, relheight=1)
         canvas.create_image(0, 0, anchor="nw", image=photo)
         canvas.lower()
         window._accent_spotlight_canvas = canvas
         window._accent_spotlight_photo = photo
+        if not getattr(window, "_accent_spotlight_resize_bound", False):
+            def redraw(event):
+                if event.widget is window:
+                    window.after_idle(lambda: install_accent_spotlight(
+                        window, getattr(window, "_active_spotlight_colour", accent), background))
+            window.bind("<Configure>", redraw, add="+")
+            window._accent_spotlight_resize_bound = True
+        window._active_spotlight_colour = accent
     except Exception:
+        # A decorative layer must never interrupt app startup or navigation.
         pass
 
 # Apply bold typography globally, including widgets that use CustomTkinter's
@@ -64,7 +84,7 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V1.13"
+APP_VERSION = "V1.14"
 PERSONAL_SITE = "https://adrianvaleitl-debug.github.io/"
 KOFI_URL = "https://ko-fi.com/marketinsight"
 
@@ -697,25 +717,36 @@ class MarketInsightApp(ctk.CTk):
             self._show_alpaca_setup()
 
     def apply_liquid_glass(self):
-        """Use a subtle tinted acrylic window surface where Windows supports it."""
+        """Enable a real Windows acrylic backdrop (blurred content behind the window)."""
         try:
-            self.attributes("-alpha", max(0.65,min(1.0,1-float(self.settings.get("transparency",8))/100)))
             if not sys.platform.startswith("win"):
                 return
+            self.update_idletasks()
+            hwnd = ctypes.c_void_p(self.winfo_id())
+            # Windows 11 system backdrop: transient-window acrylic. This is the
+            # supported DWM path; the legacy accent policy below is a fallback.
+            try:
+                backdrop = ctypes.c_int(3)  # DWMSBT_TRANSIENTWINDOW (acrylic)
+                ctypes.windll.dwmapi.DwmSetWindowAttribute(
+                    hwnd, 38, ctypes.byref(backdrop), ctypes.sizeof(backdrop))
+            except Exception:
+                pass
             class ACCENT_POLICY(ctypes.Structure):
                 _fields_ = [("AccentState", ctypes.c_int), ("AccentFlags", ctypes.c_int),
                             ("GradientColor", ctypes.c_int), ("AnimationId", ctypes.c_int)]
             class WINDOWCOMPOSITIONATTRIBDATA(ctypes.Structure):
                 _fields_ = [("Attribute", ctypes.c_int), ("Data", ctypes.c_void_p),
                             ("SizeOfData", ctypes.c_size_t)]
-            # A restrained navy/palette-tinted acrylic layer; avoid excessive transparency.
-            policy = ACCENT_POLICY(4, 2, 0xCC17171B, 0)
+            # Alpha controls the acrylic tint, not the opacity of all text/widgets.
+            transparency = int(self.data["settings"].get("transparency", 8)) if hasattr(self, "data") else int(self.get("transparency", "8"))
+            alpha = max(0x78, min(0xD8, 0xC8 - round(transparency * 1.1)))
+            tint = (alpha << 24) | 0x0017171B
+            policy = ACCENT_POLICY(4, 2, tint, 0)
             data = WINDOWCOMPOSITIONATTRIBDATA(19, ctypes.addressof(policy), ctypes.sizeof(policy))
             apply_attribute = ctypes.windll.user32.SetWindowCompositionAttribute
             apply_attribute.argtypes = [ctypes.c_void_p, ctypes.POINTER(WINDOWCOMPOSITIONATTRIBDATA)]
             apply_attribute.restype = ctypes.c_bool
-            self.update_idletasks()
-            apply_attribute(ctypes.c_void_p(self.winfo_id()), ctypes.byref(data))
+            apply_attribute(hwnd, ctypes.byref(data))
         except Exception:
             pass
 
@@ -2579,13 +2610,26 @@ class MarketInsightApp(ctk.CTk):
 
         # Rebuild widgets with the new palette; preserve the current page and app state.
         current_page = getattr(self, "current_page", "Settings")
-        for child in self.winfo_children():
-            child.destroy()
-        self.configure(fg_color=(palette_color("#F0F0F0"), palette_color("#101012")))
-        self._build_ui()
-        self._refresh_watchlist_text()
-        self.show_page(current_page if current_page in self.pages else "Settings")
-        self.status.configure(text="{} colour theme applied and saved.".format(value))
+        def rebuild_with_new_accent():
+            try:
+                for child in self.winfo_children():
+                    child.destroy()
+                self.configure(fg_color=(palette_color("#F0F0F0"), palette_color("#101012")))
+                self._build_ui()
+                self.apply_liquid_glass()
+                install_accent_spotlight(self, COLOUR_ACCENTS[ACTIVE_COLOUR_THEME][0],
+                                         "#F0F0F0" if ctk.get_appearance_mode()=="Light" else "#101012")
+                self._refresh_watchlist_text()
+                self.show_page(current_page if current_page in self.pages else "Settings")
+                self.status.configure(text="{} colour theme applied and saved.".format(value))
+            except Exception as exc:
+                write_diagnostic("Accent-colour rebuild failed: " + traceback.format_exc())
+                try:
+                    from tkinter import messagebox
+                    messagebox.showerror(APP_NAME, "The colour was saved, but the interface could not refresh. Restart the app to apply it.")
+                except Exception:
+                    pass
+        self.after_idle(rebuild_with_new_accent)
 
     def change_font_family(self, value):
         """Apply the selected typeface across the app while keeping all text bold."""
