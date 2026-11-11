@@ -91,8 +91,8 @@ KOFI_URL = "https://ko-fi.com/marketinsight"
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
     {
-        "version": "V1.13",
-        "title": "Accent-lit glass and creator shortcuts",
+        "version": "V1.14",
+        "title": "Nebula accent and true acrylic backdrop",
         "date": "November 2026",
         "items": [
             "Added persistent Adrian Vale website and Donate · Ko-fi shortcuts to the desktop sidebar.",
@@ -2585,7 +2585,7 @@ class MarketInsightApp(ctk.CTk):
         if hasattr(self, "transparency_value"):
             self.transparency_value.configure(text="{}%".format(value))
         try:
-            self.attributes("-alpha", 1 - value / 100)
+            self.apply_liquid_glass()
         except Exception:
             pass
         self.apply_liquid_glass()
