@@ -33,10 +33,20 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V1.5"
+APP_VERSION = "V1.6"
 
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
+    {
+        "version": "V1.6",
+        "title": "A more focused analyst workspace",
+        "date": "November 2026",
+        "items": [
+            "A refreshed terminal-style workspace with clearer navigation and denser market information.",
+            "Refined page hierarchy, rounded research panels and a more consistent status system.",
+            "A redesigned layout that keeps scan actions, market context and watchlist research easier to reach.",
+        ],
+    },
     {
         "version": "V1.5",
         "title": "Deeper research and smarter organisation",
@@ -1035,7 +1045,7 @@ class MarketInsightApp(ctk.CTk):
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self.sidebar = ctk.CTkFrame(self, width=205, corner_radius=0, fg_color=(palette_color("#E8E7E1"), palette_color("#252724")))
+        self.sidebar = ctk.CTkFrame(self, width=224, corner_radius=0, fg_color=(palette_color("#E5E8E0"), palette_color("#171E19")), border_width=0)
         self.sidebar.grid(row=0, column=0, sticky="nsew")
         self.sidebar.grid_propagate(False)
         ctk.CTkLabel(self.sidebar, text="MARKET\nINSIGHT", font=app_font(size=25, weight="bold"),
@@ -1109,7 +1119,7 @@ class MarketInsightApp(ctk.CTk):
 
         self.pages = {}
         for name in ["Overview", "What's New", "Market Hours", "Watchlist", "Economic Calendar", "Price Alerts", "Trading Journal", "Settings", "About"]:
-            frame = ctk.CTkScrollableFrame(self.main, corner_radius=20, fg_color=(palette_color("#F8F7F3"), palette_color("#292B28")))
+            frame = ctk.CTkScrollableFrame(self.main, corner_radius=24, border_width=1, border_color=(palette_color("#E0E3DA"), palette_color("#354238")), fg_color=(palette_color("#F4F5EF"), palette_color("#202922")))
             frame.grid(row=1, column=0, sticky="nsew")
             self.pages[name] = frame
         self._build_overview()
@@ -1128,7 +1138,7 @@ class MarketInsightApp(ctk.CTk):
         self.bind_all("<Escape>", self._exit_fullscreen)
 
     def card(self, parent, title, subtitle=None, wraplength=None):
-        frame = ctk.CTkFrame(parent, corner_radius=22, fg_color=(palette_color("#EFEEE8"), palette_color("#30332F")))
+        frame = ctk.CTkFrame(parent, corner_radius=24, border_width=1, border_color=(palette_color("#E1E3DA"), palette_color("#3B463D")), fg_color=(palette_color("#EBEEE6"), palette_color("#28332B")))
         frame.pack(fill="x", padx=14, pady=10)
         heading = ctk.CTkLabel(frame, text=title, font=app_font(size=19, weight="bold"),
                                text_color=(palette_color("#414841"), palette_color("#D8DDD7")), justify="left")
