@@ -29,7 +29,7 @@ a{color:inherit;text-decoration:none}.wrap{width:min(var(--max),calc(100% - 40px
 <h1>Your market research.<br><span>One clear view.</span></h1>
 <p class="lead">Meet Market Insight V1.4: a focused Windows desktop workspace that brings stock scanning, watchlists, technical indicators and practical risk tools together — so you can spend less time switching tabs and more time researching.</p>
 <div class="actions">
-<a class="btn primary" href="https://github.com/adrianvaleitl-debug/market-insight/releases/download/V1.4/Market_Insight_Setup_V1.4.exe">↓ Download V1.4 for Windows</a>
+<a class="btn primary" href="https://github.com/adrianvaleitl-debug/market-insight/releases/download/V1.4/Market_Insight_Setup_V1.4.exe" data-latest-installer>↓ Download V1.4 for Windows</a>
 <a class="btn secondary" href="https://github.com/adrianvaleitl-debug/market-insight/releases/tag/V1.4">View V1.4 release ↗</a>
 </div>
 <div class="fine">Free Windows installer · No separate Python setup required · Alpaca account needed for IEX latest-trade snapshots</div>
@@ -97,7 +97,7 @@ a{color:inherit;text-decoration:none}.wrap{width:min(var(--max),calc(100% - 40px
 <div class="notice" style="margin-top:22px"><strong>Keep your Secret Key private.</strong> Never upload API credentials to GitHub or share them in screenshots. Market Insight stores saved keys in Windows Credential Manager.</div>
 </section>
 <section class="wrap section">
-<div class="cta"><div><div class="eyebrow">Get started with V1.4</div><h2>Your next research session starts here.</h2><p>Download the Windows installer, or grab the ZIP package if you prefer that format.</p></div><div class="actions" style="margin:0"><a class="btn primary" href="https://github.com/adrianvaleitl-debug/market-insight/releases/download/V1.4/Market_Insight_Setup_V1.4.exe">Download installer ↓</a><a class="btn secondary" href="https://github.com/adrianvaleitl-debug/market-insight/releases/download/V1.4/Market_Insight_V1.4.zip">Download ZIP ↓</a></div></div>
+<div class="cta"><div><div class="eyebrow">Get started with V1.4</div><h2>Your next research session starts here.</h2><p>Download the Windows installer, or grab the ZIP package if you prefer that format.</p></div><div class="actions" style="margin:0"><a class="btn primary" href="https://github.com/adrianvaleitl-debug/market-insight/releases/download/V1.4/Market_Insight_Setup_V1.4.exe" data-latest-installer>Download installer ↓</a><a class="btn secondary" href="https://github.com/adrianvaleitl-debug/market-insight/releases/download/V1.4/Market_Insight_V1.4.zip" data-latest-portable>Download ZIP ↓</a></div></div>
 </section>
 
 <section id="support" class="wrap section">
@@ -115,5 +115,19 @@ a{color:inherit;text-decoration:none}.wrap{width:min(var(--max),calc(100% - 40px
 <section class="wrap section" style="padding-top:0"><div class="notice"><strong>Data &amp; risk disclosure.</strong> Latest-price snapshots use Alpaca's IEX feed, which is not the full consolidated US market and may not include every trade or venue. Historical technical indicators use Yahoo Finance daily history. Snapshots are not a continuous tick-by-tick stream; automatic scans run at the configured interval. Data may be incomplete or unavailable. Scores, warnings and calculator outputs are educational tools only, not financial advice or a recommendation to buy or sell. No brokerage connection or trade execution is provided.</div></section>
 </main>
 <footer class="wrap footer"><span>© 2026 Market Insight · Created by Adrian Vale</span><span><a href="https://www.youtube.com/@Adrianvaleitl" target="_blank" rel="noopener noreferrer">YouTube @Adrianvaleitl ↗</a>　·　<a href="https://www.tiktok.com/@adrianvaleitl" target="_blank" rel="noopener noreferrer">TikTok @adrianvaleitl ↗</a>　·　<a href="https://ko-fi.com/marketinsight" target="_blank" rel="noopener noreferrer">Ko-fi ↗</a>　·　<a href="https://github.com/adrianvaleitl-debug/market-insight" target="_blank" rel="noopener noreferrer">GitHub repository ↗</a>　·　Educational use only</span></footer>
+<script>
+(async()=>{
+  try{
+    const response=await fetch("https://api.github.com/repos/adrianvaleitl-debug/market-insight/releases/latest",{headers:{Accept:"application/vnd.github+json"}});
+    if(!response.ok)return;
+    const release=await response.json();
+    const assets=release.assets||[];
+    const installer=assets.find(asset=>asset.name.toLowerCase().endsWith(".exe"));
+    const portable=assets.find(asset=>asset.name.toLowerCase().endsWith(".zip"));
+    if(installer)document.querySelectorAll("[data-latest-installer]").forEach(link=>{link.href=installer.browser_download_url;link.setAttribute("download",installer.name);});
+    if(portable)document.querySelectorAll("[data-latest-portable]").forEach(link=>{link.href=portable.browser_download_url;link.setAttribute("download",portable.name);});
+  }catch(error){/* Keep the current verified release links as a fallback. */}
+})();
+</script>
 </body>
 </html>
