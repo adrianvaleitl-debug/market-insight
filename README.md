@@ -2,41 +2,11 @@
 
 ## What's New
 
-### V1.7 — Trade planning and risk discipline
+### V1.12 — Black glass with optional accent colours
 
-- **Trade Planner:** calculate share size from account balance, risk percentage and stop distance.
-- **Reward-to-risk analysis:** compare the planned target with the stop distance and estimate position value and potential reward.
-- **Saved plans:** keep up to 30 planning snapshots locally for later review.
-- **Input guardrails:** reject invalid prices, reversed long-trade levels and risk percentages above 100%.
-- The planner is for research and preparation only. It does not connect to a broker to submit orders or guarantee outcomes.
-
-
-### V1.6 — Research workspace upgrades
-
-V1.6 refreshes the desktop interface into a more focused analyst workspace, with clearer navigation, rounded research panels and a stronger visual hierarchy. It retains the five research and organisation tools introduced in V1.5:
-
-- **Watchlist folders:** group tickers into custom lists such as Tech, ETFs and Long-term without removing them from the main scan.
-- **Scan history:** keep the latest 20 completed scan summaries and compare the strongest results from each run.
-- **Ticker research notes:** save and reload personal notes against individual ticker symbols on your computer.
-- **Custom scan presets:** save and reuse your watchlist, score threshold, sort order and result filter.
-- **Daily market briefing:** review the latest scan leaders, advancing/declining breadth and caution flags in one summary.
-
-Earlier tools remain included: scan snapshots, searchable and sortable results, filters, CSV export, live scan progress, five font families, optional bold typography and the Economic Calendar, Price Alerts and Trading Journal.
-
-Follow Market Insight on both platforms: [YouTube @Adrianvaleitl](https://www.youtube.com/@Adrianvaleitl) · [TikTok @adrianvaleitl](https://www.tiktok.com/@adrianvaleitl).
-
-[View all releases](https://github.com/adrianvaleitl-debug/market-insight/releases) · [Open the website](https://adrianvaleitl-debug.github.io/market-insight/)
-
----
-
-A Windows desktop market scanner for watchlists, technical indicators, and market research using Alpaca IEX snapshots and Yahoo Finance historical data.
-
-## Overview
-
-Market Insight helps you review a selected list of stocks and ETFs from one desktop application.
-It calculates technical indicators and assigns each scanned symbol an illustrative score from 0 to 100.
-The app also highlights caution signals so that you can investigate unusual or weaker conditions.
-It is a research aid, not an automated trading system.
+- **Six accent choices:** Black, Amber, Azure, Lavender, Rose and Teal are available in Settings, with Black as the default.
+- **Neutral acrylic glass:** accent colours are limited to interface details and controls rather than tinting charcoal surfaces.
+- **Research data preserved:** existing watchlists, scans, saved plans, alerts, credentials and research data remain intact.
 
 ## Features
 
