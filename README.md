@@ -2,6 +2,15 @@
 
 ## What's New
 
+### V1.7 — Trade planning and risk discipline
+
+- **Trade Planner:** calculate share size from account balance, risk percentage and stop distance.
+- **Reward-to-risk analysis:** compare the planned target with the stop distance and estimate position value and potential reward.
+- **Saved plans:** keep up to 30 planning snapshots locally for later review.
+- **Input guardrails:** reject invalid prices, reversed long-trade levels and risk percentages above 100%.
+- The planner is for research and preparation only. It does not connect to a broker to submit orders or guarantee outcomes.
+
+
 ### V1.6 — Research workspace upgrades
 
 V1.6 refreshes the desktop interface into a more focused analyst workspace, with clearer navigation, rounded research panels and a stronger visual hierarchy. It retains the five research and organisation tools introduced in V1.5:
