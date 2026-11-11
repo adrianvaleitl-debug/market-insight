@@ -144,6 +144,8 @@ You are responsible for your own research and decisions. Past market behaviour d
 
 ## Project links
 
+- **Adrian Vale — personal website:** https://adrianvaleitl-debug.github.io/
+
 - **Website:** https://adrianvaleitl-debug.github.io/market-insight/
 - **Latest download:** https://github.com/adrianvaleitl-debug/market-insight/releases/latest
 - **Source code:** https://github.com/adrianvaleitl-debug/market-insight
