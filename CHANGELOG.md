@@ -8,6 +8,10 @@
 - Preserved saved watchlists, scans, plans, alerts, credentials and journals.
 
 
+## V2.0 — 11 November 2026
+- Refined the USD, EUR, GBP, JPY and CHF currency-inspired colour palettes across Light and Dark modes.
+
+
 ## V1.15 — 11 November 2026
 - Rebuilt the Windows glass host using colour-key transparency so acrylic can appear behind Market Insight without fading text or controls.
 - Expanded the transparency control's tint range and reapply timing.
