@@ -1966,10 +1966,10 @@ class MarketInsightApp(ctk.CTk):
         ).pack(anchor="w", padx=18, pady=(4, 3))
         self.colour_theme_menu = styled_settings_dropdown(
             preferences,
-            values=list(COLOUR_THEME_HUES.keys()),
+            values=["USD — US Dollar", "EUR — Euro", "GBP — British Pound", "JPY — Japanese Yen", "CHF — Swiss Franc"],
             command=self.change_colour_theme
         )
-        self.colour_theme_menu.set(self.settings.get("colour_theme", "Dollar"))
+        self.colour_theme_menu.set({"Dollar":"USD — US Dollar","Euro":"EUR — Euro","Pound":"GBP — British Pound","Yen":"JPY — Japanese Yen","Franc":"CHF — Swiss Franc"}.get(self.settings.get("colour_theme", "Dollar"), "USD — US Dollar"))
         self.colour_theme_menu.pack(anchor="w", padx=18, pady=(0, 5))
         colour_theme_note = ctk.CTkLabel(
             preferences,
@@ -2463,6 +2463,8 @@ class MarketInsightApp(ctk.CTk):
     def change_colour_theme(self, value):
         """Apply a palette immediately and rebuild the UI so every surface updates."""
         global ACTIVE_COLOUR_THEME
+        display_to_theme = {"USD — US Dollar":"Dollar","EUR — Euro":"Euro","GBP — British Pound":"Pound","JPY — Japanese Yen":"Yen","CHF — Swiss Franc":"Franc"}
+        value = display_to_theme.get(value, value)
         if value not in COLOUR_THEME_HUES:
             value = "Dollar"
         self.settings["colour_theme"] = value
