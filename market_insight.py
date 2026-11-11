@@ -149,14 +149,14 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V1.16"
+APP_VERSION = "V2.1"
 PERSONAL_SITE = "https://adrianvaleitl-debug.github.io/"
 KOFI_URL = "https://ko-fi.com/marketinsight"
 
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
     {
-        "version": "V1.16",
+        "version": "V2.1",
         "title": "Reliable colour themes and smoother resizing",
         "date": "11 November 2026",
         "items": [
