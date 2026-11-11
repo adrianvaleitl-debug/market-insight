@@ -1076,7 +1076,9 @@ class MarketInsightApp(ctk.CTk):
                 self.attributes("-fullscreen", True)
             elif mode == "Windowed":
                 self.state("normal")
-                screen_w = self.winfo_screenwidth()\n                screen_h = self.winfo_screenheight()\n                self.geometry(f"{min(1380, max(1080, screen_w - 80))}x{min(900, max(720, screen_h - 100))}")
+                screen_w = self.winfo_screenwidth()
+                screen_h = self.winfo_screenheight()
+                self.geometry(f"{min(1380, max(1080, screen_w - 80))}x{min(900, max(720, screen_h - 100))}")
             else:
                 self.state("zoomed")
         except Exception:
