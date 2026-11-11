@@ -1,6 +1,6 @@
 # Changelog
 
-## V1.16 — 11 November 2026
+## V2.1 — 11 November 2026
 - Prevented live theme changes from resetting CustomTkinter's global theme manager.
 - Kept the existing accent palette refresh and rebuilt the interface without duplicating price-alert polling.
 - Removed per-resize Gaussian-blur image generation to improve interactive resizing.
