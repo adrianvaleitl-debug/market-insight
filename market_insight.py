@@ -34,10 +34,20 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V1.8"
+APP_VERSION = "V1.9"
 
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
+    {
+        "version": "V1.9",
+        "title": "Currency colours that feel right",
+        "date": "November 2026",
+        "items": [
+            "Refined the five currency accent palettes to better match each currency visual identity.",
+            "USD now uses calm banknote green, EUR a clear European blue, GBP a richer royal violet, JPY a cherry-blossom rose, and CHF a warm Swiss alpine amber.",
+            "Updated Light and Dark modes while keeping saved theme choices and warning/status colours intact.",
+        ],
+    },
     {
         "version": "V1.8",
         "title": "A more disciplined trading workspace",
@@ -281,13 +291,13 @@ DEFAULTS = {
 ACTIVE_COLOUR_THEME = "Dollar"
 ACTIVE_FONT_FAMILY = "Segoe UI"
 ACTIVE_BOLD_TEXT = True
-# Inspired by the distinctive colours commonly associated with major banknotes.
+# Currency-inspired hues, softened to work across both Light and Dark modes.
 COLOUR_THEME_HUES = {
-    "Dollar": 42,    # soft pastel gold
-    "Euro": 218,     # Euro notes: blue
-    "Pound": 276,    # British pound notes: purple
-    "Yen": 350,      # Japanese yen notes: rose/red
-    "Franc": 174,    # Swiss franc notes: teal
+    "Dollar": 145,   # USD: calm banknote / money green
+    "Euro": 218,     # EUR: clear European blue
+    "Pound": 276,    # GBP: rich royal violet
+    "Yen": 350,      # JPY: cherry-blossom rose
+    "Franc": 30,     # CHF: warm Swiss alpine amber
 }
 CURRENCY_OPTIONS = {
     "USD": "USD ($)",
