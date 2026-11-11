@@ -4,7 +4,7 @@
 
 ### V1.6 — Research workspace upgrades
 
-The V1.6 update adds five new research and organisation tools:
+V1.6 refreshes the desktop interface into a more focused analyst workspace, with clearer navigation, rounded research panels and a stronger visual hierarchy. It retains the five research and organisation tools introduced in V1.5:
 
 - **Watchlist folders:** group tickers into custom lists such as Tech, ETFs and Long-term without removing them from the main scan.
 - **Scan history:** keep the latest 20 completed scan summaries and compare the strongest results from each run.
@@ -12,7 +12,7 @@ The V1.6 update adds five new research and organisation tools:
 - **Custom scan presets:** save and reuse your watchlist, score threshold, sort order and result filter.
 - **Daily market briefing:** review the latest scan leaders, advancing/declining breadth and caution flags in one summary.
 
-Existing V1.4 tools remain included: scan snapshots, searchable and sortable results, filters, CSV export, live scan progress, five font families, optional bold typography and the Economic Calendar, Price Alerts and Trading Journal.
+Earlier tools remain included: scan snapshots, searchable and sortable results, filters, CSV export, live scan progress, five font families, optional bold typography and the Economic Calendar, Price Alerts and Trading Journal.
 
 Follow Market Insight on both platforms: [YouTube @Adrianvaleitl](https://www.youtube.com/@Adrianvaleitl) · [TikTok @adrianvaleitl](https://www.tiktok.com/@adrianvaleitl).
 
@@ -31,7 +31,12 @@ It is a research aid, not an automated trading system.
 
 ## Features
 
-- Watchlist folders for organising symbols into named groups.\n- Local scan history with up to 20 recent summaries.\n- Ticker-specific research notes saved in app settings.\n- Reusable scan presets for watchlists, score thresholds, sorting and filters.\n- Daily briefing with scan leaders, market breadth and caution flags.\n- Scan snapshot showing average score, strongest and weakest daily moves, and highest-volume result.
+- Watchlist folders for organising symbols into named groups.
+- Local scan history with up to 20 recent summaries.
+- Ticker-specific research notes saved in app settings.
+- Reusable scan presets for watchlists, score thresholds, sorting and filters.
+- Daily briefing with scan leaders, market breadth and caution flags.
+- Scan snapshot showing average score, strongest and weakest daily moves, and highest-volume result.
 - Search scan results by ticker symbol or company name.
 - Sort results by score, biggest daily gain, biggest daily loss, highest RSI, or highest volume.
 - Filter results by all stocks, positive or negative daily move, score 70+, or caution warnings.
