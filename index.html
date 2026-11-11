@@ -107,6 +107,24 @@ body>header.wrap.nav .av-theme-tools{margin:0 auto!important}
 body>footer.wrap.footer{justify-content:center!important;align-items:center!important;text-align:center!important;gap:12px 24px!important}
 @media(max-width:900px){body>.wrap.nav,body>header.wrap.nav,body>footer.wrap.footer{width:calc(100% - 40px)!important}}
 </style>
+<style id="final-viewport-centering">
+/* Use the actual usable canvas to the right of the 252px fixed sidebar. */
+body>header.wrap.nav,body>footer.wrap.footer{
+ width:min(var(--max),calc(100vw - 292px))!important;
+ max-width:none!important;
+ margin:0!important;
+ position:relative!important;
+ left:calc((100vw - 252px - min(var(--max),calc(100vw - 292px)))/2)!important;
+ box-sizing:border-box!important;
+}
+body>header.wrap.nav{display:flex!important;flex-wrap:wrap!important;justify-content:center!important;align-items:center!important;gap:14px 26px!important}
+body>header.wrap.nav .navlinks{display:flex!important;justify-content:center!important;align-items:center!important;flex-wrap:wrap!important}
+body>header.wrap.nav .av-theme-tools{margin-inline:auto!important}
+body>footer.wrap.footer{display:flex!important;flex-wrap:wrap!important;justify-content:center!important;align-items:center!important;text-align:center!important;gap:10px 24px!important}
+@media(max-width:900px){
+ body>header.wrap.nav,body>footer.wrap.footer{width:calc(100vw - 40px)!important;margin:0 20px!important;left:0!important}
+}
+</style>
 </head>
 <body>
 <aside class="site-rail" aria-label="Market Insight website sidebar">
