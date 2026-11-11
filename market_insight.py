@@ -34,16 +34,16 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V1.9"
+APP_VERSION = "V2.0"
 
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
     {
-        "version": "V1.9",
-        "title": "Currency colours that feel right",
+        "version": "V2.0",
+        "title": "Liquid glass and softer currency themes",
         "date": "November 2026",
         "items": [
-            "Refined the five currency accent palettes to better match each currency visual identity.",
+            "Added a tinted liquid-glass window effect and stronger, softer pastel currency accents across controls.",
             "USD now uses calm banknote green, EUR a clear European blue, GBP a richer royal violet, JPY a cherry-blossom rose, and CHF a warm Swiss alpine amber.",
             "Updated Light and Dark modes while keeping saved theme choices and warning/status colours intact.",
         ],
