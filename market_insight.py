@@ -660,7 +660,7 @@ class MarketInsightApp(ctk.CTk):
                 _fields_ = [("Attribute", ctypes.c_int), ("Data", ctypes.c_void_p),
                             ("SizeOfData", ctypes.c_size_t)]
             # A restrained navy/palette-tinted acrylic layer; avoid excessive transparency.
-            policy = ACCENT_POLICY(4, 2, 0xD91A2638, 0)
+            policy = ACCENT_POLICY(4, 2, 0xCC14231A, 0)
             data = WINDOWCOMPOSITIONATTRIBDATA(19, ctypes.addressof(policy), ctypes.sizeof(policy))
             apply_attribute = ctypes.windll.user32.SetWindowCompositionAttribute
             apply_attribute.argtypes = [ctypes.c_void_p, ctypes.POINTER(WINDOWCOMPOSITIONATTRIBDATA)]
@@ -674,12 +674,12 @@ class MarketInsightApp(ctk.CTk):
         """Add blurred currency-colour spotlights behind the market workspace."""
         try:
             dark=ctk.get_appearance_mode()=="Dark"
-            base="#090F16" if dark else "#F1F0EC"
+            base="#09120D" if dark else "#E9EEE8"
             accent=COLOUR_THEME_HUES.get(ACTIVE_COLOUR_THEME,COLOUR_THEME_HUES["Dollar"])
             hue=accent/360
             rgb=colorsys.hls_to_rgb(hue,0.62,0.34)
             theme_glow="#"+"".join(f"{round(channel*255):02X}" for channel in rgb)
-            accents=[theme_glow,"#75A8E8","#B69AE8","#76C6C0"]
+            accents=[theme_glow,"#6F9D7D","#C69A69","#A6C8B3"]
             canvas=tk.Canvas(self,highlightthickness=0,bd=0,bg=base)
             canvas.place(x=0,y=0,relwidth=1,relheight=1)
             self._spotlight_canvas=canvas
@@ -687,7 +687,7 @@ class MarketInsightApp(ctk.CTk):
                 if event is not None and event.widget is not self:return
                 w=max(480,self.winfo_width());h=max(360,self.winfo_height())
                 glow=Image.new("RGBA",(w,h),(0,0,0,0));draw=ImageDraw.Draw(glow)
-                alpha=178 if dark else 82
+                alpha=150 if dark else 62
                 for x,y,r,color in [(-.08,-.10,.66,accents[0]),(.84,.12,.58,accents[1]),(.48,.92,.64,accents[2]),(.10,.62,.42,accents[3])]:
                     rgb=tuple(int(color[i:i+2],16) for i in (1,3,5));cx,cy=x*w,y*h;rad=r*min(w,h)
                     draw.ellipse((cx-rad,cy-rad,cx+rad,cy+rad),fill=(*rgb,alpha))
@@ -1132,7 +1132,7 @@ class MarketInsightApp(ctk.CTk):
             self.nav_buttons[label] = btn
         side_info = ctk.CTkScrollableFrame(
             self.sidebar, width=174, corner_radius=16,
-            fg_color=(palette_color("#E1E0D9"), palette_color("#2B2D29")),
+            fg_color=("#E4EBE2", "#1B2D21"),
             scrollbar_button_color=(palette_color("#B9BDB4"), palette_color("#555A53"))
         )
         side_info.pack(fill="both", expand=True, padx=10, pady=(18, 10))
