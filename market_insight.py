@@ -282,7 +282,7 @@ ACTIVE_FONT_FAMILY = "Segoe UI"
 ACTIVE_BOLD_TEXT = True
 # Inspired by the distinctive colours commonly associated with major banknotes.
 COLOUR_THEME_HUES = {
-    "Dollar": 150,   # US dollar: green
+    "Dollar": 42,    # soft pastel gold
     "Euro": 218,     # Euro notes: blue
     "Pound": 276,    # British pound notes: purple
     "Yen": 350,      # Japanese yen notes: rose/red
