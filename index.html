@@ -125,7 +125,6 @@ body>footer.wrap.footer{display:flex!important;flex-wrap:wrap!important;justify-
  body>header.wrap.nav,body>footer.wrap.footer{width:calc(100vw - 40px)!important;margin:0 20px!important;left:0!important}
 }
 </style>
-<style id="continuous-flow-scroll-v2">html{scroll-behavior:smooth!important;scroll-padding-top:110px}body,main{scroll-behavior:smooth!important;overscroll-behavior-y:contain}section{scroll-margin-top:100px}</style>
 </head>
 <body>
 <aside class="site-rail" aria-label="Market Insight website sidebar">
@@ -277,6 +276,14 @@ body>footer.wrap.footer{display:flex!important;flex-wrap:wrap!important;justify-
 <script id="adrian-theme-controls">
 (()=>{const root=document.documentElement,key='av-theme-'+location.pathname;let mode='dark',accent='euro';try{mode=localStorage.getItem(key+'-mode')||mode;accent=localStorage.getItem(key+'-accent')||accent}catch{}const valid=['dollar','euro','pound','yen','franc'];function apply(){root.dataset.avMode=mode;root.dataset.avAccent=valid.includes(accent)?accent:'euro';document.querySelector('meta[name="theme-color"]')?.setAttribute('content',mode==='dark'?'#171820':'#f5f3f0');const mb=document.getElementById('av-mode');if(mb){mb.textContent=mode==='dark'?'☀ Light':'☾ Dark';mb.setAttribute('aria-pressed',String(mode==='light'))}document.querySelectorAll('[data-av-choice]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.avChoice===accent)))}function persist(){try{localStorage.setItem(key+'-mode',mode);localStorage.setItem(key+'-accent',accent)}catch{}apply()}const tools=document.createElement('div');tools.className='av-theme-tools';tools.setAttribute('aria-label','Appearance settings');tools.innerHTML='<button id="av-mode" type="button">☀ Light</button>'+[['dollar','#e8c98f','USD'],['euro','#9ebce9','EUR'],['pound','#c4afe7','GBP'],['yen','#e9aebc','JPY'],['franc','#9fcbd0','CHF']].map(([n,col,label])=>'<button type="button" data-av-choice="'+n+'"><i class="av-dot" style="background:'+col+'"></i>'+label+'</button>').join('');const nav=document.querySelector('.nav');if(nav)nav.append(tools);else document.body.prepend(tools);document.getElementById('av-mode').addEventListener('click',()=>{mode=mode==='dark'?'light':'dark';persist()});tools.querySelectorAll('[data-av-choice]').forEach(b=>b.addEventListener('click',()=>{accent=b.dataset.avChoice;persist()}));apply()})();
 </script>
+
+<style id="dayflow-centered-header-footer">
+body>header.wrap.nav{position:fixed!important;top:12px!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;width:min(1160px,calc(100vw - 32px))!important;max-width:none!important;box-sizing:border-box!important;display:flex!important;flex-wrap:wrap!important;justify-content:center!important;align-items:center!important;gap:14px 26px!important;z-index:90!important}
+body>header.wrap.nav .navlinks{display:flex!important;justify-content:center!important;align-items:center!important;flex-wrap:wrap!important}
+body>header.wrap.nav .av-theme-tools{margin-inline:auto!important}
+body>footer.wrap.footer{position:fixed!important;left:50%!important;right:auto!important;bottom:12px!important;transform:translateX(-50%)!important;width:min(1160px,calc(100vw - 32px))!important;max-width:none!important;box-sizing:border-box!important;display:flex!important;flex-wrap:wrap!important;justify-content:center!important;align-items:center!important;text-align:center!important;gap:10px 28px!important;padding:14px 22px!important;border:1px solid var(--av-line,#ffffff22)!important;border-radius:16px!important;background:var(--av-panel,rgba(15,25,41,.88))!important;backdrop-filter:blur(18px);z-index:90!important}
+@media(max-width:700px){body>header.wrap.nav{width:calc(100vw - 16px)!important;top:6px!important}body>footer.wrap.footer{width:calc(100vw - 16px)!important;bottom:8px!important}}
+</style>
 </body>
 </html>
 
