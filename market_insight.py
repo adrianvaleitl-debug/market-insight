@@ -35,7 +35,7 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V1.11"
+APP_VERSION = "V1.12"
 
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
@@ -276,7 +276,7 @@ STOCK_NAMES = {
 
 DEFAULTS = {
     "appearance": "Dark",
-    "colour_theme": "Dollar",
+    "colour_theme": "Black",
     "transparency": 8,
     "font_family": "Segoe UI",
     "bold_text": True,
@@ -311,17 +311,12 @@ DEFAULTS = {
 
 # Five high-contrast accent identities. The hue is applied consistently across
 # cards, controls and highlights while preserving each surface's lightness.
-ACTIVE_COLOUR_THEME = "Dollar"
+ACTIVE_COLOUR_THEME = "Black"
 ACTIVE_FONT_FAMILY = "Segoe UI"
 ACTIVE_BOLD_TEXT = True
 # Currency-inspired hues, softened to work across both Light and Dark modes.
-COLOUR_THEME_HUES = {
-    "Dollar": 145,   # USD: calm banknote / money green
-    "Euro": 218,     # EUR: clear European blue
-    "Pound": 276,    # GBP: rich royal violet
-    "Yen": 350,      # JPY: cherry-blossom rose
-    "Franc": 30,     # CHF: warm Swiss alpine amber
-}
+COLOUR_THEME_HUES = {"Black": 0, "Amber": 38, "Azure": 215, "Lavender": 270, "Rose": 345, "Teal": 185, "Dollar": 0, "Euro": 215, "Pound": 270, "Yen": 345, "Franc": 185}
+COLOUR_ACCENTS = {"Black":("#B9B9B9","#A0A0A0"),"Amber":("#D7B77F","#BFA16A"),"Azure":("#91AFE0","#7897C8"),"Lavender":("#B5A0D8","#9B86BE"),"Rose":("#D99EAD","#C48495"),"Teal":("#91BEC3","#76A6AB")}
 CURRENCY_OPTIONS = {
     "USD": "USD ($)",
     "GBP": "GBP (£)",
@@ -357,11 +352,12 @@ def apply_ctk_palette_theme():
     """Update CustomTkinter's built-in accent colours for the active palette."""
     ctk.set_default_color_theme("green")
     theme = ctk.ThemeManager.theme
+    primary, hover = COLOUR_ACCENTS.get(ACTIVE_COLOUR_THEME, COLOUR_ACCENTS["Black"])
     muted = {
-        "CTkButton": {"fg_color": ["#B9B9B9", "#B9B9B9"], "hover_color": ["#C9C9C9", "#C9C9C9"], "text_color": ["#202020", "#202020"], "corner_radius": 13},
-        "CTkCheckBox": {"fg_color": ["#B9B9B9", "#B9B9B9"], "hover_color": ["#C9C9C9", "#C9C9C9"], "border_color": ["#7F7F7F", "#7F7F7F"], "checkmark_color": ["#202020", "#202020"]},
-        "CTkSwitch": {"fg_color": ["#434343", "#434343"], "progress_color": ["#B9B9B9", "#B9B9B9"], "button_color": ["#F2F2F2", "#F2F2F2"], "button_hover_color": ["#FFFFFF", "#FFFFFF"]},
-        "CTkOptionMenu": {"fg_color": ["#282828", "#282828"], "button_color": ["#B9B9B9", "#B9B9B9"], "button_hover_color": ["#C9C9C9", "#C9C9C9"], "text_color": ["#F2F2F2", "#F2F2F2"], "dropdown_fg_color": ["#1F1F1F", "#1F1F1F"], "dropdown_hover_color": ["#363636", "#363636"], "dropdown_text_color": ["#F2F2F2", "#F2F2F2"], "corner_radius": 13},
+        "CTkButton": {"fg_color": [primary, primary], "hover_color": [hover, hover], "text_color": ["#202020", "#202020"], "corner_radius": 13},
+        "CTkCheckBox": {"fg_color": [primary, primary], "hover_color": [hover, hover], "border_color": ["#7F7F7F", "#7F7F7F"], "checkmark_color": ["#202020", "#202020"]},
+        "CTkSwitch": {"fg_color": ["#434343", "#434343"], "progress_color": [primary, primary], "button_color": ["#F2F2F2", "#F2F2F2"], "button_hover_color": ["#FFFFFF", "#FFFFFF"]},
+        "CTkOptionMenu": {"fg_color": ["#282828", "#282828"], "button_color": [primary, primary], "button_hover_color": [hover, hover], "text_color": ["#F2F2F2", "#F2F2F2"], "dropdown_fg_color": ["#1F1F1F", "#1F1F1F"], "dropdown_hover_color": ["#363636", "#363636"], "dropdown_text_color": ["#F2F2F2", "#F2F2F2"], "corner_radius": 13},
         "CTkSlider": {"progress_color": [palette_color("#797979"), palette_color("#6E6E6E")], "button_color": [palette_color("#797979"), palette_color("#6E6E6E")], "button_hover_color": [palette_color("#676767"), palette_color("#515151")]},
         "CTkProgressBar": {"progress_color": [palette_color("#797979"), palette_color("#6E6E6E")]},
         "CTkRadioButton": {"fg_color": [palette_color("#797979"), palette_color("#6E6E6E")], "hover_color": [palette_color("#676767"), palette_color("#515151")]},
@@ -605,10 +601,10 @@ class MarketInsightApp(ctk.CTk):
         self.settings = load_settings()
         global ACTIVE_COLOUR_THEME
         previous_theme_names = {
-            "Emerald": "Dollar", "Sapphire": "Euro", "Violet": "Pound",
-            "Crimson": "Yen", "Amber": "Franc",
+            "Emerald": "Black", "Sapphire": "Azure", "Violet": "Lavender",
+            "Crimson": "Rose", "Amber": "Amber", "Dollar": "Black", "Euro": "Azure", "Pound": "Lavender", "Yen": "Rose", "Franc": "Teal",
         }
-        saved_theme = self.settings.get("colour_theme", "Dollar")
+        saved_theme = self.settings.get("colour_theme", "Black")
         ACTIVE_COLOUR_THEME = previous_theme_names.get(saved_theme, saved_theme)
         global ACTIVE_FONT_FAMILY, ACTIVE_BOLD_TEXT
         ACTIVE_FONT_FAMILY = self.settings.get("font_family", "Segoe UI")
@@ -616,7 +612,7 @@ class MarketInsightApp(ctk.CTk):
         if ACTIVE_FONT_FAMILY not in ("Segoe UI", "Arial", "Verdana", "Trebuchet MS", "Georgia"):
             ACTIVE_FONT_FAMILY = "Segoe UI"
         if ACTIVE_COLOUR_THEME not in COLOUR_THEME_HUES:
-            ACTIVE_COLOUR_THEME = "Dollar"
+            ACTIVE_COLOUR_THEME = "Black"
         self.settings["colour_theme"] = ACTIVE_COLOUR_THEME
         if self.settings.get("currency") not in CURRENCY_OPTIONS:
             self.settings["currency"] = "USD"
@@ -2000,6 +1996,10 @@ class MarketInsightApp(ctk.CTk):
         )
         self.appearance_menu.set(self.settings["appearance"])
         self.appearance_menu.pack(anchor="w", padx=18, pady=(0, 12))
+        ctk.CTkLabel(preferences, text="Accent colour", font=app_font(size=14, weight="bold"), text_color=(palette_color("#5B5B5B"), palette_color("#C3C3C3"))).pack(anchor="w", padx=18, pady=(4, 3))
+        self.colour_theme_menu = styled_settings_dropdown(preferences, values=["Black", "Amber", "Azure", "Lavender", "Rose", "Teal"], command=self.change_colour_theme)
+        self.colour_theme_menu.set(self.settings.get("colour_theme", "Black"))
+        self.colour_theme_menu.pack(anchor="w", padx=18, pady=(0, 12))
 
         ctk.CTkLabel(
             preferences, text="Window transparency",
@@ -2514,10 +2514,10 @@ class MarketInsightApp(ctk.CTk):
     def change_colour_theme(self, value):
         """Apply a palette immediately and rebuild the UI so every surface updates."""
         global ACTIVE_COLOUR_THEME
-        display_to_theme = {"USD":"Dollar","EUR":"Euro","GBP":"Pound","JPY":"Yen","CHF":"Franc"}
+        display_to_theme = {"USD":"Black","EUR":"Azure","GBP":"Lavender","JPY":"Rose","CHF":"Teal","Dollar":"Black","Euro":"Azure","Pound":"Lavender","Yen":"Rose","Franc":"Teal"}
         value = display_to_theme.get(value, value)
-        if value not in COLOUR_THEME_HUES:
-            value = "Dollar"
+        if value not in COLOUR_ACCENTS:
+            value = "Black"
         self.settings["colour_theme"] = value
         ACTIVE_COLOUR_THEME = value
         apply_ctk_palette_theme()
@@ -2527,7 +2527,7 @@ class MarketInsightApp(ctk.CTk):
         current_page = getattr(self, "current_page", "Settings")
         for child in self.winfo_children():
             child.destroy()
-        self.configure(fg_color=(palette_color("#F0F0F0"), palette_color("#212121")))
+        self.configure(fg_color=(palette_color("#F0F0F0"), palette_color("#101012")))
         self._build_ui()
         self._refresh_watchlist_text()
         self.show_page(current_page if current_page in self.pages else "Settings")
