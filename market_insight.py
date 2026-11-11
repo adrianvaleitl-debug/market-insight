@@ -33,10 +33,22 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V1.4"
+APP_VERSION = "V1.5"
 
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
+    {
+        "version": "V1.5",
+        "title": "Deeper research and smarter organisation",
+        "date": "November 2026",
+        "items": [
+            "Organise watchlist symbols into named folders without changing your full scan list.",
+            "Keep a local history of completed scans and compare top-scoring symbols.",
+            "Save private research notes against individual ticker symbols.",
+            "Create and reuse scan presets with your preferred score threshold and watchlist.",
+            "Generate a daily market briefing from your latest completed scan, including leaders, breadth and caution flags.",
+        ],
+    },
     {
         "version": "V1.4",
         "title": "Scanner improvements",
@@ -234,6 +246,11 @@ DEFAULTS = {
     "check_for_updates": True,
     "price_alerts": [],
     "trade_journal": [],
+    "watchlist_folders": {},
+    "scan_history": [],
+    "ticker_notes": {},
+    "scan_presets": {},
+    "daily_briefing": "",
 }
 
 
@@ -1457,6 +1474,157 @@ class MarketInsightApp(ctk.CTk):
         self.results_text = ctk.CTkScrollableFrame(results, height=520, corner_radius=12, fg_color=(palette_color("#F8F7F3"), palette_color("#292B28")))
         self.results_text.pack(fill="x", padx=16, pady=(4, 16))
 
+        folders = self.card(page, "Watchlist folders", "Group symbols into your own lists such as Tech, ETFs or Long-term. Folders organise your watchlist; they do not remove symbols from scans.")
+        folder_row = ctk.CTkFrame(folders, fg_color="transparent")
+        folder_row.pack(fill="x", padx=16, pady=6)
+        self.watch_folder_name_entry = ctk.CTkEntry(folder_row, placeholder_text="Folder name", width=190)
+        self.watch_folder_name_entry.pack(side="left", padx=(0, 8))
+        self.watch_folder_symbols_entry = ctk.CTkEntry(folder_row, placeholder_text="Tickers, comma separated", width=300)
+        self.watch_folder_symbols_entry.pack(side="left", padx=4)
+        ctk.CTkButton(folder_row, text="Save folder", command=self._save_watchlist_folder).pack(side="left", padx=6)
+        self.watch_folder_menu = styled_settings_dropdown(folders, values=["All folders"] + sorted(self.settings.get("watchlist_folders", {}).keys()), command=self._load_watchlist_folder)
+        self.watch_folder_menu.pack(anchor="w", padx=16, pady=(4, 12))
+
+        presets = self.card(page, "Custom scan presets", "Save your current watchlist and minimum score threshold so you can reuse a setup later.")
+        preset_row = ctk.CTkFrame(presets, fg_color="transparent")
+        preset_row.pack(fill="x", padx=16, pady=8)
+        self.preset_name_entry = ctk.CTkEntry(preset_row, placeholder_text="Preset name", width=190)
+        self.preset_name_entry.pack(side="left", padx=(0, 8))
+        ctk.CTkButton(preset_row, text="Save current setup", command=self._save_scan_preset).pack(side="left", padx=4)
+        self.preset_menu = styled_settings_dropdown(presets, values=sorted(self.settings.get("scan_presets", {}).keys()), command=self._apply_scan_preset)
+        self.preset_menu.pack(anchor="w", padx=16, pady=(4, 12))
+
+        notes = self.card(page, "Ticker research notes", "Keep your own research notes locally against a ticker. Notes are not trading advice or a signal.")
+        note_row = ctk.CTkFrame(notes, fg_color="transparent")
+        note_row.pack(fill="x", padx=16, pady=6)
+        self.note_symbol_entry = ctk.CTkEntry(note_row, placeholder_text="Ticker (e.g. AAPL)", width=180)
+        self.note_symbol_entry.pack(side="left", padx=(0, 8))
+        ctk.CTkButton(note_row, text="Load note", command=self._load_ticker_note).pack(side="left", padx=4)
+        ctk.CTkButton(note_row, text="Save note", command=self._save_ticker_note).pack(side="left", padx=4)
+        self.ticker_notes_text = ctk.CTkTextbox(notes, height=115, corner_radius=10)
+        self.ticker_notes_text.pack(fill="x", padx=16, pady=(2, 14))
+
+        history = self.card(page, "Scan history", "A local record of recent completed scans, with the strongest results from each run.")
+        self.scan_history_text = ctk.CTkTextbox(history, height=155, corner_radius=10)
+        self.scan_history_text.pack(fill="x", padx=16, pady=(4, 14))
+        self._render_scan_history()
+
+        briefing = self.card(page, "Daily market briefing", "A quick summary generated from your latest completed scan. It updates when a scan finishes.")
+        self.daily_briefing_text = ctk.CTkTextbox(briefing, height=165, corner_radius=10)
+        self.daily_briefing_text.pack(fill="x", padx=16, pady=(4, 14))
+        self._update_daily_briefing(self.results)
+
+
+    def _save_watchlist_folder(self):
+        name = self.watch_folder_name_entry.get().strip()
+        symbols = list(dict.fromkeys(x.strip().upper() for x in self.watch_folder_symbols_entry.get().replace("\n", ",").split(",") if x.strip()))
+        if not name or not symbols:
+            self.status.configure(text="Enter a folder name and at least one ticker.")
+            return
+        folders = self.settings.setdefault("watchlist_folders", {})
+        folders[name] = symbols[:100]
+        save_settings(self.settings)
+        self.watch_folder_menu.configure(values=["All folders"] + sorted(folders))
+        self.watch_folder_menu.set(name)
+        self.status.configure(text="Saved watchlist folder: " + name)
+
+    def _load_watchlist_folder(self, name):
+        if name == "All folders":
+            self._refresh_watchlist_text()
+            return
+        symbols = self.settings.get("watchlist_folders", {}).get(name, [])
+        self.watch_folder_name_entry.delete(0, "end")
+        self.watch_folder_name_entry.insert(0, name)
+        self.watch_folder_symbols_entry.delete(0, "end")
+        self.watch_folder_symbols_entry.insert(0, ", ".join(symbols))
+
+    def _save_scan_preset(self):
+        name = self.preset_name_entry.get().strip()
+        if not name:
+            self.status.configure(text="Enter a name for this scan preset.")
+            return
+        presets = self.settings.setdefault("scan_presets", {})
+        presets[name] = {
+            "threshold": int(self.settings.get("threshold", 70)),
+            "watchlist": list(self.settings.get("watchlist", DEFAULT_TICKERS)),
+            "sort": self.results_sort.get() if hasattr(self, "results_sort") else "Highest score",
+            "filter": self.results_filter.get() if hasattr(self, "results_filter") else "All stocks",
+        }
+        save_settings(self.settings)
+        self.preset_menu.configure(values=sorted(presets))
+        self.preset_menu.set(name)
+        self.status.configure(text="Saved scan preset: " + name)
+
+    def _apply_scan_preset(self, name):
+        preset = self.settings.get("scan_presets", {}).get(name)
+        if not preset:
+            return
+        self.settings["threshold"] = int(preset.get("threshold", 70))
+        self.settings["watchlist"] = list(preset.get("watchlist", DEFAULT_TICKERS))[:100]
+        save_settings(self.settings)
+        self._refresh_watchlist_text()
+        if hasattr(self, "threshold_menu"):
+            self.threshold_menu.set(str(self.settings["threshold"]))
+        if hasattr(self, "results_sort"):
+            self.results_sort.set(preset.get("sort", "Highest score"))
+            self.results_filter.set(preset.get("filter", "All stocks"))
+            self._refresh_results_view()
+        self.status.configure(text="Applied scan preset: " + name)
+
+    def _save_ticker_note(self):
+        symbol = self.note_symbol_entry.get().strip().upper()
+        note = self.ticker_notes_text.get("1.0", "end").strip()
+        if not symbol:
+            self.status.configure(text="Enter a ticker symbol before saving a note.")
+            return
+        self.settings.setdefault("ticker_notes", {})[symbol] = {"note": note, "updated": datetime.now().isoformat(timespec="minutes")}
+        save_settings(self.settings)
+        self.status.configure(text="Research note saved for " + symbol)
+
+    def _load_ticker_note(self):
+        symbol = self.note_symbol_entry.get().strip().upper()
+        if not symbol:
+            self.status.configure(text="Enter a ticker symbol to load its note.")
+            return
+        record = self.settings.get("ticker_notes", {}).get(symbol, {})
+        self.ticker_notes_text.delete("1.0", "end")
+        self.ticker_notes_text.insert("1.0", record.get("note", "") if isinstance(record, dict) else str(record))
+        self.status.configure(text="Loaded research note for " + symbol)
+
+    def _render_scan_history(self):
+        if not hasattr(self, "scan_history_text"):
+            return
+        history = self.settings.get("scan_history", [])
+        lines = []
+        for item in history[:20]:
+            leaders = ", ".join("{} ({})".format(x.get("symbol"), x.get("score")) for x in item.get("leaders", [])) or "No successful results"
+            lines.append("{}  ·  {}/{} successful  ·  Leaders: {}".format(item.get("time", ""), item.get("successful", 0), item.get("total", 0), leaders))
+        self.scan_history_text.configure(state="normal")
+        self.scan_history_text.delete("1.0", "end")
+        self.scan_history_text.insert("1.0", "\n".join(lines) if lines else "No completed scans saved yet.")
+        self.scan_history_text.configure(state="disabled")
+
+    def _update_daily_briefing(self, results):
+        if not hasattr(self, "daily_briefing_text"):
+            return
+        valid = [(symbol, data) for symbol, data in results.items() if isinstance(data, dict) and "error" not in data]
+        valid.sort(key=lambda item: item[1].get("score", 0), reverse=True)
+        if not valid:
+            message = "Your daily briefing will appear here after your first successful scan."
+        else:
+            advancing = sum(1 for _, data in valid if data.get("day_change", 0) > 0)
+            declining = sum(1 for _, data in valid if data.get("day_change", 0) < 0)
+            leaders = ["{}  ·  score {}/100  ·  day {:+.2f}%".format(s, d.get("score", 0), d.get("day_change", 0)) for s, d in valid[:3]]
+            cautions = ["{}: {}".format(s, ", ".join(d.get("warnings", [])[:2])) for s, d in valid if d.get("warnings")][:4]
+            message = "LATEST SCAN  ·  {}\n".format(datetime.now().strftime("%d %b %Y, %H:%M")) + "Watchlist breadth: {} advancing, {} declining, {} unchanged.\n\nTop scored symbols\n".format(advancing, declining, len(valid)-advancing-declining) + "\n".join(leaders)
+            if cautions:
+                message += "\n\nCaution flags\n" + "\n".join(cautions)
+            message += "\n\nResearch summary only — not a buy or sell recommendation."
+        self.daily_briefing_text.configure(state="normal")
+        self.daily_briefing_text.delete("1.0", "end")
+        self.daily_briefing_text.insert("1.0", message)
+        self.daily_briefing_text.configure(state="disabled")
+
 
     def _build_economic_calendar(self):
         page = self.pages["Economic Calendar"]
@@ -2549,6 +2717,19 @@ class MarketInsightApp(ctk.CTk):
 
     def _finish_scan(self, output, market_context=None):
         self.results = output
+        valid_for_history = [(symbol, data) for symbol, data in output.items() if "error" not in data]
+        valid_for_history.sort(key=lambda item: item[1].get("score", 0), reverse=True)
+        history = self.settings.setdefault("scan_history", [])
+        history.insert(0, {
+            "time": datetime.now().strftime("%Y-%m-%d %H:%M"),
+            "successful": len(valid_for_history),
+            "total": len(output),
+            "leaders": [{"symbol": symbol, "score": round(float(data.get("score", 0)), 1)} for symbol, data in valid_for_history[:5]],
+        })
+        self.settings["scan_history"] = history[:20]
+        save_settings(self.settings)
+        self._render_scan_history()
+        self._update_daily_briefing(output)
         market_context = market_context or {}
         for symbol, label in getattr(self, "market_pulse_labels", {}).items():
             data = market_context.get(symbol)
