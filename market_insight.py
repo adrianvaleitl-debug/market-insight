@@ -277,7 +277,7 @@ STOCK_NAMES = {
 DEFAULTS = {
     "appearance": "Dark",
     "colour_theme": "Dollar",
-    "transparency": 94,
+    "transparency": 8,
     "font_family": "Segoe UI",
     "bold_text": True,
     "startup_window_mode": "Maximised",
@@ -661,7 +661,7 @@ class MarketInsightApp(ctk.CTk):
     def apply_liquid_glass(self):
         """Use a subtle tinted acrylic window surface where Windows supports it."""
         try:
-            self.attributes("-alpha", max(0.78,min(1.0,float(self.settings.get("transparency",94))/100)))
+            self.attributes("-alpha", max(0.65,min(1.0,1-float(self.settings.get("transparency",8))/100)))
             if not sys.platform.startswith("win"):
                 return
             class ACCENT_POLICY(ctypes.Structure):
@@ -2007,12 +2007,12 @@ class MarketInsightApp(ctk.CTk):
             text_color=(palette_color("#555D54"), palette_color("#C0C5BC"))
         ).pack(anchor="w", padx=18, pady=(4, 3))
         self.transparency_value = ctk.CTkLabel(
-            preferences, text="{}%".format(int(self.settings.get("transparency", 94))),
+            preferences, text="{}%".format(int(self.settings.get("transparency", 8))),
             font=app_font(size=13, weight="bold")
         )
         self.transparency_value.pack(anchor="w", padx=18, pady=(0, 3))
         self.transparency_slider = ctk.CTkSlider(
-            preferences, from_=78, to=100, number_of_steps=22,
+            preferences, from_=0, to=35, number_of_steps=35,
             command=self.change_transparency
         )
         self.transparency_slider.set(int(self.settings.get("transparency", 94)))
@@ -2501,7 +2501,7 @@ class MarketInsightApp(ctk.CTk):
         if hasattr(self, "transparency_value"):
             self.transparency_value.configure(text="{}%".format(value))
         try:
-            self.attributes("-alpha", value / 100)
+            self.attributes("-alpha", 1 - value / 100)
         except Exception:
             pass
         save_settings(self.settings)
