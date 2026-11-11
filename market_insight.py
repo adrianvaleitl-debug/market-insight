@@ -17,6 +17,7 @@ from zoneinfo import ZoneInfo
 from pathlib import Path
 
 import customtkinter as ctk
+from PIL import Image, ImageDraw, ImageFilter, ImageTk
 
 # Apply bold typography globally, including widgets that use CustomTkinter's
 # built-in default font (such as sidebar buttons and small helper/status text).
@@ -635,6 +636,7 @@ class MarketInsightApp(ctk.CTk):
             set_windows_window_icon(self, icon_path)
         self.configure(fg_color=(palette_color("#F1F0EC"), palette_color("#20211F")))
         self.apply_liquid_glass()
+        self.apply_spotlight_background()
         self.results = {}
         self.scanning = False
         self.after_id = None
@@ -673,6 +675,33 @@ class MarketInsightApp(ctk.CTk):
             apply_attribute.restype = ctypes.c_bool
             self.update_idletasks()
             apply_attribute(ctypes.c_void_p(self.winfo_id()), ctypes.byref(data))
+        except Exception:
+            pass
+
+    def apply_spotlight_background(self):
+        """Add blurred currency-colour spotlights behind the market workspace."""
+        try:
+            dark=ctk.get_appearance_mode()=="Dark"
+            base="#101612" if dark else "#F1F0EC"
+            accent=COLOUR_THEME_HUES.get(ACTIVE_COLOUR_THEME,COLOUR_THEME_HUES["Dollar"])
+            accents=["#"+format(int(accent),"02X")+"B98A","#8EBDA8","#9EBCE9"]
+            canvas=tk.Canvas(self,highlightthickness=0,bd=0,bg=base)
+            canvas.place(x=0,y=0,relwidth=1,relheight=1)
+            self._spotlight_canvas=canvas
+            def render(event=None):
+                if event is not None and event.widget is not self:return
+                w=max(480,self.winfo_width());h=max(360,self.winfo_height())
+                glow=Image.new("RGBA",(w,h),(0,0,0,0));draw=ImageDraw.Draw(glow)
+                alpha=78 if dark else 34
+                for x,y,r,color in [(-.12,-.10,.76,accents[0]),(.82,.12,.66,accents[1]),(.45,.92,.72,accents[2])]:
+                    rgb=tuple(int(color[i:i+2],16) for i in (1,3,5));cx,cy=x*w,y*h;rad=r*min(w,h)
+                    draw.ellipse((cx-rad,cy-rad,cx+rad,cy+rad),fill=(*rgb,alpha))
+                glow=glow.filter(ImageFilter.GaussianBlur(max(65,int(min(w,h)*.17))))
+                image=Image.new("RGBA",(w,h),base);image.alpha_composite(glow)
+                self._spotlight_photo=ImageTk.PhotoImage(image.convert("RGB"))
+                canvas.delete("all");canvas.create_image(0,0,anchor="nw",image=self._spotlight_photo);canvas.lower()
+            self.bind("<Configure>",lambda e:render(e),add="+")
+            self.after(120,render)
         except Exception:
             pass
 
