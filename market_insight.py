@@ -1296,7 +1296,6 @@ class MarketInsightApp(ctk.CTk):
         self._build_about()
         self.show_page("Overview")
         self.after(350, self.apply_liquid_glass)
-        self.after(15000, self._check_price_alerts)
         # Global bindings work even when a child control has keyboard focus.
         self.bind_all("<F11>", self._toggle_fullscreen)
         self.bind_all("<Escape>", self._exit_fullscreen)
