@@ -20,6 +20,71 @@ from pathlib import Path
 import customtkinter as ctk
 from PIL import Image, ImageDraw, ImageFilter, ImageTk
 
+GLASS_KEY = "#010101"
+
+def apply_windows_glass_backdrop(window, transparency=8, light=False):
+    """Expose a Windows acrylic backdrop through transparent Tk root pixels."""
+    if sys.platform != "win32":
+        return False
+    key = GLASS_KEY
+    try:
+        # Tk's colour-key transparency lets DWM draw acrylic behind the client
+        # area without fading child text, icons or controls.
+        window.wm_attributes("-transparentcolor", key)
+        window.configure(fg_color=key)
+    except Exception:
+        # Keep the app usable if colour-key transparency is unavailable.
+        try:
+            window.configure(fg_color="#EDEDED" if light else "#101012")
+        except Exception:
+            pass
+    try:
+        window.update_idletasks()
+        user32 = ctypes.windll.user32
+        hwnd = ctypes.c_void_p(window.winfo_id())
+        try:
+            user32.GetAncestor.argtypes = [ctypes.c_void_p, ctypes.c_uint]
+            user32.GetAncestor.restype = ctypes.c_void_p
+            hwnd = ctypes.c_void_p(user32.GetAncestor(hwnd, 2) or hwnd.value)
+        except Exception:
+            pass
+
+        # Windows 11 system backdrop (transient acrylic).
+        backdrop_ok = False
+        try:
+            backdrop = ctypes.c_int(3)
+            result = ctypes.windll.dwmapi.DwmSetWindowAttribute(
+                hwnd, 38, ctypes.byref(backdrop), ctypes.sizeof(backdrop))
+            backdrop_ok = (result == 0)
+        except Exception:
+            pass
+
+        # Acrylic fallback also supplies a user-adjustable tint on Windows 10.
+        class ACCENT_POLICY(ctypes.Structure):
+            _fields_ = [("AccentState", ctypes.c_int), ("AccentFlags", ctypes.c_int),
+                        ("GradientColor", ctypes.c_int), ("AnimationId", ctypes.c_int)]
+        class WINDOWCOMPOSITIONATTRIBDATA(ctypes.Structure):
+            _fields_ = [("Attribute", ctypes.c_int), ("Data", ctypes.c_void_p),
+                        ("SizeOfData", ctypes.c_size_t)]
+        amount = max(0, min(35, int(transparency)))
+        alpha = 0xE8 - round((0xE8 - 0x70) * amount / 35)
+        colour = 0x00F0F0F0 if light else 0x0017171B
+        policy = ACCENT_POLICY(4, 2, (alpha << 24) | colour, 0)
+        data = WINDOWCOMPOSITIONATTRIBDATA(19, ctypes.addressof(policy), ctypes.sizeof(policy))
+        apply_attribute = user32.SetWindowCompositionAttribute
+        apply_attribute.argtypes = [ctypes.c_void_p, ctypes.POINTER(WINDOWCOMPOSITIONATTRIBDATA)]
+        apply_attribute.restype = ctypes.c_bool
+        accent_ok = bool(apply_attribute(hwnd, ctypes.byref(data)))
+        try:
+            user32.SetWindowPos(hwnd, None, 0, 0, 0, 0,
+                                0x0001 | 0x0002 | 0x0004 | 0x0020)
+        except Exception:
+            pass
+        return backdrop_ok or accent_ok
+    except Exception:
+        return False
+
+
 
 def install_accent_spotlight(window, accent, background="#101012"):
     """Render a soft multi-layer nebula glow behind the app's glass surfaces."""
@@ -84,7 +149,7 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V1.14"
+APP_VERSION = "V1.15"
 PERSONAL_SITE = "https://adrianvaleitl-debug.github.io/"
 KOFI_URL = "https://ko-fi.com/marketinsight"
 
@@ -696,7 +761,7 @@ class MarketInsightApp(ctk.CTk):
         if icon_path and icon_path.exists():
             self.update_idletasks()
             set_windows_window_icon(self, icon_path)
-        self.configure(fg_color=("#EDEDED", "#101010"))
+        self.configure(fg_color=GLASS_KEY if sys.platform=="win32" else ("#EDEDED", "#101010"))
         self.apply_liquid_glass()
         self.results = {}
         self.scanning = False
@@ -717,36 +782,12 @@ class MarketInsightApp(ctk.CTk):
             self._show_alpaca_setup()
 
     def apply_liquid_glass(self):
-        """Enable a real Windows acrylic backdrop (blurred content behind the window)."""
         try:
             if not sys.platform.startswith("win"):
                 return
-            self.update_idletasks()
-            hwnd = ctypes.c_void_p(self.winfo_id())
-            # Windows 11 system backdrop: transient-window acrylic. This is the
-            # supported DWM path; the legacy accent policy below is a fallback.
-            try:
-                backdrop = ctypes.c_int(3)  # DWMSBT_TRANSIENTWINDOW (acrylic)
-                ctypes.windll.dwmapi.DwmSetWindowAttribute(
-                    hwnd, 38, ctypes.byref(backdrop), ctypes.sizeof(backdrop))
-            except Exception:
-                pass
-            class ACCENT_POLICY(ctypes.Structure):
-                _fields_ = [("AccentState", ctypes.c_int), ("AccentFlags", ctypes.c_int),
-                            ("GradientColor", ctypes.c_int), ("AnimationId", ctypes.c_int)]
-            class WINDOWCOMPOSITIONATTRIBDATA(ctypes.Structure):
-                _fields_ = [("Attribute", ctypes.c_int), ("Data", ctypes.c_void_p),
-                            ("SizeOfData", ctypes.c_size_t)]
-            # Alpha controls the acrylic tint, not the opacity of all text/widgets.
-            transparency = int(self.data["settings"].get("transparency", 8)) if hasattr(self, "data") else int(self.get("transparency", "8"))
-            alpha = max(0x78, min(0xD8, 0xC8 - round(transparency * 1.1)))
-            tint = (alpha << 24) | 0x0017171B
-            policy = ACCENT_POLICY(4, 2, tint, 0)
-            data = WINDOWCOMPOSITIONATTRIBDATA(19, ctypes.addressof(policy), ctypes.sizeof(policy))
-            apply_attribute = ctypes.windll.user32.SetWindowCompositionAttribute
-            apply_attribute.argtypes = [ctypes.c_void_p, ctypes.POINTER(WINDOWCOMPOSITIONATTRIBDATA)]
-            apply_attribute.restype = ctypes.c_bool
-            apply_attribute(hwnd, ctypes.byref(data))
+            apply_windows_glass_backdrop(
+                self, int(self.settings.get("transparency", 8)),
+                ctk.get_appearance_mode() == "Light")
         except Exception:
             pass
 
@@ -1164,7 +1205,7 @@ class MarketInsightApp(ctk.CTk):
         webbrowser.open(url)
 
     def _build_ui(self):
-        install_accent_spotlight(self, COLOUR_ACCENTS.get(ACTIVE_COLOUR_THEME, COLOUR_ACCENTS["Black"])[0], "#F0F0F0" if ctk.get_appearance_mode()=="Light" else "#101012")
+        install_accent_spotlight(self, COLOUR_ACCENTS.get(ACTIVE_COLOUR_THEME, COLOUR_ACCENTS["Black"])[0], GLASS_KEY if sys.platform=="win32" else ("#F0F0F0" if ctk.get_appearance_mode()=="Light" else "#101012"))
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
@@ -2585,10 +2626,7 @@ class MarketInsightApp(ctk.CTk):
         if hasattr(self, "transparency_value"):
             self.transparency_value.configure(text="{}%".format(value))
         try:
-            self.apply_liquid_glass()
-        except Exception:
-            pass
-        self.apply_liquid_glass()
+            self.after_idle(self.apply_liquid_glass)
         save_settings(self.settings)
 
     def change_appearance(self, value):
@@ -2614,11 +2652,11 @@ class MarketInsightApp(ctk.CTk):
             try:
                 for child in self.winfo_children():
                     child.destroy()
-                self.configure(fg_color=(palette_color("#F0F0F0"), palette_color("#101012")))
+                self.configure(fg_color=GLASS_KEY if sys.platform=="win32" else (palette_color("#F0F0F0"), palette_color("#101012")))
                 self._build_ui()
                 self.apply_liquid_glass()
                 install_accent_spotlight(self, COLOUR_ACCENTS[ACTIVE_COLOUR_THEME][0],
-                                         "#F0F0F0" if ctk.get_appearance_mode()=="Light" else "#101012")
+                                         GLASS_KEY if sys.platform=="win32" else ("#F0F0F0" if ctk.get_appearance_mode()=="Light" else "#101012"))
                 self._refresh_watchlist_text()
                 self.show_page(current_page if current_page in self.pages else "Settings")
                 self.status.configure(text="{} colour theme applied and saved.".format(value))
