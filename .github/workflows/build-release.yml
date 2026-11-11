@@ -63,24 +63,24 @@ jobs:
         shell: pwsh
         run: |
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
-          if (!(Test-Path "installer-output/Market_Insight_Setup_V1.5.exe")) { throw "The Windows installer was not created." }
+          if (!(Test-Path "installer-output/Market_Insight_Setup_V1.6.exe")) { throw "The Windows installer was not created." }
 
       - name: Assemble source ZIP for existing users
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path Market_Insight | Out-Null
           Copy-Item market_insight.py, requirements.txt, SETUP_AND_START.bat, Start_Market_Insight.vbs, market_insight.ico, START_IN_DIAGNOSTIC_MODE.bat, Create_Desktop_Shortcut.ps1, README.md -Destination Market_Insight
-          Compress-Archive -Path Market_Insight -DestinationPath Market_Insight_V1.5.zip -Force
+          Compress-Archive -Path Market_Insight -DestinationPath Market_Insight_V1.6.zip -Force
 
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: pwsh
         run: |
-          gh release view V1.5 --repo adrianvaleitl-debug/market-insight 2>$null
+          gh release view V1.6 --repo adrianvaleitl-debug/market-insight 2>$null
           if ($LASTEXITCODE -ne 0) {
-            gh release create V1.5 --repo adrianvaleitl-debug/market-insight --title "Market Insight V1.5" --notes "Market Insight V1.5 adds watchlist folders, scan history, ticker research notes, reusable scan presets and a generated daily market briefing." --target main
-            if ($LASTEXITCODE -ne 0) { throw "Could not create the V1.5 GitHub release." }
+            gh release create V1.6 --repo adrianvaleitl-debug/market-insight --title "Market Insight V1.6" --notes "Market Insight V1.6 adds a redesigned analyst terminal interface, clearer navigation, refined research panels and a more focused layout." --target main
+            if ($LASTEXITCODE -ne 0) { throw "Could not create the V1.6 GitHub release." }
           }
-          gh release upload V1.5 "installer-output/Market_Insight_Setup_V1.5.exe" "Market_Insight_V1.5.zip" --repo adrianvaleitl-debug/market-insight --clobber
-          if ($LASTEXITCODE -ne 0) { throw "Could not upload the V1.5 release assets." }
+          gh release upload V1.6 "installer-output/Market_Insight_Setup_V1.6.exe" "Market_Insight_V1.6.zip" --repo adrianvaleitl-debug/market-insight --clobber
+          if ($LASTEXITCODE -ne 0) { throw "Could not upload the V1.6 release assets." }
