@@ -278,7 +278,7 @@ body>footer.wrap.footer{display:flex!important;flex-wrap:wrap!important;justify-
     const installer=installers.find(a=>versionOf(a.name)===version)||null;
     const portable=archives.find(a=>versionOf(a.name)===version)||null;
     document.querySelectorAll("[data-latest-installer]").forEach(link=>{
-      link.href=installer?.browser_download_url||release.html_url||releaseFallback;
+      link.href=installer?.browser_download_url||fallback;
       link.removeAttribute("download");
       link.textContent=installer?"↓ Download "+version+" for Windows":"↓ View latest download";
     });
