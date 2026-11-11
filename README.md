@@ -2,7 +2,7 @@
 
 ## What's New
 
-### V1.16 — Stable colour themes and smoother window resizing
+### V2.1 — Stable colour themes and smoother window resizing
 
 - **Theme refresh:** removed live CustomTkinter theme resets that could leave existing widgets inconsistent during colour changes.
 - **Resize performance:** stopped rebuilding the full blurred spotlight bitmap on every window-size event.
