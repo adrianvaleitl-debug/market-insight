@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#2a2a2a">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<meta name="description" content="Meet Market Insight V1.12 — a free Windows market-scanning workspace with watchlists, technical indicators, a dedicated Trade Planner, saved risk plans and Alpaca IEX snapshots. Download the installer.">
+<meta name="description" content="Meet Market Insight V1.13 — a free Windows market-scanning workspace with watchlists, technical indicators, a dedicated Trade Planner, saved risk plans and Alpaca IEX snapshots. Download the installer.">
 <title>Market Insight — A clearer view of the market</title>
 <style>
 :root{color-scheme:dark;--bg:#101612;--panel:#17211b;--panel2:#1d2922;--line:#2a3a30;--text:#edf5ef;--muted:#a1b1a6;--green:#b8e4c7;--green2:#6eb88a;--red:#efb8b8;--red2:#c97979;--cream:#e8f0e9;--max:1120px}
@@ -16,7 +16,7 @@ a{color:inherit;text-decoration:none}.wrap{width:min(var(--max),calc(100% - 40px
 .section{padding:68px 0}.section-head{max-width:650px;margin-bottom:28px}.eyebrow{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--green2);font-weight:750}.section h2{font-size:clamp(28px,4vw,42px);line-height:1.12;letter-spacing:-.045em;margin:10px 0}.section p{color:var(--muted)}.features{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.feature{background:linear-gradient(150deg,#1a261f,#141c17);border:1px solid var(--line);padding:23px;border-radius:19px}.feature-icon{width:38px;height:38px;border-radius:12px;background:#b8e4c718;color:var(--green);display:grid;place-items:center;font-size:18px}.feature h3{font-size:17px;margin:17px 0 5px}.feature p{font-size:14px;margin:0}.feature ul{margin:12px 0 0;padding-left:18px;color:var(--muted);font-size:13px;line-height:1.8}.feature li{padding-left:2px;margin:2px 0}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.step{border-top:1px solid var(--line);padding:18px 8px}.num{color:var(--green);font-weight:800;font-size:13px}.step h3{margin:8px 0 4px}.step p{font-size:14px;margin:0}.notice{padding:19px 21px;border:1px solid #d6b78035;background:#d6b7800b;border-radius:16px;color:#d7c39e;font-size:13px}.cta{padding:34px;border:1px solid #b8e4c733;border-radius:24px;background:radial-gradient(ellipse at 100% 0%,#b8e4c71b,transparent 55%),#18231c;display:flex;align-items:center;justify-content:space-between;gap:24px}.cta h2{margin:0 0 8px}.cta p{margin:0}.footer{padding:28px 0 42px;margin-top:35px;border-top:1px solid #ffffff24;color:#b8c8bd;font-size:13px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}.footer a{color:var(--green);font-weight:700}.footer a:hover{text-decoration:underline}
 @media(max-width:820px){.hero{grid-template-columns:1fr;padding:60px 0;gap:34px}.features,.steps{grid-template-columns:1fr 1fr}.preview{max-width:600px}.cta{align-items:flex-start;flex-direction:column}}@media(max-width:560px){.navlinks{gap:13px;font-size:12px}.navlinks a:nth-child(2){display:none}.features,.steps{grid-template-columns:1fr}.hero h1{font-size:46px}.wrap{width:min(100% - 28px,var(--max))}.preview{padding:12px}.metric strong{font-size:16px}.section{padding:48px 0}}
 
-/* V1.12: Market Insight is the analyst terminal in the Adrian Vale product family. */
+/* V1.13: Market Insight is the analyst terminal in the Adrian Vale product family. */
 html[data-av-accent="black"]{--av-accent:#b9b9b9;--av-accent-soft:#e5e5e5;--av-accent-ink:#202020}
 body{background:radial-gradient(ellipse at 82% -8%,#294333 0,transparent 36%),linear-gradient(180deg,#0c120e,#101612 48%,#0d130f)}
 .nav{position:sticky;top:12px;z-index:20;background:rgba(18,26,21,.9);backdrop-filter:blur(18px);border:1px solid #ffffff18;border-radius:22px;padding:13px 18px;margin-top:12px;box-shadow:0 14px 45px #0004}
@@ -127,6 +127,10 @@ body>footer.wrap.footer{display:flex!important;flex-wrap:wrap!important;justify-
 }
 </style>
 
+<style id="adrian-accent-glass-spotlight">
+body{position:relative}body:before{content:"";position:fixed;inset:-14%;z-index:0;pointer-events:none;background:radial-gradient(ellipse 42% 34% at 18% 8%,color-mix(in srgb,var(--av-accent,#9ebce9) 18%,transparent),transparent 78%),radial-gradient(ellipse 36% 30% at 82% 78%,color-mix(in srgb,var(--av-accent,#9ebce9) 11%,transparent),transparent 80%);filter:blur(54px)}body>*{position:relative;z-index:1}
+.nav,.site-rail,.feature,.cta,.other-project-card,.footer,.preview,.metric,.chart,.stock,.notice,.rail-stat{backdrop-filter:blur(18px) saturate(1.12);-webkit-backdrop-filter:blur(18px) saturate(1.12)}
+</style>
 </head>
 <body>
 <aside class="site-rail" aria-label="Market Insight website sidebar">
@@ -144,24 +148,24 @@ body>footer.wrap.footer{display:flex!important;flex-wrap:wrap!important;justify-
     <div class="rail-kicker">QUICK VIEW</div>
     <div class="rail-stat"><span>SCAN UNIVERSE</span><b>50 stocks</b></div>
     <div class="rail-stat"><span>RESEARCH</span><b>Watchlists</b></div>
-    <div class="rail-stat"><span>UPDATES</span><b>V1.12</b></div>
-    <a class="rail-download" href="https://github.com/adrianvaleitl-debug/market-insight/releases/download/V1.12/Market_Insight_Setup_V1.12.exe">Get the app ↗</a>
+    <div class="rail-stat"><span>UPDATES</span><b>V1.13</b></div>
+    <a class="rail-download" href="https://github.com/adrianvaleitl-debug/market-insight/releases/download/V1.13/Market_Insight_Setup_V1.13.exe">Get the app ↗</a>
   </div>
 </aside>
 
 <header class="wrap nav">
 <a class="brand" href="#"><span class="mark"><img src="favicon.svg" alt="" width="34" height="34"></span><span>Market Insight</span></a>
-<nav class="navlinks"><a href="#whats-new">What's new</a><a href="#all-features">All features</a><a href="#setup">Getting started</a><a href="https://github.com/adrianvaleitl-debug/market-insight">GitHub</a><a href="#support">Support</a></nav>
+<nav class="navlinks"><a href="#whats-new">What's new</a><a href="#all-features">All features</a><a href="#setup">Getting started</a><a href="https://adrianvaleitl-debug.github.io/" target="_blank" rel="noopener noreferrer">My website ↗</a><a href="https://ko-fi.com/marketinsight" target="_blank" rel="noopener noreferrer">Donate ↗</a><a href="https://github.com/adrianvaleitl-debug/market-insight">GitHub</a><a href="#support">Support</a></nav>
 </header>
 <main>
 <section class="wrap hero">
 <div>
-<span class="pill">● V1.12 FEATURE OVERVIEW</span>
+<span class="pill">● V1.13 FEATURE OVERVIEW</span>
 <h1>Your market research.<br><span>One clear view.</span></h1>
-<p class="lead">Meet Market Insight V1.12: a refreshed analyst-terminal workspace that brings stock scanning, watchlists, technical indicators and practical risk tools together — so you can spend less time switching tabs and more time researching.</p>
+<p class="lead">Meet Market Insight V1.13: a refreshed analyst-terminal workspace that brings stock scanning, watchlists, technical indicators and practical risk tools together — so you can spend less time switching tabs and more time researching.</p>
 <div class="actions">
-<a class="btn primary" href="https://github.com/adrianvaleitl-debug/market-insight/releases/download/V1.12/Market_Insight_Setup_V1.12.exe" data-latest-installer>↓ Download latest for Windows</a>
-<a class="btn secondary" href="https://github.com/adrianvaleitl-debug/market-insight/releases/tag/V1.12" data-latest-release>View latest release ↗</a>
+<a class="btn primary" href="https://github.com/adrianvaleitl-debug/market-insight/releases/download/V1.13/Market_Insight_Setup_V1.13.exe" data-latest-installer>↓ Download latest for Windows</a>
+<a class="btn secondary" href="https://github.com/adrianvaleitl-debug/market-insight/releases/tag/V1.13" data-latest-release>View latest release ↗</a>
 </div>
 <div class="fine">Free Windows installer · No separate Python setup required · Alpaca account needed for IEX latest-trade snapshots</div>
 </div>
@@ -177,11 +181,11 @@ body>footer.wrap.footer{display:flex!important;flex-wrap:wrap!important;justify-
 <span><b>SCAN</b> 50-stock research universe</span><span><b>RESEARCH</b> Watchlists and ticker notes</span><span><b>REVIEW</b> Scan history and presets</span><span><b>CONTEXT</b> Market briefing and alerts</span>
 </section>
 <section id="whats-new" class="wrap section">
-<div class="section-head"><div class="eyebrow">Latest update · V1.12</div><h2>Black glass, with accent colours when you want them.</h2><p>V1.12 restores six optional accent choices while keeping the acrylic-glass workspace neutral. Black is the default; Amber, Azure, Lavender, Rose and Teal are available for interface accents and controls. Your existing watchlists, scans, saved plans, alerts, credentials and research data are preserved.</p></div>
+<div class="section-head"><div class="eyebrow">Latest update · V1.13</div><h2>Black glass, with accent colours when you want them.</h2><p>V1.13 restores six optional accent choices while keeping the acrylic-glass workspace neutral. Black is the default; Amber, Azure, Lavender, Rose and Teal are available for interface accents and controls. Your existing watchlists, scans, saved plans, alerts, credentials and research data are preserved.</p></div>
 <div class="features"><article class="feature"><div class="feature-icon">◉</div><h3>Six accent choices</h3><p>Choose Black, Amber, Azure, Lavender, Rose or Teal in Settings, with Black selected by default.</p></article><article class="feature"><div class="feature-icon">⌘</div><h3>Neutral acrylic glass</h3><p>Accent colours stay on interface details and controls rather than tinting the charcoal glass surfaces.</p></article><article class="feature"><div class="feature-icon">▣</div><h3>Your research stays intact</h3><p>Existing watchlists, scans, saved plans, alerts, credentials and research data remain preserved.</p></article></div>
 </section>
 <section id="features" class="wrap section">
-<div class="section-head"><div class="eyebrow">Meet Market Insight V1.12</div><h2>The essentials, without the clutter.</h2><p>A clean, approachable desktop scanner for keeping your watchlist organised, reviewing technical signals and exploring trade risk — all in one workspace.</p></div>
+<div class="section-head"><div class="eyebrow">Meet Market Insight V1.13</div><h2>The essentials, without the clutter.</h2><p>A clean, approachable desktop scanner for keeping your watchlist organised, reviewing technical signals and exploring trade risk — all in one workspace.</p></div>
 <div class="features">
 <article class="feature"><div class="feature-icon">⌕</div><h3>Market scanning</h3><p>Scan a starter universe of US-listed stocks and ETFs, or build your own watchlist of up to 100 symbols.</p></article>
 <article class="feature"><div class="feature-icon">↗</div><h3>Technical indicators</h3><p>Review EMA, RSI, MACD, volume ratio, ATR and recent price changes in one place.</p></article>
@@ -194,7 +198,7 @@ body>footer.wrap.footer{display:flex!important;flex-wrap:wrap!important;justify-
 </section>
 
 <section id="all-features" class="wrap section">
-<div class="section-head"><div class="eyebrow">Full app feature list · V1.12</div><h2>Everything included in Market Insight.</h2><p>Explore the complete set of tools included in the app, grouped by scanning, market information, trading tools and settings.</p></div>
+<div class="section-head"><div class="eyebrow">Full app feature list · V1.13</div><h2>Everything included in Market Insight.</h2><p>Explore the complete set of tools included in the app, grouped by scanning, market information, trading tools and settings.</p></div>
 <div class="features">
 <article class="feature"><div class="feature-icon">⌕</div><h3>Stock scanner &amp; analysis</h3><ul>
 <li>50 starter US stock and ETF symbols</li><li>Custom watchlist with up to 100 symbols</li><li>Technical score from 0–100 with caution warnings</li><li>EMA 20 and EMA 50</li><li>RSI, MACD and ATR indicators</li><li>Daily and 20-day price changes</li><li>Volume compared with its 20-day average</li><li>Search by ticker or company name</li><li>Sort by score, daily gain/loss, RSI or volume</li><li>Filter by market move, score or warnings</li><li>Scan snapshot with average score and standout results</li><li>Export scan data and indicators to CSV</li>
@@ -215,16 +219,16 @@ body>footer.wrap.footer{display:flex!important;flex-wrap:wrap!important;justify-
 </section>
 
 <section id="setup" class="wrap section">
-<div class="section-head"><div class="eyebrow">Getting started</div><h2>Install it. Set it up. Start researching.</h2><p>The V1.12 Windows installer includes the latest Market Insight features and handles installation for you. You can also download the portable ZIP if you prefer.</p></div>
+<div class="section-head"><div class="eyebrow">Getting started</div><h2>Install it. Set it up. Start researching.</h2><p>The V1.13 Windows installer includes the latest Market Insight features and handles installation for you. You can also download the portable ZIP if you prefer.</p></div>
 <div class="steps">
-<div class="step"><div class="num">01 / DOWNLOAD</div><h3>Get the installer</h3><p>Download the V1.12 Windows installer from the button above.</p></div>
+<div class="step"><div class="num">01 / DOWNLOAD</div><h3>Get the installer</h3><p>Download the V1.13 Windows installer from the button above.</p></div>
 <div class="step"><div class="num">02 / INSTALL</div><h3>Follow the prompts</h3><p>Run the installer and follow the on-screen steps. Launch Market Insight from your Start Menu shortcut.</p></div>
 <div class="step"><div class="num">03 / CONNECT</div><h3>Connect market data</h3><p>In Settings → Live market data — Alpaca, enter your API Key ID and Secret Key to enable IEX latest-trade snapshots.</p></div>
 </div>
 <div class="notice" style="margin-top:22px"><strong>Keep your Secret Key private.</strong> Never upload API credentials to GitHub or share them in screenshots. Market Insight stores saved keys in Windows Credential Manager.</div>
 </section>
 <section class="wrap section">
-<div class="cta"><div><div class="eyebrow">Get started with the latest version</div><h2>Your next research session starts here.</h2><p>Download the Windows installer, or grab the ZIP package if you prefer that format.</p></div><div class="actions" style="margin:0"><a class="btn primary" href="https://github.com/adrianvaleitl-debug/market-insight/releases/download/V1.12/Market_Insight_Setup_V1.12.exe" data-latest-installer>Download installer ↓</a><a class="btn secondary" href="https://github.com/adrianvaleitl-debug/market-insight/releases/download/V1.12/Market_Insight_V1.12.zip" data-latest-portable>Download ZIP ↓</a></div></div>
+<div class="cta"><div><div class="eyebrow">Get started with the latest version</div><h2>Your next research session starts here.</h2><p>Download the Windows installer, or grab the ZIP package if you prefer that format.</p></div><div class="actions" style="margin:0"><a class="btn primary" href="https://github.com/adrianvaleitl-debug/market-insight/releases/download/V1.13/Market_Insight_Setup_V1.13.exe" data-latest-installer>Download installer ↓</a><a class="btn secondary" href="https://github.com/adrianvaleitl-debug/market-insight/releases/download/V1.13/Market_Insight_V1.13.zip" data-latest-portable>Download ZIP ↓</a></div></div>
 </section>
 
 <section id="support" class="wrap section">
@@ -243,13 +247,13 @@ body>footer.wrap.footer{display:flex!important;flex-wrap:wrap!important;justify-
 
 <section class="section other-projects" id="my-other-projects"><div class="section-head"><div><div class="eyebrow">MORE FROM ADRIAN</div><h2>My other projects.</h2></div><p>Explore the other websites and projects in my collection.</p></div><div class="other-project-grid"><a class="other-project-card" href="https://adrianvaleitl-debug.github.io/" target="_blank" rel="noopener noreferrer"><img class="other-project-mark" src="https://adrianvaleitl-debug.github.io/brand.svg" alt="Adrian Vale logo"><strong>Adrian Vale</strong><p>The central hub for software, downloads and updates.</p><span class="other-project-visit">VISIT WEBSITE ↗</span></a><a class="other-project-card" href="https://adrianvaleitl-debug.github.io/DayFlow/" target="_blank" rel="noopener noreferrer"><img class="other-project-mark" src="https://raw.githubusercontent.com/adrianvaleitl-debug/DayFlow/main/assets/dayflow.svg" alt="DayFlow logo"><strong>DayFlow</strong><p>A calmer way to plan tasks, habits and focused work.</p><span class="other-project-visit">VISIT WEBSITE ↗</span></a><a class="other-project-card" href="https://adrianvaleitl-debug.github.io/SoloDesk/" target="_blank" rel="noopener noreferrer"><img class="other-project-mark" src="https://raw.githubusercontent.com/adrianvaleitl-debug/SoloDesk/main/assets/solodesk-logo.svg" alt="SoloDesk logo"><strong>SoloDesk</strong><p>A practical workspace for everyday small-business admin.</p><span class="other-project-visit">VISIT WEBSITE ↗</span></a></div></section>
 </main>
-<footer class="wrap footer"><span>© 2026 Market Insight · Created by Adrian Vale</span><span><a href="https://www.youtube.com/@Adrianvaleitl" target="_blank" rel="noopener noreferrer">YouTube @Adrianvaleitl ↗</a>　·　<a href="https://www.tiktok.com/@adrianvaleitl" target="_blank" rel="noopener noreferrer">TikTok @adrianvaleitl ↗</a>　·　<a href="https://ko-fi.com/marketinsight" target="_blank" rel="noopener noreferrer">Ko-fi ↗</a>　·　<a href="https://github.com/adrianvaleitl-debug/market-insight" target="_blank" rel="noopener noreferrer">GitHub repository ↗</a>　·　Educational use only</span>　·　<a href="https://adrianvaleitl-debug.github.io/" target="_blank" rel="noopener noreferrer">Adrian Vale · All projects ↗</a></footer>
+<footer class="wrap footer"><span>© 2026 Market Insight · Created by Adrian Vale</span><span><a href="https://www.youtube.com/@Adrianvaleitl" target="_blank" rel="noopener noreferrer">YouTube @Adrianvaleitl ↗</a>　·　<a href="https://www.tiktok.com/@adrianvaleitl" target="_blank" rel="noopener noreferrer">TikTok @adrianvaleitl ↗</a>　·　<a href="https://ko-fi.com/marketinsight" target="_blank" rel="noopener noreferrer">Donate · Ko-fi ↗</a>　·　<a href="https://github.com/adrianvaleitl-debug/market-insight" target="_blank" rel="noopener noreferrer">GitHub repository ↗</a>　·　Educational use only</span>　·　<a href="https://adrianvaleitl-debug.github.io/" target="_blank" rel="noopener noreferrer">Adrian Vale · All projects ↗</a></footer>
 <script>
 (async()=>{
-  const repo="https://api.github.com/repos/adrianvaleitl-debug/market-insight/releases/tags/V1.12";
-  const fallback="https://github.com/adrianvaleitl-debug/market-insight/releases/download/V1.12/Market_Insight_Setup_V1.12.exe";
-  const portableFallback="https://github.com/adrianvaleitl-debug/market-insight/releases/download/V1.12/Market_Insight_V1.12.zip";
-  const releaseFallback="https://github.com/adrianvaleitl-debug/market-insight/releases/tag/V1.12";
+  const repo="https://api.github.com/repos/adrianvaleitl-debug/market-insight/releases/tags/V1.13";
+  const fallback="https://github.com/adrianvaleitl-debug/market-insight/releases/download/V1.13/Market_Insight_Setup_V1.13.exe";
+  const portableFallback="https://github.com/adrianvaleitl-debug/market-insight/releases/download/V1.13/Market_Insight_V1.13.zip";
+  const releaseFallback="https://github.com/adrianvaleitl-debug/market-insight/releases/tag/V1.13";
   try{
     const response=await fetch(repo,{headers:{Accept:"application/vnd.github+json"},cache:"no-store"});
     if(!response.ok)throw new Error("Release lookup failed");
