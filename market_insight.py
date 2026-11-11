@@ -168,6 +168,14 @@ RELEASE_NOTES = [
         ],
     },
     {
+        "version": "V2.0",
+        "title": "Refined currency-inspired colour palettes",
+        "date": "11 November 2026",
+        "items": [
+            "Refined the USD, EUR, GBP, JPY and CHF-inspired accent palettes across Light and Dark modes.",
+        ],
+    },
+    {
         "version": "V1.15",
         "title": "Accent spotlight and creator shortcuts",
         "date": "11 November 2026",
