@@ -1,5 +1,11 @@
 # Changelog
 
+## V2.2 — 12 November 2026
+- Added a required first-launch risk and liability acknowledgement before onboarding or app access.
+- Added a prominent risk and liability section to the website and expanded the written disclaimer.
+- Saved acknowledgement locally; users are prompted again if the notice version changes.
+
+
 ## V2.1 — 11 November 2026
 - Prevented live theme changes from resetting CustomTkinter's global theme manager.
 - Kept the existing accent palette refresh and rebuilt the interface without duplicating price-alert polling.
