@@ -2,6 +2,12 @@
 
 ## What's New
 
+### V2.2 — Risk disclosure and first-launch acknowledgement
+
+- Added a required first-launch risk and liability notice before onboarding or app access.
+- Added a prominent risk and liability section to the project website and expanded the written disclaimer.
+- The acknowledgement is stored locally and will be requested again when the notice is materially revised.
+
 ### V2.1 — Stable colour themes and smoother window resizing
 
 - **Theme refresh:** removed live CustomTkinter theme resets that could leave existing widgets inconsistent during colour changes.
@@ -128,13 +134,17 @@ You can remove saved Alpaca credentials from the Live market data section in Set
 - If setup cannot install a dependency, check that Python is installed and available to the setup script.
 - Restart the app after changing system or Python installation settings.
 
-## Disclaimer
+## Risk and liability disclaimer
 
-Market Insight is provided for educational and informational purposes only.
-It does not provide financial, investment, tax, or legal advice.
-Scores, indicators, warnings, and calculator outputs are estimates for research and learning.
-The application does not connect to a broker to place, manage, or execute trades.
-You are responsible for your own research and decisions. Past market behaviour does not guarantee future results.
+Market Insight is provided for educational, informational and independent research purposes only. It is not financial, investment, tax or legal advice, personal advice, or a recommendation to buy, sell or hold any asset. Nothing in the application or website takes account of an individual's objectives or financial circumstances.
+
+Prices, snapshots, historical data, scores, indicators, alerts, warnings and calculator outputs may be delayed, incomplete, inaccurate or unavailable. Third-party services may change or fail. Scores and indicators are estimates, not predictions or guarantees. Past performance does not guarantee future results.
+
+You are responsible for independently checking information, assessing risks and making your own trading and investment decisions. You may lose some or all of the money you invest. Market Insight does not place, manage or execute trades and cannot control markets, brokers, data providers, devices or user actions. Do not rely on the software as the sole basis for a financial decision; consider independent advice from an appropriately qualified financial adviser.
+
+To the fullest extent permitted by applicable law, Adrian Vale and the people involved in creating or maintaining Market Insight exclude responsibility for losses, damage or costs arising from or connected with use of, inability to use, or reliance on the app, website, data or outputs, including trading or investment losses, lost profits, data errors, service interruptions and software faults. This wording does not exclude or limit any liability or consumer right that cannot lawfully be excluded or limited under applicable law.
+
+Using Market Insight does not create an advisory, brokerage, fiduciary or other professional relationship with Adrian Vale. The app displays a first-launch acknowledgement of this notice before allowing access.
 
 ## Project links
 
