@@ -247,7 +247,7 @@ body{position:relative}body:before{content:"";position:fixed;inset:-14%;z-index:
 <footer class="wrap footer"><span>© 2026 Market Insight · Created by Adrian Vale</span><span><a href="https://www.youtube.com/@Adrianvaleitl" target="_blank" rel="noopener noreferrer">YouTube @Adrianvaleitl ↗</a>　·　<a href="https://www.tiktok.com/@adrianvaleitl" target="_blank" rel="noopener noreferrer">TikTok @adrianvaleitl ↗</a>　·　<a href="https://ko-fi.com/marketinsight" target="_blank" rel="noopener noreferrer">Donate · Ko-fi ↗</a>　·　<a href="https://github.com/adrianvaleitl-debug/market-insight" target="_blank" rel="noopener noreferrer">GitHub repository ↗</a>　·　Educational use only</span>　·　<a href="https://adrianvaleitl-debug.github.io/" target="_blank" rel="noopener noreferrer">Adrian Vale · All projects ↗</a></footer>
 <script>
 (async()=>{
-  const repo="https://api.github.com/repos/adrianvaleitl-debug/market-insight/releases/tags/V1.15";
+  const repo="https://api.github.com/repos/adrianvaleitl-debug/market-insight/releases/latest";
   const fallback="https://github.com/adrianvaleitl-debug/market-insight/releases/download/V1.15/Market_Insight_Setup_V1.15.exe";
   const portableFallback="https://github.com/adrianvaleitl-debug/market-insight/releases/download/V1.15/Market_Insight_V1.15.zip";
   const releaseFallback="https://github.com/adrianvaleitl-debug/market-insight/releases/tag/V1.15";
@@ -264,12 +264,12 @@ body{position:relative}body:before{content:"";position:fixed;inset:-14%;z-index:
     const installer=installers.find(a=>versionOf(a.name)===version)||null;
     const portable=archives.find(a=>versionOf(a.name)===version)||null;
     document.querySelectorAll("[data-latest-installer]").forEach(link=>{
-      link.href=installer?.browser_download_url||fallback;
+      link.href=installer?.browser_download_url||release.html_url||releaseFallback;
       link.removeAttribute("download");
       link.textContent=installer?"↓ Download "+version+" for Windows":"↓ View latest download";
     });
-    document.querySelectorAll("[data-latest-portable]").forEach(link=>{link.href=portable?.browser_download_url||portableFallback;});
-    document.querySelectorAll("[data-latest-release]").forEach(link=>{link.href=release.html_url||fallback;link.textContent="View "+version+" release ↗";});
+    document.querySelectorAll("[data-latest-portable]").forEach(link=>{link.href=portable?.browser_download_url||release.html_url||releaseFallback;link.textContent=portable?"Download ZIP ↓":"View latest release downloads ↗";});
+    document.querySelectorAll("[data-latest-release]").forEach(link=>{link.href=release.html_url||releaseFallback;link.textContent="View "+version+" release ↗";});
     document.querySelectorAll("[data-release-version]").forEach(el=>el.textContent=version);
   }catch(error){
     document.querySelectorAll("[data-latest-installer]").forEach(link=>link.href=fallback);
