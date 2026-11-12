@@ -334,5 +334,44 @@ body>footer.wrap.footer{position:fixed!important;left:calc(252px + (100vw - 252p
 @media(max-width:560px){body>header.wrap.nav{align-items:flex-start!important;gap:8px!important;padding:10px 12px!important}body>header.wrap.nav .navlinks{gap:8px 12px!important;font-size:12px!important}body>header.wrap.nav .av-theme-tools{justify-content:flex-start!important;gap:5px!important}body>main{width:calc(100vw - 28px)!important;margin:0 14px!important}body>footer.wrap.footer{width:calc(100vw - 16px)!important;padding:8px 10px!important;font-size:10px!important}}
 
 </style>
+<style id="av-device-responsive-v1">
+/* Phone layout: preserve the desktop design while giving narrow touch screens their own flow. */
+@media (max-width:700px) and (pointer:coarse) and (orientation:portrait){
+ html,body{width:100%;max-width:100%;overflow-x:hidden}
+ body{padding-left:0!important;padding-bottom:0!important}
+ .site-rail{display:none!important}
+ .wrap{width:calc(100% - 28px)!important;max-width:none!important}
+ body>.wrap.nav,.nav{position:sticky!important;top:6px!important;left:auto!important;right:auto!important;transform:none!important;width:calc(100% - 20px)!important;margin:8px 10px 0!important;padding:10px 12px!important;min-height:0!important;height:auto!important;display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:9px!important;border-radius:16px!important}
+ .navlinks{display:flex!important;flex-wrap:wrap!important;gap:7px 13px!important;font-size:12px!important}
+ main{width:100%!important;max-width:none!important;margin:0!important;padding:0 14px!important;overflow:visible!important}
+ main>section,.section{width:100%!important;max-width:none!important;min-width:0!important;padding:38px 0!important;overflow:visible!important}
+ .hero{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:24px!important;padding:42px 0 30px!important}
+ .hero h1{font-size:clamp(37px,10vw,48px)!important;line-height:1.04!important}
+ .lead{font-size:16px!important;line-height:1.6!important}
+ .preview{width:100%!important;max-width:none!important;transform:none!important;padding:12px!important;border-radius:18px!important}
+ .metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+ .metric{min-width:0!important;padding:10px!important}
+ .metric strong{font-size:17px!important}
+ .features,.steps,.market-ticker{grid-template-columns:1fr!important;gap:10px!important}
+ .feature,.step{min-width:0!important;padding:18px!important}
+ .actions{gap:9px!important}
+ .btn{min-height:44px!important;padding:11px 14px!important}
+ .cta{display:flex!important;flex-direction:column!important;align-items:stretch!important;padding:22px!important;gap:15px!important}
+ .footer,body>footer.footer{position:static!important;left:auto!important;right:auto!important;bottom:auto!important;transform:none!important;width:100%!important;max-width:none!important;margin:24px 0 0!important;padding:20px 14px 28px!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:10px!important}
+ img,svg{max-width:100%}
+}
+@media (max-height:520px) and (pointer:coarse) and (orientation:landscape){
+ body{padding-left:0!important;padding-bottom:0!important}
+ .site-rail{display:none!important}
+ body>.wrap.nav,.nav{position:sticky!important;top:4px!important;width:calc(100% - 20px)!important;margin:5px 10px!important;padding:7px 12px!important}
+ main{width:100%!important;margin:0!important;padding:0 18px!important}
+ .hero{grid-template-columns:1fr 1fr!important;gap:18px!important;padding:24px 0!important}
+ .hero h1{font-size:clamp(30px,5vw,44px)!important}
+ .preview{transform:none!important;padding:10px!important}
+ .section{padding:28px 0!important}
+ .features,.steps{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .footer,body>footer.footer{position:static!important;width:100%!important;margin:16px 0 0!important}
+}
+</style>
 </body>
 </html>
