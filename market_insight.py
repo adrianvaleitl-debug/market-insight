@@ -787,7 +787,7 @@ class MarketInsightApp(ctk.CTk):
         ctk.CTkLabel(
             dialog,
             text="Please read this important information. You must acknowledge it before continuing.",
-            font=app_font(size=13, weight="bold"), text_color=(" #555555", "#B7C1BA"),
+            font=app_font(size=13, weight="bold"), text_color=("#555555", "#B7C1BA"),
             anchor="w", wraplength=690, justify="left"
         ).pack(fill="x", padx=28, pady=(0, 14))
 
@@ -831,8 +831,8 @@ class MarketInsightApp(ctk.CTk):
         actions = ctk.CTkFrame(dialog, fg_color="transparent")
         actions.pack(fill="x", padx=24, pady=(0, 22))
         ctk.CTkButton(
-            actions, text="Exit Market Insight", fg_color=(" #E7E7E7", "#343A36"),
-            text_color=(" #222222", "#F2F5F2"), hover_color=("#D8D8D8", "#454D47"),
+            actions, text="Exit Market Insight", fg_color=("#E7E7E7", "#343A36"),
+            text_color=("#222222", "#F2F5F2"), hover_color=("#D8D8D8", "#454D47"),
             command=self.destroy, width=170
         ).pack(side="left")
         def accept_notice():
