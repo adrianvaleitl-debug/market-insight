@@ -156,6 +156,17 @@ KOFI_URL = "https://ko-fi.com/marketinsight"
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
     {
+        "version": "V2.2",
+        "title": "Risk disclosure and first-launch acknowledgement",
+        "date": "12 November 2026",
+        "items": [
+            "Added a required risk and liability notice before onboarding or app access.",
+            "Saved acknowledgement locally and request it again when the notice is revised.",
+            "Expanded the About-page disclaimer and published matching website wording.",
+        ],
+    },
+
+    {
         "version": "V2.1",
         "title": "Reliable colour themes and smoother resizing",
         "date": "11 November 2026",
@@ -794,31 +805,31 @@ class MarketInsightApp(ctk.CTk):
         body = ctk.CTkScrollableFrame(dialog, corner_radius=14, fg_color=("#FFFFFF", "#202622"))
         body.pack(fill="both", expand=True, padx=24, pady=(0, 16))
         notice = (
-            "EDUCATIONAL AND INFORMATIONAL USE ONLY\\n\\n"
+            "EDUCATIONAL AND INFORMATIONAL USE ONLY\n\n"
             "Market Insight is a software tool for education, information and independent research. "
             "It is not a financial adviser and does not provide financial, investment, tax or legal advice, "
             "personal recommendations, or a recommendation to buy, sell or hold any asset. Nothing in the "
-            "app or on its website takes account of your objectives or financial circumstances.\\n\\n"
-            "NO GUARANTEE; DATA AND OUTPUTS MAY BE WRONG\\n\\n"
+            "app or on its website takes account of your objectives or financial circumstances.\n\n"
+            "NO GUARANTEE; DATA AND OUTPUTS MAY BE WRONG\n\n"
             "Prices, market snapshots, historical data, scores, indicators, alerts, warnings, calculations "
             "and other outputs may be delayed, incomplete, inaccurate or unavailable. Third-party services "
             "can change or fail. Scores and indicators are estimates, not predictions. Past performance "
-            "does not guarantee future results.\\n\\n"
-            "YOUR DECISIONS AND LOSSES ARE YOUR RESPONSIBILITY\\n\\n"
+            "does not guarantee future results.\n\n"
+            "YOUR DECISIONS AND LOSSES ARE YOUR RESPONSIBILITY\n\n"
             "You are solely responsible for independently checking information, assessing risks and making "
             "your own trading and investment decisions. You can lose some or all of the money you invest. "
             "Market Insight does not place, manage or execute trades and cannot control markets, brokers, "
             "data providers, your devices or your actions. Do not rely on this software as the sole basis "
             "for a financial decision. Consider obtaining advice from an appropriately qualified "
-            "independent financial adviser.\\n\\n"
-            "LIMITATION OF LIABILITY\\n\\n"
+            "independent financial adviser.\n\n"
+            "LIMITATION OF LIABILITY\n\n"
             "To the fullest extent permitted by applicable law, Adrian Vale and the people involved in "
             "creating or maintaining Market Insight exclude responsibility for losses, damage or costs "
             "arising from or connected with use of, inability to use, or reliance on the app, website, "
             "data or outputs, including trading or investment losses, lost profits, data errors, service "
             "interruptions and software faults. This wording does not exclude or limit any liability or "
-            "consumer right that cannot lawfully be excluded or limited under applicable law.\\n\\n"
-            "NO CONTRACTUAL OR PROFESSIONAL RELATIONSHIP\\n\\n"
+            "consumer right that cannot lawfully be excluded or limited under applicable law.\n\n"
+            "NO CONTRACTUAL OR PROFESSIONAL RELATIONSHIP\n\n"
             "Using Market Insight does not create an advisory, brokerage, fiduciary or other professional "
             "relationship with Adrian Vale. If you do not agree with this notice, do not continue using "
             "Market Insight."
@@ -844,7 +855,7 @@ class MarketInsightApp(ctk.CTk):
                 from tkinter import messagebox
                 messagebox.showerror(
                     APP_NAME,
-                    "Your acknowledgement could not be saved. Please check that the app can write to its settings folder, then try again.\\n\\n{}".format(exc),
+                    "Your acknowledgement could not be saved. Please check that the app can write to its settings folder, then try again.\n\n{}".format(exc),
                     parent=dialog
                 )
                 return
@@ -1211,7 +1222,7 @@ class MarketInsightApp(ctk.CTk):
             from tkinter import messagebox
             messagebox.showerror(
                 APP_NAME,
-                "Couldn't save the display setting. Please try again.\\n\\n{}".format(exc),
+                "Couldn't save the display setting. Please try again.\n\n{}".format(exc),
                 parent=self
             )
 
@@ -3150,7 +3161,7 @@ class MarketInsightApp(ctk.CTk):
             self.status.configure(text="Scan results exported to CSV.")
         except Exception as exc:
             from tkinter import messagebox
-            messagebox.showerror(APP_NAME, "Couldn't export the CSV file.\\n\\n{}".format(exc), parent=self)
+            messagebox.showerror(APP_NAME, "Couldn't export the CSV file.\n\n{}".format(exc), parent=self)
 
     def _finish_scan(self, output, market_context=None):
         self.results = output
@@ -3203,7 +3214,7 @@ class MarketInsightApp(ctk.CTk):
             issue.pack(fill="x", padx=5, pady=6)
             ctk.CTkLabel(issue, text="Stocks we couldn't check", font=app_font(size=15, weight="bold"),
                          text_color=(palette_color("#838383"), palette_color("#AFAFAF"))).pack(anchor="w", padx=12, pady=(8, 2))
-            error_details = ctk.CTkLabel(issue, text="\\n".join(errors[:12]),
+            error_details = ctk.CTkLabel(issue, text="\n".join(errors[:12]),
                                          font=app_font(size=13, weight="bold"), justify="left",
                                          text_color=(palette_color("#808080"), palette_color("#AFAFAF")))
             error_details.pack(anchor="w", fill="x", padx=12, pady=(0, 10))
