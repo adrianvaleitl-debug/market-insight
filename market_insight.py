@@ -149,7 +149,7 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V2.1"
+APP_VERSION = "V2.2"
 PERSONAL_SITE = "https://adrianvaleitl-debug.github.io/"
 KOFI_URL = "https://ko-fi.com/marketinsight"
 
@@ -761,13 +761,113 @@ class MarketInsightApp(ctk.CTk):
         self.results = {}
         self.scanning = False
         self.after_id = None
+        # Show the legal risk notice before any onboarding or app functionality.
+        self.after(180, self._show_risk_disclaimer)
+
+    def _show_risk_disclaimer(self):
+        """Require a one-time acknowledgement of the current risk notice."""
+        notice_version = "2026-11-12"
+        if self.settings.get("risk_disclaimer_version") == notice_version:
+            self._continue_startup_after_disclaimer()
+            return
+
+        dialog = ctk.CTkToplevel(self)
+        dialog.title("Important risk & liability notice")
+        dialog.geometry("760x690")
+        dialog.minsize(620, 560)
+        dialog.transient(self)
+        dialog.protocol("WM_DELETE_WINDOW", self.destroy)
+        dialog.grab_set()
+        dialog.configure(fg_color=("#F2F3F2", "#171A18"))
+
+        ctk.CTkLabel(
+            dialog, text="Before you use Market Insight",
+            font=app_font(size=25, weight="bold"), anchor="w"
+        ).pack(fill="x", padx=28, pady=(25, 8))
+        ctk.CTkLabel(
+            dialog,
+            text="Please read this important information. You must acknowledge it before continuing.",
+            font=app_font(size=13, weight="bold"), text_color=(" #555555", "#B7C1BA"),
+            anchor="w", wraplength=690, justify="left"
+        ).pack(fill="x", padx=28, pady=(0, 14))
+
+        body = ctk.CTkScrollableFrame(dialog, corner_radius=14, fg_color=("#FFFFFF", "#202622"))
+        body.pack(fill="both", expand=True, padx=24, pady=(0, 16))
+        notice = (
+            "EDUCATIONAL AND INFORMATIONAL USE ONLY\\n\\n"
+            "Market Insight is a software tool for education, information and independent research. "
+            "It is not a financial adviser and does not provide financial, investment, tax or legal advice, "
+            "personal recommendations, or a recommendation to buy, sell or hold any asset. Nothing in the "
+            "app or on its website takes account of your objectives or financial circumstances.\\n\\n"
+            "NO GUARANTEE; DATA AND OUTPUTS MAY BE WRONG\\n\\n"
+            "Prices, market snapshots, historical data, scores, indicators, alerts, warnings, calculations "
+            "and other outputs may be delayed, incomplete, inaccurate or unavailable. Third-party services "
+            "can change or fail. Scores and indicators are estimates, not predictions. Past performance "
+            "does not guarantee future results.\\n\\n"
+            "YOUR DECISIONS AND LOSSES ARE YOUR RESPONSIBILITY\\n\\n"
+            "You are solely responsible for independently checking information, assessing risks and making "
+            "your own trading and investment decisions. You can lose some or all of the money you invest. "
+            "Market Insight does not place, manage or execute trades and cannot control markets, brokers, "
+            "data providers, your devices or your actions. Do not rely on this software as the sole basis "
+            "for a financial decision. Consider obtaining advice from an appropriately qualified "
+            "independent financial adviser.\\n\\n"
+            "LIMITATION OF LIABILITY\\n\\n"
+            "To the fullest extent permitted by applicable law, Adrian Vale and the people involved in "
+            "creating or maintaining Market Insight exclude responsibility for losses, damage or costs "
+            "arising from or connected with use of, inability to use, or reliance on the app, website, "
+            "data or outputs, including trading or investment losses, lost profits, data errors, service "
+            "interruptions and software faults. This wording does not exclude or limit any liability or "
+            "consumer right that cannot lawfully be excluded or limited under applicable law.\\n\\n"
+            "NO CONTRACTUAL OR PROFESSIONAL RELATIONSHIP\\n\\n"
+            "Using Market Insight does not create an advisory, brokerage, fiduciary or other professional "
+            "relationship with Adrian Vale. If you do not agree with this notice, do not continue using "
+            "Market Insight."
+        )
+        ctk.CTkLabel(
+            body, text=notice, font=app_font(size=13, weight="bold"),
+            justify="left", anchor="nw", wraplength=660
+        ).pack(fill="both", expand=True, padx=18, pady=18)
+
+        actions = ctk.CTkFrame(dialog, fg_color="transparent")
+        actions.pack(fill="x", padx=24, pady=(0, 22))
+        ctk.CTkButton(
+            actions, text="Exit Market Insight", fg_color=(" #E7E7E7", "#343A36"),
+            text_color=(" #222222", "#F2F5F2"), hover_color=("#D8D8D8", "#454D47"),
+            command=self.destroy, width=170
+        ).pack(side="left")
+        def accept_notice():
+            self.settings["risk_disclaimer_version"] = notice_version
+            self.settings["risk_disclaimer_accepted_at"] = datetime.now().astimezone().isoformat(timespec="seconds")
+            try:
+                save_settings(self.settings)
+            except Exception as exc:
+                from tkinter import messagebox
+                messagebox.showerror(
+                    APP_NAME,
+                    "Your acknowledgement could not be saved. Please check that the app can write to its settings folder, then try again.\\n\\n{}".format(exc),
+                    parent=dialog
+                )
+                return
+            dialog.grab_release()
+            dialog.destroy()
+            self._continue_startup_after_disclaimer()
+
+        ctk.CTkButton(
+            actions, text="I understand — continue", command=accept_notice,
+            width=210, height=40
+        ).pack(side="right")
+        dialog.update_idletasks()
+        x = max(0, (self.winfo_screenwidth() - dialog.winfo_width()) // 2)
+        y = max(0, (self.winfo_screenheight() - dialog.winfo_height()) // 2)
+        dialog.geometry("+{}+{}".format(x, y))
+        dialog.focus_force()
+
+    def _continue_startup_after_disclaimer(self):
         # Keep the root window mapped while onboarding dialogs are displayed.
-        # Withdrawing the parent can also hide its CTkToplevel setup dialog on Windows.
         api_key, secret_key = get_alpaca_credentials()
         valid = self._validate_alpaca_credentials(api_key, secret_key)[0] if api_key and secret_key else False
         self.saved_alpaca_connection_valid = valid
         if ONBOARDING_TEST_MODE:
-            # Replay first-run setup without deleting saved data.
             self._show_alpaca_setup()
         elif valid and self.settings.get("selected_platform"):
             self._launch_main_ui()
@@ -2444,7 +2544,7 @@ class MarketInsightApp(ctk.CTk):
                                  text_color=(palette_color("#7B7B7B"), palette_color("#A9A9A9")))
         data_note.pack(anchor="w", fill="x", padx=18, pady=5)
         self._fit_text_to_width(data_note, card, 40)
-        disclaimer = ctk.CTkLabel(card, text="For education and research only. Scores and indicators are estimates, not financial advice or a guarantee of future results. Market Insight does not connect to your broker and cannot place trades.",
+        disclaimer = ctk.CTkLabel(card, text="Educational and informational use only — not financial, investment, tax or legal advice. Data, scores and calculations may be inaccurate, incomplete or delayed and are not guaranteed. You are responsible for your own research and decisions, including any losses. To the fullest extent permitted by law, Adrian Vale and the Market Insight project exclude liability arising from use of or reliance on the app, its data or outputs. This does not limit rights or liability that cannot legally be excluded. Market Insight does not execute trades.",
                                   font=app_font(size=13, weight="bold"), justify="left",
                                   text_color=(palette_color("#808080"), palette_color("#AFAFAF")))
         disclaimer.pack(anchor="w", fill="x", padx=18, pady=5)
