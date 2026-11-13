@@ -92,7 +92,7 @@ def apply_windows_glass_backdrop(window, transparency=8, light=False):
 
 
 
-def install_accent_spotlight(window, accent, background=palette_color("#101012")):
+def install_accent_spotlight(window, accent, background="#101012"):
     """Render a soft multi-layer nebula glow behind the app's glass surfaces."""
     try:
         if not isinstance(accent, str) or len(accent) != 7 or not accent.startswith("#"):
