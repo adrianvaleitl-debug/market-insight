@@ -21,10 +21,7 @@ from pathlib import Path
 import customtkinter as ctk
 
 # ---------------------------------------------------------------------------
-# TEMPORARY UNSTYLED UI BASELINE
-# Keep the existing widget tree, layout and behaviour, but discard authored
-# visual styling so a new design can be applied cleanly later.
-def _install_unstyled_ui():
+:
     _style_keys = {
         "fg_color", "bg_color", "hover_color", "border_color", "border_width",
         "text_color", "placeholder_text_color", "button_color",
@@ -1449,7 +1446,7 @@ class MarketInsightApp(ctk.CTk):
             self.settings["currency"] = "USD"
         self.settings["appearance"] = "Dark"
         ctk.set_appearance_mode("dark")
-        ctk.set_default_color_theme("green")
+        ctk.set_default_color_theme("blue")
         apply_ctk_palette_theme()
         self.title(APP_NAME)
         icon_path = ensure_app_icon()
