@@ -22,7 +22,10 @@ async fn get_market_quote(symbol: String) -> Result<MarketQuote, String> {
         return Err("Enter a valid ticker symbol.".to_string());
     }
     let url = format!("https://query1.finance.yahoo.com/v8/finance/chart/{}?range=3mo&interval=1d", symbol);
-    let response = reqwest::Client::new()
+    let client = reqwest::Client::builder()
+        .timeout(std::time::Duration::from_secs(15))
+        .build().map_err(|_| "Market data client could not be initialised.".to_string())?;
+    let response = client
         .get(url)
         .header("User-Agent", "Mozilla/5.0 AdrianValeMarketInsight/3.0")
         .send().await.map_err(|_| "Market data could not be reached. Check your internet connection.".to_string())?;
