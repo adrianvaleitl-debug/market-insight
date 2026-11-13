@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap");
 :root{font-family:system-ui,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;color:#f1f0f5;background:#171820;--bg:#171820;--side:#1d1f29;--panel:#222530;--panel2:#292c38;--line:#353846;--text:#f1f0f5;--muted:#a4a5b1;--accent:#9ebde5;--accent-strong:#82a7d9;--gold:#9ebde5;--gold-soft:#dceaff;--accent-ink:#20212a;--shadow:0 18px 50px #0004}
 :root[data-theme=royal]{--accent:#dfc18a;--accent-strong:#e6c98f;--gold:#dfc18a;--gold-soft:#f5e7c9;--accent-ink:#2b1d12}
 *{box-sizing:border-box}body{margin:0;min-width:760px;min-height:100vh;background:radial-gradient(ellipse at 78% -8%,color-mix(in srgb,var(--accent) 9%,transparent),transparent 40%),var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -246,7 +247,7 @@ body{
 .app-footer,.breadcrumb,.record-meta,.section-toolbar p,.muted,.disclaimer{color:var(--muted)!important}
 
 /* Personal settings, accessibility and Royal typography */
-:root[data-font="royal"] .page-heading h1,:root[data-font="royal"] .banner-copy h2,:root[data-font="royal"] .surface h3,:root[data-font="royal"] .section-title h3,:root[data-font="royal"] .entry-modal h2{font-family:"Palatino Linotype","Book Antiqua",Georgia,serif;font-weight:600;letter-spacing:-.035em}
+:root[data-font="royal"] .page-heading h1,:root[data-font="royal"] .banner-copy h2,:root[data-font="royal"] .surface h3,:root[data-font="royal"] .section-title h3,:root[data-font="royal"] .entry-modal h2{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;letter-spacing:-.02em}
 :root[data-text-size="large"]{font-size:17px}:root[data-text-size="larger"]{font-size:18px}
 :root[data-text-size="large"] .muted,:root[data-text-size="large"] .page-heading p,:root[data-text-size="large"] .record-meta,:root[data-text-size="large"] .form-grid label,:root[data-text-size="larger"] .muted,:root[data-text-size="larger"] .page-heading p,:root[data-text-size="larger"] .record-meta,:root[data-text-size="larger"] .form-grid label{font-size:1.08em;line-height:1.75}
 :root[data-high-contrast="true"]{--text:#fff;--muted:#e0e4eb;--line:color-mix(in srgb,var(--accent) 48%,#fff)}
