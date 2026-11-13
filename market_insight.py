@@ -2471,6 +2471,10 @@ class MarketInsightApp(ctk.CTk):
             text_color=(palette_color("#777777"), palette_color("#B0B0B0"))
         ).pack(fill="x", padx=18, pady=(8, 10))
         ctk.CTkButton(
+            local_data, text="Read privacy & legal information",
+            command=lambda: webbrowser.open("https://adrianvaleitl-debug.github.io/market-insight/legal.html")
+        ).pack(anchor="w", padx=18, pady=(0, 8))
+        ctk.CTkButton(
             local_data, text="Delete all Market Insight data…",
             fg_color=("#9B3434", "#9B3434"), hover_color=("#7E2929", "#7E2929"),
             command=self.delete_all_local_data
