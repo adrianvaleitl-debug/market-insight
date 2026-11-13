@@ -147,8 +147,12 @@ html[data-av-mode="light"] .metric small,
 html[data-av-mode="light"] .rail-stat span,
 html[data-av-mode="light"] .rail-kicker{color:var(--av-muted)!important}
 html[data-av-mode="light"] .down{color:#8f3030!important}
+</style><style id="accessibility-skip-motion">
+.skip-link{position:fixed;z-index:10001;left:12px;top:-70px;padding:10px 14px;border:2px solid #79b5ff;border-radius:8px;background:#171b24;color:#fff;font:700 14px/1.3 system-ui,-apple-system,"Segoe UI",sans-serif;text-decoration:none}
+.skip-link:focus{top:12px;outline:3px solid #2878d0;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style></head>
-<body>
+<body><a class="skip-link" href="#main-content">Skip to main content</a>
 <aside class="site-rail" aria-label="Market Insight website sidebar">
   <div class="rail-kicker">MARKET DESK</div>
   <div class="rail-title">Market Insight</div>
@@ -174,7 +178,7 @@ html[data-av-mode="light"] .down{color:#8f3030!important}
 <a class="brand" href="#"><span class="mark"><img src="favicon.svg" alt="" width="34" height="34"></span><span>Market Insight</span></a>
 <nav class="navlinks"><a href="#whats-new">What's new</a><a href="#all-features">All features</a><a href="#setup">Getting started</a><a href="https://adrianvaleitl-debug.github.io/" target="_blank" rel="noopener noreferrer">My website ↗</a><a href="https://ko-fi.com/marketinsight" target="_blank" rel="noopener noreferrer">Donate ↗</a><a href="https://github.com/adrianvaleitl-debug/market-insight">GitHub</a><a href="#support">Support</a></nav>
 </header>
-<main>
+<main id="main-content">
 <section class="wrap hero">
 <div>
 <span class="pill">● V2.3 FEATURE OVERVIEW</span>
