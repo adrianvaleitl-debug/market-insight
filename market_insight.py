@@ -997,7 +997,7 @@ class MarketInsightApp(ctk.CTk):
         ctk.CTkButton(panel, text="Get your API keys from Alpaca ↗", fg_color="transparent",
                       text_color=(palette_color("#757575"), palette_color("#BFBFBF")),
                       command=lambda: webbrowser.open("https://app.alpaca.markets/")).pack(anchor="w", padx=25, pady=12)
-        self.setup_status = ctk.CTkLabel(panel, text="Your keys are saved securely in Windows Credential Manager on this computer.",
+        self.setup_status = ctk.CTkLabel(panel, text="Your keys are stored in Windows Credential Manager on this device.",
                                          font=app_font(size=13, weight="bold"), justify="left")
         self.setup_status.pack(anchor="w", fill="x", padx=30, pady=8)
         self._fit_text_to_width(self.setup_status, panel, 60)
@@ -2483,13 +2483,21 @@ class MarketInsightApp(ctk.CTk):
         # Connection credentials stay together in one separate section.
         connection = self.card(
             page, "Live market data connection",
-            "Connect Alpaca for the latest available IEX prices. Your API details are stored securely in Windows Credential Manager."
+            "Connect Alpaca for the latest available IEX prices. API credentials are stored in Windows Credential Manager on this device and sent to Alpaca when you use its data features."
         )
         self.alpaca_key_entry = ctk.CTkEntry(connection, placeholder_text="Alpaca API Key ID", show="•")
         self.alpaca_key_entry.pack(fill="x", padx=18, pady=(8, 6))
         self.alpaca_secret_entry = ctk.CTkEntry(connection, placeholder_text="Alpaca Secret Access Key", show="•")
         self.alpaca_secret_entry.pack(fill="x", padx=18, pady=6)
-        key_status = "Your Alpaca keys are saved securely." if all(get_alpaca_credentials()) else "No Alpaca keys have been saved yet."
+        self.alpaca_consent_var = ctk.BooleanVar(value=False)
+        ctk.CTkCheckBox(
+            connection,
+            text="I understand that these keys are saved on this device and sent to Alpaca when I request Alpaca data.",
+            variable=self.alpaca_consent_var,
+            wraplength=760,
+            justify="left"
+        ).pack(anchor="w", padx=18, pady=(4, 8))
+        key_status = "Your Alpaca keys are stored in Windows Credential Manager." if all(get_alpaca_credentials()) else "No Alpaca keys have been saved yet."
         self.alpaca_status = ctk.CTkLabel(
             connection, text=key_status, text_color=(palette_color("#797979"), palette_color("#B1B1B1"))
         )
@@ -2937,12 +2945,16 @@ class MarketInsightApp(ctk.CTk):
         if not api_key or not secret_key:
             self.alpaca_status.configure(text="Enter both the API Key ID and Secret Access Key.")
             return
+        if not self.alpaca_consent_var.get():
+            self.alpaca_status.configure(text="Please confirm how the Alpaca credentials are stored and used before saving.")
+            return
         try:
             keyring.set_password("Market Insight", "alpaca_api_key", api_key)
             keyring.set_password("Market Insight", "alpaca_secret_key", secret_key)
             self.alpaca_key_entry.delete(0, "end")
             self.alpaca_secret_entry.delete(0, "end")
-            self.alpaca_status.configure(text="Your Alpaca keys have been saved securely in Windows Credential Manager.")
+            self.alpaca_consent_var.set(False)
+            self.alpaca_status.configure(text="Your Alpaca keys have been saved in Windows Credential Manager.")
             self.status.configure(text="Your live price data keys have been saved.")
         except Exception as exc:
             self.alpaca_status.configure(text=f"Could not save credentials securely: {exc}")
