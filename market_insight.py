@@ -211,20 +211,20 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V2.5"
+APP_VERSION = "V2.6"
 PERSONAL_SITE = "https://adrianvaleitl-debug.github.io/"
 KOFI_URL = "https://ko-fi.com/marketinsight"
 
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
     {
-        "version": "V2.5",
-        "title": "Adrian Vale website-matched interface",
+        "version": "V2.6",
+        "title": "Unstyled interface baseline",
         "date": "13 November 2026",
         "items": [
-            "Replaced the old six accent colours and Light/Dark/System options with two complete visual themes.",
-            "Classy uses midnight navy, ice white and subtle silver; Royal uses dark chocolate brown, pale gold and metallic gold.",
-            "Applied each palette consistently across navigation, panels, settings, controls and market research views.",
+            "Removed custom colours, decorative backgrounds and branded visual effects for a clean redesign baseline.",
+            "Reset typography and control styling to a plain system appearance.",
+            "Kept the existing screens, navigation, market tools and app functionality.",
             "Preserved watchlists, scans, saved plans, alerts, credentials and research data.",
         ],
     },
@@ -759,20 +759,20 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V2.5"
+APP_VERSION = "V2.6"
 PERSONAL_SITE = "https://adrianvaleitl-debug.github.io/"
 KOFI_URL = "https://ko-fi.com/marketinsight"
 
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
     {
-        "version": "V2.5",
-        "title": "Adrian Vale website-matched interface",
+        "version": "V2.6",
+        "title": "Unstyled interface baseline",
         "date": "13 November 2026",
         "items": [
-            "Replaced the old six accent colours and Light/Dark/System options with two complete visual themes.",
-            "Classy uses midnight navy, ice white and subtle silver; Royal uses dark chocolate brown, pale gold and metallic gold.",
-            "Applied each palette consistently across navigation, panels, settings, controls and market research views.",
+            "Removed custom colours, decorative backgrounds and branded visual effects for a clean redesign baseline.",
+            "Reset typography and control styling to a plain system appearance.",
+            "Kept the existing screens, navigation, market tools and app functionality.",
             "Preserved watchlists, scans, saved plans, alerts, credentials and research data.",
         ],
     },
