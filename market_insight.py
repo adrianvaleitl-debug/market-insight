@@ -1399,7 +1399,7 @@ class MarketInsightApp(ctk.CTk):
                       fg_color="transparent", hover_color=(palette_color("#D9D9D9"), palette_color("#383838")),
                       text_color=(palette_color("#555555"), palette_color("#D7D7D7")),
                       command=lambda: webbrowser.open(PERSONAL_SITE)).pack(fill="x", padx=2, pady=2)
-        ctk.CTkButton(creator_actions, text="Donate · Ko-fi ↗", height=31, corner_radius=10,
+        ctk.CTkButton(creator_actions, text="Optional support · Ko-fi ↗", height=31, corner_radius=10,
                       fg_color=COLOUR_ACCENTS.get(ACTIVE_COLOUR_THEME, COLOUR_ACCENTS["Black"])[0],
                       hover_color=COLOUR_ACCENTS.get(ACTIVE_COLOUR_THEME, COLOUR_ACCENTS["Black"])[1],
                       text_color="#202020", command=lambda: webbrowser.open(KOFI_URL)).pack(fill="x", padx=2, pady=2)
@@ -1577,7 +1577,7 @@ class MarketInsightApp(ctk.CTk):
             command=lambda: webbrowser.open("https://www.tiktok.com/@adrianvaleitl")
         ).pack(side="right", padx=(6, 0))
         ctk.CTkButton(
-            creator_links, text="☕ Donate on Ko-fi  ↗", width=150, height=28,
+            creator_links, text="☕ Optional support on Ko-fi  ↗", width=150, height=28,
             corner_radius=12,
             fg_color=(palette_color("#D9D9D9"), palette_color("#464646")),
             hover_color=(palette_color("#CACACA"), palette_color("#545454")),
@@ -2531,7 +2531,7 @@ class MarketInsightApp(ctk.CTk):
             ("TradingView charts", "https://www.tradingview.com/"),
             ("YouTube  ·  @Adrianvaleitl", "https://www.youtube.com/@Adrianvaleitl"),
             ("TikTok  ·  @adrianvaleitl", "https://www.tiktok.com/@adrianvaleitl"),
-            ("Donate  ·  Ko-fi", "https://ko-fi.com/marketinsight"),
+            ("Optional support  ·  Ko-fi", "https://ko-fi.com/marketinsight"),
             ("Official website", "https://adrianvaleitl-debug.github.io/market-insight/"),
             ("GitHub repository", "https://github.com/adrianvaleitl-debug/market-insight")
         ]:
