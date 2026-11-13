@@ -1142,7 +1142,7 @@ def apply_ctk_palette_theme():
 
 def app_font(*args, **kwargs):
     """Create a consistently bold app font using the user-selected font family."""
-    kwargs.setdefault("family", "Georgia" if ACTIVE_COLOUR_THEME == "Royal" else "Manrope")
+    kwargs.setdefault("family", "Manrope")
     kwargs.setdefault("weight", "bold" if ACTIVE_BOLD_TEXT else "normal")
     return ctk.CTkFont(*args, **kwargs)
 
