@@ -1,23 +1,25 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Activity, ArrowDownRight, ArrowUpRight, BarChart3, CalendarDays, Check, CheckCircle2, ChevronRight, CircleDollarSign, Clock3, Download, FileText, Filter, LayoutDashboard, Menu, MoreHorizontal, Plus, Search, Settings2, ShieldCheck, Sparkles, Target, Trash2, TrendingUp, Wallet, X } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
-import { isAlertTriggered, positionSize, relativeStrengthIndex, rewardRisk, simpleMovingAverage } from "./domain";
+import { isAlertTriggered, positionSize, relativeStrengthIndex, rewardRisk, simpleMovingAverage, technicalScore } from "./domain";
 import "./styles.css";
 
-type MarketQuote = {symbol:string;currentPrice:number;previousClose:number;changePercent:number;closes:number[];volumes:number[];currency:string;marketState:string};
+type MarketQuote = {symbol:string;currentPrice:number;previousClose:number;changePercent:number;closes:number[];highs:number[];lows:number[];volumes:number[];currency:string;marketState:string};
 type Row = { id:string; created:string; done?:boolean; [key:string]:string|number|boolean|undefined };
 const APP: string = "Market Insight";
-const NAV = ["Overview","Watchlist","Scanner","Trade planner","Alerts","Journal","Market hours","Settings"] as string[];
+const NAV = ["Overview","Watchlist","Scanner","Scan history","Trade planner","Alerts","Journal","Market hours","Settings"] as string[];
 const FIELDS = {"Watchlist":[["symbol","Ticker symbol","text"],["name","Company or asset","text"],["market","Market","select","US|UK|Europe|Crypto|Other"],["thesis","Why you're watching","textarea"]],"Scanner":[["symbol","Ticker symbol","text"],["price","Reference price","number"],["change","Change (%)","number"],["volume","Volume","number"]],"Trade planner":[["symbol","Ticker symbol","text"],["side","Direction","select","Long|Short"],["account","Account size (£)","number"],["risk","Risk (%)","number"],["entry","Entry price","number"],["stop","Stop price","number"],["target","Target price","number"]],"Alerts":[["symbol","Ticker symbol","text"],["condition","Condition","select","Above|Below"],["target","Target price","number"],["notes","Reason","text"]],"Journal":[["symbol","Ticker symbol","text"],["side","Direction","select","Long|Short"],["entry","Entry price","number"],["exit","Exit price","number"],["size","Position size","number"],["notes","Trade notes","textarea"]]} as Record<string, [string,string,string,string?][]>;
 const STORE = "adrianvale.rebuild." + APP.toLowerCase().replace(/ /g,"-") + ".v2";
 const money = (n:number) => new Intl.NumberFormat("en-GB",{style:"currency",currency:"GBP",maximumFractionDigits:2}).format(n||0);
 const num = (v:unknown) => Number(v)||0;
 const safeDate = (v:unknown) => v ? new Date(String(v)+"T12:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}) : "—";
 const emptyData = () => Object.fromEntries(Object.keys(FIELDS).map(k=>[k,[]])) as Record<string,Row[]>;
+const STARTER_SYMBOLS = ["AAPL","MSFT","NVDA","AMZN","GOOGL","META","AVGO","TSLA","BRK-B","JPM","WMT","LLY","V","XOM","MA","COST","NFLX","ORCL","PG","JNJ","HD","ABBV","BAC","KO","CRM","CVX","MRK","AMD","PEP","ACN","TMO","CSCO","MCD","LIN","ABT","WFC","DHR","DIS","QCOM","TXN","CAT","GE","NOW","AMAT","IBM","INTU","VZ","PM","SPY","QQQ"];
+const initialData = ():Record<string,Row[]> => {try{const saved=localStorage.getItem(STORE);if(saved)return {...emptyData(),...JSON.parse(saved)};}catch{}const base=emptyData();base.Watchlist=STARTER_SYMBOLS.map((symbol,i)=>({id:"starter-"+symbol,created:new Date().toISOString(),symbol,name:symbol,market:"US",folder:symbol==="SPY"||symbol==="QQQ"?"ETF":i<12?"Growth":"Core",thesis:"Starter watchlist symbol. Add your own research notes."}));return base};
 
 export default function App(){
  const [page,setPage]=useState("Overview");
- const [data,setData]=useState<Record<string,Row[]>>(()=>{try{return {...emptyData(),...JSON.parse(localStorage.getItem(STORE)||"{}")}}catch{return emptyData()}});
+ const [data,setData]=useState<Record<string,Row[]>>(initialData);
  const [theme,setTheme]=useState<"classy"|"royal">(()=>localStorage.getItem("adrianvale.theme")==="royal"?"royal":"classy");
  const [query,setQuery]=useState("");
  const [modal,setModal]=useState(false);
@@ -33,6 +35,8 @@ export default function App(){
  const [quoteLoading,setQuoteLoading]=useState(false);
  const [quoteUpdated,setQuoteUpdated]=useState("");
  const [triggeredAlerts,setTriggeredAlerts]=useState<string[]>([]);
+ const [scanFilter,setScanFilter]=useState("All");
+ const [scanSort,setScanSort]=useState("Score");
  useEffect(()=>{localStorage.setItem(STORE,JSON.stringify(data))},[data]);
  useEffect(()=>{document.documentElement.dataset.theme=theme;localStorage.setItem("adrianvale.theme",theme)},[theme]);
  useEffect(()=>{if(!timerRunning)return;const id=window.setInterval(()=>setSecondsLeft(s=>{if(s<=1){setTimerRunning(false);notify("Focus session complete");return 0}return s-1}),1000);return()=>window.clearInterval(id)},[timerRunning]);
