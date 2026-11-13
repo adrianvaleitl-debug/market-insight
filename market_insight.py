@@ -150,12 +150,23 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V2.3"
+APP_VERSION = "V2.4"
 PERSONAL_SITE = "https://adrianvaleitl-debug.github.io/"
 KOFI_URL = "https://ko-fi.com/marketinsight"
 
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
+    {
+        "version": "V2.4",
+        "title": "Two complete Classy and Royal themes",
+        "date": "13 November 2026",
+        "items": [
+            "Replaced the old six accent colours and Light/Dark/System options with two complete visual themes.",
+            "Classy uses midnight navy, ice white and subtle silver; Royal uses dark chocolate brown, pale gold and metallic gold.",
+            "Applied each palette consistently across navigation, panels, settings, controls and market research views.",
+            "Preserved watchlists, scans, saved plans, alerts, credentials and research data.",
+        ],
+    },
     {
         "version": "V2.2",
         "title": "Risk disclosure and first-launch acknowledgement",
