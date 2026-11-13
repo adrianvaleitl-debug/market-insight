@@ -1,16 +1,19 @@
-# Market Insight 3.0 — clean rebuild
+# Market Insight 3.0 — Adrian Vale
 
-A market research and risk-planning desktop workspace by Adrian Vale, rebuilt with React, TypeScript and Tauri 2. The legacy application UI and Python application code are not carried forward.
+A market research and risk-planning desktop workspace, rebuilt with React, TypeScript and Tauri 2. The previous Python UI and application implementation are not included.
 
-## Core workspace
-- Personal watchlist and symbol scanner
-- Native market quote retrieval and daily close history via Yahoo Finance chart data
-- SMA 20 and RSI 14 technical reference indicators
-- Position sizing and reward-to-risk calculator
-- Price level alerts checked when quotes are refreshed
+## Core features
+- 50-symbol starter US stock and ETF watchlist, with editable folders and research notes
+- Native Yahoo Finance chart-data retrieval through the Tauri backend
+- Scanner with daily and 20-day change, EMA 20/50, RSI 14, MACD line, ATR 14 and volume versus its 20-day average
+- Transparent illustrative technical checklist score, caution flags, filters and sorting
+- Saved scan snapshots (latest 20)
+- Price-level alerts checked when quotes are refreshed
+- Position-size, risk-amount and reward-to-risk calculator
 - Trade journal
-- Tokyo, London and New York market session reference times
-- Classy blue and Royal gold appearance modes
+- Sydney, Tokyo, London and New York forex-session references plus London, US, Tokyo and Hong Kong exchange hours
+- Full JSON backup export and CSV export
+- Classy blue and Royal gold appearance themes
 
 ## Run locally
 ```bash
@@ -26,9 +29,9 @@ npm run tauri build
 ```
 
 ## Data, market data and risk
-Watchlists, alerts, plans and journal entries are stored locally in the app. Market quotes are requested from Yahoo Finance by the native desktop backend; data may be delayed, incomplete or unavailable. No brokerage account is connected and the app does not place orders. Technical indicators and sizing are research aids, not financial advice. Confirm prices and all trading decisions with your broker or exchange.
+Watchlists, scan snapshots, alerts, plans and journal entries are stored locally in the app. Market prices and daily history are requested from Yahoo Finance by the native desktop backend; data may be delayed, incomplete or unavailable. No brokerage account is connected and the app does not place orders. Technical scores, indicators and position sizing are research aids, not predictions or financial advice. Confirm prices and decisions with your broker or exchange.
 
-## Stack
+## Technology
 React 18 · TypeScript · Vite · Tauri 2 · Rust · reqwest
 
 Website: https://adrianvaleitl-debug.github.io/
