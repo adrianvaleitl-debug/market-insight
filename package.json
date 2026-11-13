@@ -7,7 +7,8 @@
     "dev": "vite --host 127.0.0.1",
     "build": "tsc -b && vite build",
     "tauri": "tauri",
-    "test": "vitest run"
+    "test": "vitest run",
+    "pretauri": "tauri icon src-tauri/icons/app-icon.svg"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.12.3",
