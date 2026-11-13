@@ -2046,15 +2046,16 @@ class MarketInsightApp(ctk.CTk):
         self.main.grid_columnconfigure(0, weight=1)
         self.main.grid_rowconfigure(1, weight=1)
 
-        header = ctk.CTkFrame(self.main, fg_color="transparent")
-        header.grid(row=0, column=0, sticky="ew", pady=(0, 18))
+        header = ctk.CTkFrame(self.main, fg_color=palette_color("#202024"), corner_radius=17, border_width=1, border_color=palette_color("#38383E"), height=66)
+        header.grid(row=0, column=0, sticky="ew", pady=(0, 18), padx=(0, 2))
+        header.grid_propagate(False)
         header.grid_columnconfigure(0, weight=1)
         self.page_title = ctk.CTkLabel(header, text="Market overview", font=ctk.CTkFont(family="Cormorant Garamond" if ACTIVE_COLOUR_THEME == "Royal" else "Manrope", size=32, weight="bold"),
                                        text_color=(palette_color(palette_color("#313131")), palette_color(palette_color("#ECECEC"))))
-        self.page_title.grid(row=0, column=0, sticky="w")
+        self.page_title.grid(row=0, column=0, sticky="w", padx=22, pady=8)
         self.status = ctk.CTkLabel(header, text="Ready", corner_radius=16, padx=14, pady=8,
                                    fg_color=(palette_color(palette_color("#E3E3E3")), palette_color(palette_color("#393939"))), text_color=(palette_color(palette_color("#757575")), palette_color(palette_color("#BFBFBF"))))
-        self.status.grid(row=0, column=1, sticky="e")
+        self.status.grid(row=0, column=1, sticky="e", padx=18, pady=8)
 
         self.pages = {}
         for name in ["Overview", "What's New", "Market Hours", "Watchlist", "Economic Calendar", "Price Alerts", "Trading Journal", "Settings", "About"]:
