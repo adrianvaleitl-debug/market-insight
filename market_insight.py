@@ -354,7 +354,7 @@ ACTIVE_FONT_FAMILY = "Segoe UI"
 ACTIVE_BOLD_TEXT = True
 # Theme selection is intentionally independent of operating-system light/dark mode.
 COLOUR_THEME_HUES = {"Classy": 0, "Royal": 38}
-COLOUR_ACCENTS = {"Classy":("#DCE5F0","#AAB9CC"),"Royal":("#FFC34D","#DFA52F")}
+COLOUR_ACCENTS = {"Classy":("#d8dde5","#aeb8c8"),"Royal":("#F1D9A8","#FFC34D")}
 CURRENCY_OPTIONS = {
     "USD": "USD ($)",
     "GBP": "GBP (£)",
@@ -795,7 +795,7 @@ ACTIVE_FONT_FAMILY = "Segoe UI"
 ACTIVE_BOLD_TEXT = True
 # Theme selection is intentionally independent of operating-system light/dark mode.
 COLOUR_THEME_HUES = {"Classy": 0, "Royal": 38}
-COLOUR_ACCENTS = {"Classy":("#DCE5F0","#AAB9CC"),"Royal":("#FFC34D","#DFA52F")}
+COLOUR_ACCENTS = {"Classy":("#d8dde5","#aeb8c8"),"Royal":("#F1D9A8","#FFC34D")}
 CURRENCY_OPTIONS = {
     "USD": "USD ($)",
     "GBP": "GBP (£)",
@@ -1838,7 +1838,7 @@ class MarketInsightApp(ctk.CTk):
         header.grid(row=0, column=0, sticky="ew", pady=(0, 18), padx=(0, 2))
         header.grid_propagate(False)
         header.grid_columnconfigure(0, weight=1)
-        self.page_title = ctk.CTkLabel(header, text="Market overview", font=ctk.CTkFont(family="Cormorant Garamond" if ACTIVE_COLOUR_THEME == "Royal" else "Manrope", size=32, weight="bold"),
+        self.page_title = ctk.CTkLabel(header, text="Market overview", font=ctk.CTkFont(family="Cormorant Garamond", size=32, weight="bold"),
                                        text_color=(palette_color(palette_color("#313131")), palette_color(palette_color("#ECECEC"))))
         self.page_title.grid(row=0, column=0, sticky="w", padx=22, pady=8)
         self.status = ctk.CTkLabel(header, text="Ready", corner_radius=16, padx=14, pady=8,
