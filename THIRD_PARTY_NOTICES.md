@@ -1,6 +1,6 @@
 # Third-party software and SDK inventory
 
-This inventory records the direct Python packages declared or imported by this project. Package versions are not locked to exact builds in the repository, so the precise resolved versions and their bundled notices must be checked for each release. Transitive dependencies are not exhaustively listed here.
+This inventory records the direct Python packages declared or imported by this project. Package versions are not locked to exact builds in the repository. Each Windows release workflow therefore generates a `THIRD_PARTY_LICENSES.md` report from the actual build environment, listing resolved package versions, licence identifiers and upstream URLs, including transitive dependencies.
 
 ## Runtime dependencies
 
@@ -31,7 +31,7 @@ The website source was reviewed for external script imports, embedded frames, an
 ## Release checklist
 
 Before each public release:
-- Record the exact resolved package versions used by the build.
-- Review the licence and notices for all direct and transitive dependencies.
-- Include required upstream copyright and licence notices with the distributed application.
+- Review the generated `THIRD_PARTY_LICENSES.md` report for unknown, changed or restrictive licences.
+- Check the exact licence text and required attribution for all direct and transitive dependencies.
+- Confirm the packaged distribution includes the upstream licence files required by those dependencies.
 - Re-run the SDK and network-endpoint review when dependencies or update/data integrations change.
