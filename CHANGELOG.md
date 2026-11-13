@@ -12,3 +12,9 @@
 - Matched the Adrian Vale website surfaces, typography and Classy blue / Royal gold themes.
 - Added automated tests and Windows installer build checks.
 - No brokerage connection, trade execution or legacy Python application code is included.
+
+## 2.9.0 — MarketView release
+- Added a first-launch investment-risk and no-financial-advice acknowledgement.
+- Added configurable links to open symbols in a preferred trading platform.
+- Renamed the product MarketView and introduced a matching royal-gold M app icon.
+- Updated the desktop installer identity and manual release links.
