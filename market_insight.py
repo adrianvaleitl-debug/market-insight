@@ -2955,42 +2955,6 @@ class MarketInsightApp(ctk.CTk):
         self.transparency_slider.set(int(self.settings.get("transparency", 8)))
         self.transparency_slider.pack(fill="x", padx=18, pady=(0, 14))
 
-        ctk.CTkLabel(
-            preferences, text="Font style",
-            font=app_font(size=14),
-            text_color=(palette_color(palette_color("#5B5B5B")), palette_color(palette_color("#C3C3C3")))
-        ).pack(anchor="w", padx=18, pady=(4, 3))
-        self.font_family_menu = styled_settings_dropdown(
-            preferences,
-            values=["Segoe UI", "Arial", "Verdana", "Trebuchet MS", "Georgia"],
-            command=self.change_font_family
-        )
-        self.font_family_menu.set(self.settings.get("font_family", "Segoe UI"))
-        self.font_family_menu.pack(anchor="w", padx=18, pady=(0, 8))
-
-        self.bold_text_var = ctk.BooleanVar(value=bool(self.settings.get("bold_text", True)))
-        self.bold_text_checkbox = ctk.CTkCheckBox(
-            preferences,
-            text="Use bold text throughout the app",
-            variable=self.bold_text_var,
-            command=self.change_bold_text,
-            font=app_font(size=13),
-            text_color=(palette_color(palette_color("#5B5B5B")), palette_color(palette_color("#C3C3C3"))),
-            fg_color=(palette_color(palette_color("#A5A5A5")), palette_color(palette_color("#939393"))),
-            hover_color=(palette_color(palette_color("#939393")), palette_color(palette_color("#A9A9A9"))),
-            border_color=(palette_color(palette_color("#B3B3B3")), palette_color(palette_color("#7C7C7C"))),
-            checkmark_color=palette_color("#FFFFFF")
-        )
-        self.bold_text_checkbox.pack(anchor="w", padx=18, pady=(0, 8))
-        font_note = ctk.CTkLabel(
-            preferences,
-            text="Choose from five font styles and turn bold text on or off for the whole app, including the sidebar and smaller labels.",
-            font=app_font(size=13), justify="left", anchor="w",
-            text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#A9A9A9")))
-        )
-        font_note.pack(fill="x", padx=18, pady=(0, 12))
-        self._fit_text_to_width(font_note, preferences, 40)
-
         ctk.CTkLabel(preferences, text="How the program opens",
                      font=app_font(size=14, weight="bold"),
                      text_color=(palette_color(palette_color("#5B5B5B")), palette_color(palette_color("#C3C3C3")))).pack(anchor="w", padx=18, pady=(4, 3))
