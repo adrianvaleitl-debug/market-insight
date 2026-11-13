@@ -264,6 +264,48 @@ html[data-site-theme="royal"] .av-theme-switcher button[aria-pressed=true]{backg
 .av-theme-switcher button:focus-visible{outline:3px solid var(--av-theme-accent2);outline-offset:3px}
 @media(max-width:600px){.av-theme-switcher{left:10px;bottom:58px;transform:scale(.94);transform-origin:bottom left}}
 </style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style id="adrian-shared-layout">
+:root{--av-layout-line:rgba(225,194,139,.24);--av-layout-panel:rgba(59,42,29,.82);--av-layout-muted:#c7b69e}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+body{padding-left:252px!important;min-height:100vh;overflow-x:hidden!important;font-family:'Manrope',Inter,ui-sans-serif,system-ui,sans-serif!important;position:relative;isolation:isolate}
+body:before{content:"";position:fixed;inset:-18%;z-index:-1;pointer-events:none;background:radial-gradient(ellipse 46% 36% at 12% 10%,rgba(151,103,58,.3),transparent 75%),radial-gradient(ellipse 42% 38% at 84% 18%,rgba(226,198,145,.15),transparent 78%),radial-gradient(ellipse 50% 42% at 76% 90%,rgba(111,70,39,.25),transparent 78%);filter:blur(58px)}
+h1,h2,h3,h4,.rail-title{font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif!important;font-weight:600!important;letter-spacing:-.025em}
+.site-rail{position:fixed!important;inset:18px auto 18px 18px!important;width:214px!important;padding:24px 17px!important;display:flex!important;flex-direction:column!important;border:1px solid var(--av-layout-line)!important;border-radius:25px!important;background:linear-gradient(165deg,rgba(65,46,31,.96),rgba(35,25,18,.96))!important;box-shadow:0 22px 65px #0007!important;backdrop-filter:blur(24px)!important;color:#f7efdf!important}
+.rail-kicker{font:800 9px 'Manrope',sans-serif!important;letter-spacing:.17em!important;color:#d8bd8b!important}
+.rail-title{font-size:25px!important;line-height:1.05!important;margin-top:9px!important;color:#fbf2e3!important}
+.rail-rule{height:1px!important;background:var(--av-layout-line)!important;margin:21px 0 15px!important}
+.rail-links{display:grid!important;gap:5px!important}
+.rail-links a{display:block!important;padding:11px 12px!important;border:1px solid transparent!important;border-radius:11px!important;color:#c7b69e!important;font:600 12px 'Manrope',sans-serif!important;transition:.18s ease!important}
+.rail-links a:hover{background:rgba(223,193,138,.12)!important;border-color:rgba(223,193,138,.2)!important;color:#f7efdf!important}
+.rail-bottom{margin-top:auto!important}
+.rail-stat{display:flex!important;flex-direction:column!important;gap:3px!important;padding:12px 0!important;border-bottom:1px solid #ffffff18!important}
+.rail-stat span{font:800 9px 'Manrope',sans-serif!important;letter-spacing:.12em!important;color:#b7a58b!important}
+.rail-stat b{font:600 16px 'Cormorant Garamond',Georgia,serif!important;color:#f8efdf!important}
+.rail-download{display:flex!important;justify-content:center!important;align-items:center!important;margin-top:17px!important;padding:12px!important;border-radius:13px!important;background:linear-gradient(115deg,#f1dfb5,#c49a58 48%,#f5e5bd)!important;color:#2b1d12!important;font:800 11px 'Manrope',sans-serif!important}
+body>header.wrap.nav,body>.wrap>header.nav{display:none!important}
+body>main,body>.wrap>main{width:min(1180px,100%)!important;max-width:1180px!important;margin:0 auto!important;padding:0 clamp(22px,4vw,54px)!important;height:auto!important;min-height:100vh!important;max-height:none!important;overflow:visible!important;display:block!important}
+main>section,main>.section,main>.hero{width:auto!important;min-width:0!important;max-width:none!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;flex:none!important;display:block}
+main>.hero{display:grid!important;grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr)!important;align-items:center!important;gap:clamp(28px,5vw,66px)!important;padding:clamp(58px,8vh,100px) 0 58px!important}
+main>.section{padding:54px 0 64px!important;border-top:1px solid var(--av-layout-line)!important}
+main>.footer{position:static!important;width:auto!important;height:auto!important;min-height:0!important;margin:38px 0 0!important;padding:25px 0 30px!important;display:flex!important;flex-wrap:wrap!important;justify-content:space-between!important;border-top:1px solid var(--av-layout-line)!important;background:transparent!important}
+button:focus-visible,a:focus-visible{outline:3px solid #e6c98f!important;outline-offset:3px!important}
+@media(max-width:760px){
+ body{padding-left:0!important}
+ .site-rail{position:relative!important;inset:auto!important;width:auto!important;min-height:0!important;margin:10px!important;padding:14px 15px!important;border-radius:17px!important}
+ .rail-title{font-size:21px!important}
+ .rail-rule,.rail-bottom{display:none!important}
+ .rail-links{display:flex!important;gap:5px!important;overflow-x:auto!important;padding-top:12px!important;scrollbar-width:none}
+ .rail-links a{white-space:nowrap!important;flex:0 0 auto!important;padding:8px 10px!important;font-size:10px!important}
+ body>main,body>.wrap>main{width:100%!important;padding:0 18px!important}
+ main>.hero{grid-template-columns:1fr!important;padding:42px 0 38px!important;gap:26px!important}
+ main>.section{padding:38px 0 45px!important}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
 </head>
 <body><a class="skip-link" href="#main-content">Skip to main content</a>
 <aside class="site-rail" aria-label="Market Insight website sidebar">
