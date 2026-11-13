@@ -2,6 +2,11 @@
 
 ## What's New
 
+### V2.3 — Local data deletion and privacy controls
+- Added a user-controlled option to delete local settings, watchlists, scans, alerts, journals, plans and notes.
+- Added credential-removal attempts for saved Alpaca API keys and clearer feedback if Windows cannot confirm deletion.
+- Added an explicit browser-storage choice for website appearance preferences.
+
 ### V2.2 — Risk disclosure and first-launch acknowledgement
 
 - Added a required first-launch risk and liability notice before onboarding or app access.
