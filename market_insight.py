@@ -2957,7 +2957,7 @@ class MarketInsightApp(ctk.CTk):
             self.alpaca_status.configure(text="Your Alpaca keys have been saved in Windows Credential Manager.")
             self.status.configure(text="Your live price data keys have been saved.")
         except Exception as exc:
-            self.alpaca_status.configure(text=f"Could not save credentials securely: {exc}")
+            self.alpaca_status.configure(text=f"Could not store credentials in Windows Credential Manager: {exc}")
 
     def remove_alpaca_keys(self):
         failures = []
