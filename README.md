@@ -1,4 +1,4 @@
-# Market Insight 3.0 — Adrian Vale
+# MarketView 2.9 3.0 — Adrian Vale
 
 A market research and risk-planning desktop workspace, rebuilt with React, TypeScript and Tauri 2. The previous Python UI and application implementation are not included.
 
@@ -29,9 +29,15 @@ npm run tauri build
 ```
 
 ## Data, market data and risk
-Watchlists, scan snapshots, alerts, plans and journal entries are stored locally in the app. Market prices and daily history are requested from Yahoo Finance by the native desktop backend; data may be delayed, incomplete or unavailable. No brokerage account is connected and the app does not place orders. Technical scores, indicators and position sizing are research aids, not predictions or financial advice. Confirm prices and decisions with your broker or exchange.
+Watchlists, scan snapshots, alerts, plans and journal entries are stored locally in the app. Market prices and daily history are requested from Yahoo Finance by the native desktop backend; data may be delayed, incomplete or unavailable. MarketView does not connect to a brokerage account and the app does not place orders. Technical scores, indicators and position sizing are research aids, not predictions or financial advice. Confirm prices and decisions with your broker or exchange.
 
 ## Technology
 React 18 · TypeScript · Vite · Tauri 2 · Rust · reqwest
 
 Website: https://adrianvaleitl-debug.github.io/
+
+## MarketView 2.9.0
+
+- Added a first-launch investment-risk and no-financial-advice acknowledgement.
+- Added configurable links to open watchlist and scanner symbols in a preferred trading platform.
+- Renamed the product MarketView and introduced a matching royal-gold M app icon.
