@@ -19,6 +19,67 @@ from zoneinfo import ZoneInfo
 from pathlib import Path
 
 import customtkinter as ctk
+
+# ---------------------------------------------------------------------------
+# TEMPORARY UNSTYLED UI BASELINE
+# Keep the existing widget tree, layout and behaviour, but discard authored
+# visual styling so a new design can be applied cleanly later.
+def _install_unstyled_ui():
+    _style_keys = {
+        "fg_color", "bg_color", "hover_color", "border_color", "border_width",
+        "text_color", "placeholder_text_color", "button_color",
+        "button_hover_color", "dropdown_fg_color", "dropdown_hover_color",
+        "dropdown_text_color", "progress_color", "checkmark_color",
+        "scrollbar_button_color", "scrollbar_button_hover_color",
+        "corner_radius", "font",
+    }
+    _widget_names = (
+        "CTk", "CTkToplevel", "CTkFrame", "CTkScrollableFrame", "CTkLabel",
+        "CTkButton", "CTkEntry", "CTkComboBox", "CTkOptionMenu", "CTkTextbox",
+        "CTkCheckBox", "CTkSwitch", "CTkSlider", "CTkProgressBar",
+        "CTkRadioButton", "CTkTabview", "CTkSegmentedButton",
+    )
+    for _name in _widget_names:
+        _cls = getattr(ctk, _name, None)
+        if _cls is None or getattr(_cls, "_unstyled_patch", False):
+            continue
+        _original_init = _cls.__init__
+        def _make_init(original):
+            def _init(self, *args, **kwargs):
+                for key in _style_keys:
+                    kwargs.pop(key, None)
+                if "corner_radius" in _original_parameters:
+                    kwargs["corner_radius"] = 0
+                original(self, *args, **kwargs)
+            return _init
+        # Do not impose constructor arguments unsupported by a given widget.
+        import inspect as _inspect
+        _original_parameters = set(_inspect.signature(_original_init).parameters)
+        _cls.__init__ = _make_init(_original_init)
+        _original_configure = getattr(_cls, "configure", None)
+        if _original_configure:
+            def _make_configure(original):
+                def _configure(self, *args, **kwargs):
+                    for key in _style_keys:
+                        kwargs.pop(key, None)
+                    return original(self, *args, **kwargs)
+                return _configure
+            _cls.configure = _make_configure(_original_configure)
+        _cls._unstyled_patch = True
+    # Native-looking, regular system typography instead of brand fonts/bold.
+    _original_font_init = ctk.CTkFont.__init__
+    def _plain_font_init(self, *args, **kwargs):
+        kwargs["family"] = "Segoe UI"
+        kwargs["weight"] = "normal"
+        _original_font_init(self, *args, **kwargs)
+    ctk.CTkFont.__init__ = _plain_font_init
+    ctk.set_appearance_mode("System")
+    ctk.set_default_color_theme("blue")
+    globals()["apply_windows_glass_backdrop"] = lambda *args, **kwargs: False
+    globals()["install_accent_spotlight"] = lambda *args, **kwargs: None
+
+_install_unstyled_ui()
+
 from PIL import Image, ImageDraw, ImageFilter, ImageTk
 
 GLASS_KEY = "#010101"
