@@ -441,12 +441,12 @@ DEFAULTS = {
 }
 
 
-# Five high-contrast accent identities. The hue is applied consistently across
-# cards, controls and highlights while preserving each surface's lightness.
+# Two complete visual palettes. Classy uses midnight navy and ice-white;
+# Royal uses dark chocolate brown and pale/metallic gold.
 ACTIVE_COLOUR_THEME = "Classy"
 ACTIVE_FONT_FAMILY = "Segoe UI"
 ACTIVE_BOLD_TEXT = True
-# Currency-inspired hues, softened to work across both Light and Dark modes.
+# Theme selection is intentionally independent of operating-system light/dark mode.
 COLOUR_THEME_HUES = {"Classy": 0, "Royal": 38}
 COLOUR_ACCENTS = {"Classy":("#DCE5F0","#AAB9CC"),"Royal":("#FFC34D","#DFA52F")}
 CURRENCY_OPTIONS = {
