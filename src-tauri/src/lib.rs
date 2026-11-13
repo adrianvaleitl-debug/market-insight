@@ -8,6 +8,8 @@ struct MarketQuote {
     previous_close: f64,
     change_percent: f64,
     closes: Vec<f64>,
+    highs: Vec<f64>,
+    lows: Vec<f64>,
     volumes: Vec<f64>,
     currency: String,
     market_state: String,
@@ -35,6 +37,8 @@ async fn get_market_quote(symbol: String) -> Result<MarketQuote, String> {
     if result.is_null() { return Err("No market data was found for that symbol.".to_string()); }
     let meta = &result["meta"];
     let closes: Vec<f64> = result["indicators"]["quote"][0]["close"].as_array().into_iter().flatten().filter_map(|v| v.as_f64()).collect();
+    let highs: Vec<f64> = result["indicators"]["quote"][0]["high"].as_array().into_iter().flatten().filter_map(|v| v.as_f64()).collect();
+    let lows: Vec<f64> = result["indicators"]["quote"][0]["low"].as_array().into_iter().flatten().filter_map(|v| v.as_f64()).collect();
     let volumes: Vec<f64> = result["indicators"]["quote"][0]["volume"].as_array().into_iter().flatten().filter_map(|v| v.as_f64()).collect();
     let previous_close = meta["chartPreviousClose"].as_f64().or_else(|| meta["previousClose"].as_f64()).unwrap_or(0.0);
     let current_price = meta["regularMarketPrice"].as_f64().or_else(|| closes.last().copied()).unwrap_or(0.0);
@@ -46,6 +50,8 @@ async fn get_market_quote(symbol: String) -> Result<MarketQuote, String> {
         previous_close,
         change_percent,
         closes,
+        highs,
+        lows,
         volumes,
         currency: meta["currency"].as_str().unwrap_or("—").to_string(),
         market_state: meta["marketState"].as_str().unwrap_or("UNKNOWN").to_string(),
