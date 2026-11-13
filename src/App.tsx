@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Activity, ArrowDownRight, ArrowUpRight, BarChart3, CalendarDays, Check, CheckCircle2, ChevronRight, CircleDollarSign, Clock3, Download, FileText, Filter, LayoutDashboard, Menu, MoreHorizontal, Plus, Search, Settings2, ShieldCheck, Sparkles, Target, Trash2, TrendingUp, Wallet, X } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
+import { isAlertTriggered, positionSize, relativeStrengthIndex, rewardRisk, simpleMovingAverage } from "./domain";
 import "./styles.css";
 
 type MarketQuote = {symbol:string;currentPrice:number;previousClose:number;changePercent:number;closes:number[];volumes:number[];currency:string;marketState:string};
@@ -37,7 +38,7 @@ export default function App(){
  useEffect(()=>{if(!timerRunning)return;const id=window.setInterval(()=>setSecondsLeft(s=>{if(s<=1){setTimerRunning(false);notify("Focus session complete");return 0}return s-1}),1000);return()=>window.clearInterval(id)},[timerRunning]);
  const notify=(s:string)=>{setToast(s);window.setTimeout(()=>setToast(""),2400)};
  const rows=data[page]||[];
- const refreshQuotes=async()=>{const symbols=[...(data.Watchlist||[]).map(r=>String(r.symbol||"")),...(data.Scanner||[]).map(r=>String(r.symbol||""))].map(s=>s.trim().toUpperCase()).filter(Boolean).filter((s,i,a)=>a.indexOf(s)===i);if(!symbols.length){notify("Add ticker symbols to your watchlist first");return}setQuoteLoading(true);try{const results=await Promise.all(symbols.map(symbol=>invoke<MarketQuote>("get_market_quote",{symbol})));setQuotes(results);setQuoteUpdated(new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}));const hits=(data.Alerts||[]).filter(a=>!triggeredAlerts.includes(a.id)&&results.some(q=>q.symbol===String(a.symbol||"").toUpperCase()&&(a.condition==="Above"?q.currentPrice>=num(a.target):q.currentPrice<=num(a.target))));if(hits.length){setTriggeredAlerts(p=>[...p,...hits.map(a=>a.id)]);notify("Price alert triggered: "+hits.map(a=>String(a.symbol).toUpperCase()).join(", "))}else notify("Updated "+results.length+" market quotes")}catch(e){notify(typeof e==="string"?e:"Could not retrieve market data. Open the Windows desktop app and try again.")}finally{setQuoteLoading(false)}};
+ const refreshQuotes=async()=>{const symbols=[...(data.Watchlist||[]).map(r=>String(r.symbol||"")),...(data.Scanner||[]).map(r=>String(r.symbol||""))].map(s=>s.trim().toUpperCase()).filter(Boolean).filter((s,i,a)=>a.indexOf(s)===i);if(!symbols.length){notify("Add ticker symbols to your watchlist first");return}setQuoteLoading(true);try{const results=await Promise.all(symbols.map(symbol=>invoke<MarketQuote>("get_market_quote",{symbol})));setQuotes(results);setQuoteUpdated(new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}));const hits=(data.Alerts||[]).filter(a=>!triggeredAlerts.includes(a.id)&&results.some(q=>q.symbol===String(a.symbol||"").toUpperCase()&&isAlertTriggered(q.currentPrice,String(a.condition),num(a.target))));if(hits.length){setTriggeredAlerts(p=>[...p,...hits.map(a=>a.id)]);notify("Price alert triggered: "+hits.map(a=>String(a.symbol).toUpperCase()).join(", "))}else notify("Updated "+results.length+" market quotes")}catch(e){notify(typeof e==="string"?e:"Could not retrieve market data. Open the Windows desktop app and try again.")}finally{setQuoteLoading(false)}};
  const all=Object.values(data).flat();
  const completed=all.filter(r=>r.done).length;
  const totalSpend=(data.Expenses||[]).reduce((s,r)=>s+num(r.amount),0);
@@ -54,8 +55,8 @@ export default function App(){
  const doneTasks=(data.Tasks||[]).filter(r=>r.done).length;
  const marketHours=[{name:"Tokyo",open:"09:00",close:"18:00",zone:"Asia/Tokyo"},{name:"London",open:"08:00",close:"16:30",zone:"Europe/London"},{name:"New York",open:"09:30",close:"16:00",zone:"America/New_York"}];
  const isSessionOpen=(open:string,close:string,zone:string)=>{const now=new Date();const time=new Intl.DateTimeFormat("en-GB",{timeZone:zone,hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).format(now);const [h,m]=time.split(":").map(Number);const mins=h*60+m;const day=new Intl.DateTimeFormat("en-US",{timeZone:zone,weekday:"short"}).format(now);const [oh,om]=open.split(":").map(Number);const [ch,cm]=close.split(":").map(Number);return day!=="Sat"&&day!=="Sun"&&mins>=oh*60+om&&mins<ch*60+cm};
- const marketRisk=()=>{const p=data["Trade planner"]?.[0];if(!p)return 0;const distance=Math.abs(num(p.entry)-num(p.stop));return distance>0?num(p.account)*num(p.risk)/100/distance:0};
- const marketReward=()=>{const p=data["Trade planner"]?.[0];if(!p)return 0;const risk=Math.abs(num(p.entry)-num(p.stop));const reward=Math.abs(num(p.target)-num(p.entry));return risk>0?reward/risk:0};
+ const marketRisk=()=>{const p=data["Trade planner"]?.[0];if(!p)return 0;return positionSize(num(p.account),num(p.risk),num(p.entry),num(p.stop))};
+ const marketReward=()=>{const p=data["Trade planner"]?.[0];if(!p)return 0;return rewardRisk(num(p.entry),num(p.stop),num(p.target))};
  const fmtTimer=(s:number)=>String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
  const isPersonal=APP==="DayFlow", isBusiness=APP==="SoloDesk", isMarket=APP==="Market Insight";
  const title=page==="Overview"?(isPersonal?"Your day":isBusiness?"Business overview":"Market overview"):page;
