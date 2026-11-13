@@ -18,6 +18,7 @@ on:
       - "installer.iss"
       - "tools/DEBUG_START.bat"
       - "README.md"
+      - "THIRD_PARTY_NOTICES.md"
       - "index.html"
       - "favicon.svg"
       - ".github/workflows/build-release.yml"
@@ -50,7 +51,7 @@ jobs:
       - name: Build standalone Windows application
         shell: pwsh
         run: |
-          pyinstaller --noconfirm --clean --windowed --onedir --name "Market Insight" --icon market_insight.ico --add-data "market_insight.ico;." --collect-all customtkinter --collect-all keyring --collect-all yfinance --collect-all pandas --collect-all certifi --collect-all curl_cffi --collect-all requests --collect-all tzdata market_insight.py
+          pyinstaller --noconfirm --clean --windowed --onedir --name "Market Insight" --icon market_insight.ico --add-data "market_insight.ico;." --add-data "THIRD_PARTY_NOTICES.md;." --collect-all customtkinter --collect-all keyring --collect-all yfinance --collect-all pandas --collect-all certifi --collect-all curl_cffi --collect-all requests --collect-all tzdata market_insight.py
           if (!(Test-Path "dist/Market Insight/Market Insight.exe")) { throw "The packaged application executable was not created." }
           $bundledIcon = Get-ChildItem -Path "dist/Market Insight" -Filter "market_insight.ico" -File -Recurse | Select-Object -First 1
           if (!$bundledIcon) { throw "The current application icon was not bundled into the packaged application." }
@@ -69,7 +70,7 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path Market_Insight | Out-Null
-          Copy-Item market_insight.py, requirements.txt, SETUP_AND_START.bat, Start_Market_Insight.vbs, market_insight.ico, START_IN_DIAGNOSTIC_MODE.bat, Create_Desktop_Shortcut.ps1, README.md -Destination Market_Insight
+          Copy-Item market_insight.py, requirements.txt, SETUP_AND_START.bat, Start_Market_Insight.vbs, market_insight.ico, START_IN_DIAGNOSTIC_MODE.bat, Create_Desktop_Shortcut.ps1, README.md, THIRD_PARTY_NOTICES.md -Destination Market_Insight
           Compress-Archive -Path Market_Insight -DestinationPath Market_Insight_V2.3.zip -Force
 
       - name: Publish GitHub release
