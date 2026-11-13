@@ -43,15 +43,15 @@ jobs:
           $exe = Get-ChildItem -Path "src-tauri/target/release/bundle/nsis" -Filter "*.exe" | Select-Object -First 1
           $msi = Get-ChildItem -Path "src-tauri/target/release/bundle/msi" -Filter "*.msi" | Select-Object -First 1
           if (-not $exe -or -not $msi) { throw "Expected NSIS EXE and MSI installers were not produced." }
-          Copy-Item $exe.FullName "release-assets/Market_Insight_Setup_V2.8.exe"
-          Copy-Item $msi.FullName "release-assets/Market_Insight_V2.8.msi"
+          Copy-Item $exe.FullName "release-assets/MarketView-Setup-2.9.exe"
+          Copy-Item $msi.FullName "release-assets/MarketView-2.9.msi"
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: "V2.8"
-          name: "market-insight 2.8 — Windows"
+          tag_name: "V2.9"
+          name: "MarketView 2.9 — Windows"
           body: |
-            Fresh React + TypeScript + Tauri 2 rebuild with personal settings, accessibility options and expanded legal and privacy information.
+            New MarketView release with custom trading-app links, a first-launch investment-risk acknowledgement and royal-gold app identity.
           files: release-assets/*
           overwrite_files: true
           fail_on_unmatched_files: true
