@@ -2727,23 +2727,6 @@ class MarketInsightApp(ctk.CTk):
         self.colour_theme_menu.set(self.settings.get("colour_theme", "Classy"))
         self.colour_theme_menu.pack(anchor="w", padx=18, pady=(0, 12))
 
-        ctk.CTkLabel(
-            preferences, text="Window transparency",
-            font=app_font(size=14, weight="bold"),
-            text_color=(palette_color(palette_color("#555D54")), palette_color(palette_color("#C0C5BC")))
-        ).pack(anchor="w", padx=18, pady=(4, 3))
-        self.transparency_value = ctk.CTkLabel(
-            preferences, text="{}%".format(int(self.settings.get("transparency", 8))),
-            font=app_font(size=13, weight="bold")
-        )
-        self.transparency_value.pack(anchor="w", padx=18, pady=(0, 3))
-        self.transparency_slider = ctk.CTkSlider(
-            preferences, from_=0, to=35, number_of_steps=35,
-            command=self.change_transparency
-        )
-        self.transparency_slider.set(int(self.settings.get("transparency", 8)))
-        self.transparency_slider.pack(fill="x", padx=18, pady=(0, 14))
-
         ctk.CTkLabel(preferences, text="How the program opens",
                      font=app_font(size=14, weight="bold"),
                      text_color=(palette_color(palette_color("#5B5B5B")), palette_color(palette_color("#C3C3C3")))).pack(anchor="w", padx=18, pady=(4, 3))
