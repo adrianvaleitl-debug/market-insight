@@ -151,7 +151,70 @@ html[data-av-mode="light"] .down{color:#8f3030!important}
 .skip-link{position:fixed;z-index:10001;left:12px;top:-70px;padding:10px 14px;border:2px solid #79b5ff;border-radius:8px;background:#171b24;color:#fff;font:700 14px/1.3 system-ui,-apple-system,"Segoe UI",sans-serif;text-decoration:none}
 .skip-link:focus{top:12px;outline:3px solid #2878d0;outline-offset:3px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
-</style></head>
+</style><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">\n<style id="adrian-luxury-brown-gold-system">\n
+/* Adrian Vale luxury brown + champagne-gold website system */
+:root,html[data-mode],html[data-accent],html[data-av-mode],html[data-av-accent]{
+ --bg:#211710!important;--side:#291d15!important;--panel:rgba(54,39,27,.78)!important;
+ --panel2:rgba(75,54,36,.72)!important;--line:rgba(220,190,137,.23)!important;
+ --text:#f7efdf!important;--ink:#f7efdf!important;--muted:#c5b59d!important;
+ --green:#d8bd83!important;--green2:#b99354!important;--blue:#d8bd83!important;
+ --accent:#d8bd83!important;--accent-soft:#ead9b6!important;--accent-ink:#2b1d12!important;
+ --av-accent:#d8bd83!important;--av-accent-soft:#ead9b6!important;--av-accent-ink:#2b1d12!important;
+ --shadow:0 22px 70px rgba(0,0,0,.34)!important;
+}
+html,html[data-mode="light"],html[data-mode="dark"],html[data-av-mode="light"],html[data-av-mode="dark"]{
+ color-scheme:dark!important;background:#211710!important;
+}
+body{
+ position:relative!important;isolation:isolate;background:#211710!important;color:#f7efdf!important;
+ font-family:'Manrope',Inter,ui-sans-serif,system-ui,sans-serif!important;
+}
+body:before{
+ content:"";position:fixed!important;inset:-18%!important;z-index:-1!important;pointer-events:none!important;
+ background:
+ radial-gradient(ellipse 48% 38% at 16% 12%,rgba(157,111,66,.48),transparent 76%),
+ radial-gradient(ellipse 42% 36% at 82% 24%,rgba(224,194,139,.25),transparent 78%),
+ radial-gradient(ellipse 48% 42% at 72% 88%,rgba(105,67,38,.42),transparent 80%),
+ radial-gradient(ellipse 30% 28% at 28% 78%,rgba(232,211,169,.13),transparent 78%)!important;
+ filter:blur(58px)!important;opacity:.95!important;
+}
+body>*{position:relative;z-index:1}
+h1,h2,h3,h4,.hero h1,.section-head h2,.brand,.rail-title{
+ font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif!important;
+ font-weight:600!important;letter-spacing:-.025em!important;
+}
+p,.lead,.navlinks,.nav a,.btn,.pill,button,.footer,.section-note{font-family:'Manrope',Inter,ui-sans-serif,system-ui,sans-serif!important}
+h1,h2,h3,h4{color:#fbf3e4!important}
+a{ text-decoration-color:rgba(216,189,131,.45)}
+a:hover{color:#f0d9a7!important}
+.nav,.sidebar,.site-rail,.topline,.preview,.mock,.screen,.metric,.stat,.task,.feature,.feature-card,.step,.about-card,.cta,.download,.download-card,.project-card,.social-card,.side-card,.theme-panel,.release,.notice,.panel,.hero-card,.card,.table,.chart,.stock,.metric-grid,.hero-detail-strip,.hub-highlights article,.top-appearance{
+ background:linear-gradient(145deg,rgba(72,51,34,.82),rgba(39,28,20,.82))!important;
+ border-color:rgba(220,190,137,.24)!important;
+ box-shadow:0 18px 54px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,239,205,.055)!important;
+ backdrop-filter:blur(22px) saturate(1.18)!important;-webkit-backdrop-filter:blur(22px) saturate(1.18)!important;
+}
+.nav,.topline{background:rgba(43,31,22,.78)!important}
+.site-rail,.sidebar{background:linear-gradient(165deg,rgba(65,45,30,.94),rgba(35,25,18,.94))!important}
+.btn.primary,.primary,.rail-download,.get,.modebtn,.av-theme-tools button[aria-pressed=true]{
+ color:#2b1d12!important;background:linear-gradient(115deg,#f1dfb5 0%,#c49a58 35%,#f5e5bd 62%,#b98a48 100%)!important;
+ border:1px solid rgba(255,235,190,.7)!important;
+ box-shadow:0 9px 28px rgba(183,137,70,.24),inset 0 1px 0 rgba(255,255,255,.65)!important;
+}
+.btn.secondary,.secondary{background:rgba(235,216,181,.07)!important;border:1px solid rgba(220,190,137,.34)!important;color:#f5e9d3!important}
+.pill,.live,.eyebrow,.section-index,.num,.number,.tag,.up,.rail-kicker,.project-meta,.other-project-visit,.page-hint{
+ color:#e5c98e!important;
+}
+.pill,.live{background:rgba(216,189,131,.12)!important;border-color:rgba(216,189,131,.34)!important}
+.feature-icon,.ico,.mini-icon{background:rgba(216,189,131,.13)!important;color:#e7cc96!important;border:1px solid rgba(216,189,131,.24)!important}
+hr,.rail-rule{border-color:rgba(220,190,137,.22)!important;background:rgba(220,190,137,.22)!important}
+.footer{border-color:rgba(220,190,137,.2)!important;color:#c5b59d!important}
+input,select,textarea{background:rgba(33,23,16,.72)!important;color:#f7efdf!important;border-color:rgba(220,190,137,.3)!important}
+::selection{background:rgba(216,189,131,.38)!important;color:#fff9ec!important}
+@media(prefers-reduced-motion:no-preference){
+ .btn,.primary,.feature,.download-card,.project-card,.social-card,.other-project-card{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease!important}
+ .feature:hover,.download-card:hover,.project-card:hover,.social-card:hover,.other-project-card:hover{transform:translateY(-3px)!important;border-color:rgba(236,207,151,.58)!important;box-shadow:0 24px 60px rgba(0,0,0,.3),0 0 24px rgba(216,189,131,.08)!important}
+}
+\n</style>\n</head>
 <body><a class="skip-link" href="#main-content">Skip to main content</a>
 <aside class="site-rail" aria-label="Market Insight website sidebar">
   <div class="rail-kicker">MARKET DESK</div>
