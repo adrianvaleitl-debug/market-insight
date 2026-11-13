@@ -44,18 +44,18 @@ def _install_unstyled_ui():
         if _cls is None or getattr(_cls, "_unstyled_patch", False):
             continue
         _original_init = _cls.__init__
-        def _make_init(original):
+        def _make_init(original, has_corner):
             def _init(self, *args, **kwargs):
                 for key in _style_keys:
                     kwargs.pop(key, None)
-                if "corner_radius" in _original_parameters:
+                if has_corner:
                     kwargs["corner_radius"] = 0
                 original(self, *args, **kwargs)
             return _init
         # Do not impose constructor arguments unsupported by a given widget.
         import inspect as _inspect
         _original_parameters = set(_inspect.signature(_original_init).parameters)
-        _cls.__init__ = _make_init(_original_init)
+        _cls.__init__ = _make_init(_original_init, "corner_radius" in _original_parameters)
         _original_configure = getattr(_cls, "configure", None)
         if _original_configure:
             def _make_configure(original):
