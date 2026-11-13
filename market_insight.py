@@ -45,12 +45,23 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V2.6"
+APP_VERSION = "V2.7"
 PERSONAL_SITE = "https://adrianvaleitl-debug.github.io/"
 KOFI_URL = "https://ko-fi.com/marketinsight"
 
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
+    {
+        "version": "V2.7",
+        "title": "Website-matched visual redesign",
+        "date": "13 November 2026",
+        "items": [
+            "Rebuilt the app shell around the Adrian Vale website navigation and page layout.",
+            "Removed acrylic blur, decorative background effects and obsolete transparency controls.",
+            "Matched the Classy and Royal palettes and website typography across the interface.",
+            "Preserved existing market tools, saved settings, watchlists, alerts and research data.",
+        ],
+    },
     {
         "version": "V2.6",
         "title": "Unstyled interface baseline",
@@ -486,12 +497,23 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V2.6"
+APP_VERSION = "V2.7"
 PERSONAL_SITE = "https://adrianvaleitl-debug.github.io/"
 KOFI_URL = "https://ko-fi.com/marketinsight"
 
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
+    {
+        "version": "V2.7",
+        "title": "Website-matched visual redesign",
+        "date": "13 November 2026",
+        "items": [
+            "Rebuilt the app shell around the Adrian Vale website navigation and page layout.",
+            "Removed acrylic blur, decorative background effects and obsolete transparency controls.",
+            "Matched the Classy and Royal palettes and website typography across the interface.",
+            "Preserved existing market tools, saved settings, watchlists, alerts and research data.",
+        ],
+    },
     {
         "version": "V2.6",
         "title": "Unstyled interface baseline",
