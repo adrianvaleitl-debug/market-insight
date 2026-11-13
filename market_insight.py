@@ -2963,7 +2963,7 @@ class MarketInsightApp(ctk.CTk):
         from tkinter import messagebox
         if not messagebox.askyesno(
             "Delete all Market Insight data",
-            "This permanently deletes local settings, watchlists, scans, alerts, journal entries, plans and notes. It also attempts to remove saved Alpaca API credentials from Windows Credential Manager. Back up or export anything you want to keep first. This cannot be undone.\\n\\nContinue?",
+            "This permanently deletes local settings, watchlists, scans, alerts, journal entries, plans and notes. It also attempts to remove saved Alpaca API credentials from Windows Credential Manager. Back up or export anything you want to keep first. This cannot be undone.\n\nContinue?",
             parent=self
         ):
             return
@@ -2988,8 +2988,8 @@ class MarketInsightApp(ctk.CTk):
         if failures:
             messagebox.showwarning(
                 "Deletion needs checking",
-                "The app is closing, but some items could not be confirmed as deleted. Check Windows Credential Manager and these locations:\\n" +
-                "\\n".join(failures),
+                "The app is closing, but some items could not be confirmed as deleted. Check Windows Credential Manager and these locations:\n" +
+                "\n".join(failures),
                 parent=self
             )
         else:
