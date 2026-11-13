@@ -1,5 +1,11 @@
 # Changelog
 
+## V2.4 — 13 November 2026
+- Replaced the six accent-colour choices and Light/Dark/System modes with two complete palettes: Classy (midnight navy and ice white) and Royal (dark chocolate brown, pale gold and metallic gold).
+- Applied the selected theme across the entire desktop interface, including navigation, panels, settings, controls and research views.
+- Preserved watchlists, scan history, plans, alerts, credentials, journals and research notes.
+
+
 ## V2.3 — 13 November 2026
 - Added a Settings control to delete local settings, watchlists, scan history, alerts, trade journal entries, plans and notes.
 - Added an attempt to remove saved Alpaca API credentials from Windows Credential Manager and report deletion failures.
