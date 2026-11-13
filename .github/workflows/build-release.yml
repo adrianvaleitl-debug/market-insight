@@ -82,10 +82,10 @@ jobs:
         run: |
           gh release view V2.6 --repo adrianvaleitl-debug/market-insight 2>$null
           if ($LASTEXITCODE -ne 0) {
-            gh release create V2.6 --repo adrianvaleitl-debug/market-insight --title "Market Insight V2.6" --notes "Market Insight V2.6 adds a required first-launch risk and liability acknowledgement and expands the website and app disclaimers." --target main
+            gh release create V2.6 --repo adrianvaleitl-debug/market-insight --title "Market Insight V2.6" --notes "Market Insight V2.6 introduces a temporary unstyled interface baseline, removing custom visual styling while retaining the existing tools and functionality." --target main
             if ($LASTEXITCODE -ne 0) { throw "Could not create the V2.6 GitHub release." }
           }
           gh release upload V2.6 "installer-output/Market_Insight_Setup_V2.6.exe" "Market_Insight_V2.6.zip" --repo adrianvaleitl-debug/market-insight --clobber
           if ($LASTEXITCODE -ne 0) { throw "Could not upload the V2.6 release assets." }
-          gh release edit V2.6 --repo adrianvaleitl-debug/market-insight --title "Market Insight V2.6" --notes "Market Insight V2.6 rebuilds the Windows acrylic backdrop and transparency layer, moves the accent spotlight onto the transparent host, and redesigns the in-app release history."
+          gh release edit V2.6 --repo adrianvaleitl-debug/market-insight --title "Market Insight V2.6" --notes "Market Insight V2.6 introduces a temporary unstyled interface baseline, removing custom visual styling while retaining the existing tools and functionality."
           if ($LASTEXITCODE -ne 0) { throw "Could not update the V2.6 release notes." }
