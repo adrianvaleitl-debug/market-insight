@@ -157,8 +157,8 @@ KOFI_URL = "https://ko-fi.com/marketinsight"
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
     {
-        "version": "V2.4",
-        "title": "Two complete Classy and Royal themes",
+        "version": "V2.5",
+        "title": "Adrian Vale website-matched interface",
         "date": "13 November 2026",
         "items": [
             "Replaced the old six accent colours and Light/Dark/System options with two complete visual themes.",
@@ -488,48 +488,79 @@ def currency_to_usd_rate(currency):
 
 
 def palette_color(value):
-    """Translate legacy widget colours into the Adrian Vale website palette."""
+    """Map legacy widget colours to the exact Adrian Vale website palettes."""
     royal = ACTIVE_COLOUR_THEME == "Royal"
-    colors = {
+    palette = {
+        "#101010": "#241407" if royal else "#000412",
         "#101012": "#241407" if royal else "#000412",
-        "#19191D": "#4a2e18" if royal else "#101d32",
-        "#202024": "#382313" if royal else "#081225",
-        "#29292E": "#4a2e18" if royal else "#101d32",
-        "#38383E": "#6b4a2c" if royal else "#26364d",
-        "#404040": "#6b4a2c" if royal else "#26364d",
-        "#36363D": "#4a2e18" if royal else "#101d32",
-        "#1B1B20": "#241407" if royal else "#000412",
-        "#F2F2F2": "#fff3d9" if royal else "#EBEEF2",
-        "#EBEEF2": "#fff3d9" if royal else "#EBEEF2",
-        "#A9A9A9": "#d5bd94" if royal else "#aeb8c8",
-        "#AFAFAF": "#d5bd94" if royal else "#aeb8c8",
-        "#EDEDED": "#241407" if royal else "#000412",
-        "#FBFBFB": "#382313" if royal else "#081225",
-        "#F9F9F9": "#4a2e18" if royal else "#101d32",
-        "#FFFFFF": "#fff3d9" if royal else "#EBEEF2",
-        "#E9E9E9": "#4a2e18" if royal else "#101d32",
-        "#E4E4E4": "#6b4a2c" if royal else "#26364d",
-        "#DBDBDB": "#6b4a2c" if royal else "#26364d",
-        "#7E7E7E": "#d5bd94" if royal else "#aeb8c8",
-        "#333333": "#fff3d9" if royal else "#EBEEF2",
-        "#1E1E1E": "#241407" if royal else "#000412",
+        "#171A18": "#241407" if royal else "#000412",
+        "#1B1B1B": "#4a2e18" if royal else "#101d32",
+        "#202622": "#382313" if royal else "#081225",
+        "#212121": "#382313" if royal else "#081225",
+        "#242424": "#382313" if royal else "#081225",
         "#282828": "#4a2e18" if royal else "#101d32",
-        "#1F1F1F": "#382313" if royal else "#081225",
-        "#7F7F7F": "#d5bd94" if royal else "#aeb8c8",
-        "#D6D6D6": "#6b4a2c" if royal else "#26364d",
+        "#292929": "#4a2e18" if royal else "#101d32",
+        "#2A2A2A": "#4a2e18" if royal else "#101d32",
+        "#323232": "#4a2e18" if royal else "#101d32",
+        "#383838": "#6b4a2c" if royal else "#26364d",
+        "#393939": "#6b4a2c" if royal else "#26364d",
+        "#3A3A3A": "#6b4a2c" if royal else "#26364d",
+        "#3F3F3F": "#6b4a2c" if royal else "#26364d",
+        "#404040": "#6b4a2c" if royal else "#26364d",
+        "#414141": "#6b4a2c" if royal else "#26364d",
+        "#464646": "#4a2e18" if royal else "#101d32",
+        "#4D4D4D": "#6b4a2c" if royal else "#26364d",
+        "#545454": "#6b4a2c" if royal else "#26364d",
+        "#585858": "#6b4a2c" if royal else "#26364d",
+        "#5C5C5C": "#6b4a2c" if royal else "#26364d",
+        "#F0F0F0": "#241407" if royal else "#000412",
+        "#F7F7F7": "#382313" if royal else "#081225",
+        "#FBFBFB": "#382313" if royal else "#081225",
+        "#FFFFFF": "#fff3d9" if royal else "#EBEEF2",
+        "#EEEEEE": "#fff3d9" if royal else "#EBEEF2",
+        "#EBEBEB": "#fff3d9" if royal else "#EBEEF2",
+        "#ECECEC": "#fff3d9" if royal else "#EBEEF2",
+        "#E8E8E8": "#4a2e18" if royal else "#101d32",
+        "#E7E7E7": "#4a2e18" if royal else "#101d32",
+        "#E3E3E3": "#6b4a2c" if royal else "#26364d",
+        "#E2E2E2": "#6b4a2c" if royal else "#26364d",
+        "#E0E0E0": "#6b4a2c" if royal else "#26364d",
+        "#DADADA": "#6b4a2c" if royal else "#26364d",
+        "#D9D9D9": "#6b4a2c" if royal else "#26364d",
+        "#D8D8D8": "#6b4a2c" if royal else "#26364d",
+        "#D1D1D1": "#6b4a2c" if royal else "#26364d",
         "#CBCBCB": "#6b4a2c" if royal else "#26364d",
-        "#585858": "#4a2e18" if royal else "#101d32",
-        "#343434": "#4a2e18" if royal else "#101d32",
-        "#B9B9B9": "#F1D9A8" if royal else "#d8dde5",
-        "#A0A0A0": "#d5bd94" if royal else "#aeb8c8",
-        "#696969": "#d5bd94" if royal else "#aeb8c8",
         "#C3C3C3": "#d5bd94" if royal else "#aeb8c8",
+        "#BFBFBF": "#d5bd94" if royal else "#aeb8c8",
+        "#B8B8B8": "#d5bd94" if royal else "#aeb8c8",
+        "#B7C1BA": "#d5bd94" if royal else "#aeb8c8",
+        "#AFAFAF": "#d5bd94" if royal else "#aeb8c8",
+        "#A9A9A9": "#d5bd94" if royal else "#aeb8c8",
+        "#A0A0A0": "#d5bd94" if royal else "#aeb8c8",
+        "#888888": "#d5bd94" if royal else "#aeb8c8",
+        "#828282": "#d5bd94" if royal else "#aeb8c8",
+        "#808080": "#d5bd94" if royal else "#aeb8c8",
+        "#7F7F7F": "#d5bd94" if royal else "#aeb8c8",
+        "#7B7B7B": "#d5bd94" if royal else "#aeb8c8",
+        "#777777": "#d5bd94" if royal else "#aeb8c8",
+        "#757575": "#d5bd94" if royal else "#aeb8c8",
+        "#6A6A6A": "#d5bd94" if royal else "#aeb8c8",
+        "#686868": "#d5bd94" if royal else "#aeb8c8",
+        "#616161": "#d5bd94" if royal else "#aeb8c8",
+        "#5B5B5B": "#d5bd94" if royal else "#aeb8c8",
+        "#555555": "#d5bd94" if royal else "#aeb8c8",
+        "#4F4F4F": "#d5bd94" if royal else "#aeb8c8",
+        "#434343": "#fff3d9" if royal else "#EBEEF2",
+        "#313131": "#fff3d9" if royal else "#EBEEF2",
+        "#303030": "#fff3d9" if royal else "#EBEEF2",
+        "#222222": "#241407" if royal else "#000412",
+        "#202020": "#241407" if royal else "#000412",
     }
-    if value in colors:
-        return colors[value]
+    if value in palette:
+        return palette[value]
     if isinstance(value, str) and len(value) == 7 and value.startswith("#"):
         try:
-            rgb = tuple(int(value[i:i + 2], 16) for i in (1, 3, 5))
+            rgb = tuple(int(value[index:index + 2], 16) for index in (1, 3, 5))
             if max(rgb) - min(rgb) <= 2:
                 level = sum(rgb) // 3
                 if level < 40: return "#241407" if royal else "#000412"
@@ -540,31 +571,6 @@ def palette_color(value):
         except ValueError:
             pass
     return value
-import json
-import math
-import csv
-import os
-import hashlib
-import sys
-import subprocess
-import shutil
-import threading
-import traceback
-import colorsys
-import webbrowser
-import requests
-import certifi
-import keyring
-import tkinter as tk
-from datetime import datetime, date, time
-from zoneinfo import ZoneInfo
-from pathlib import Path
-
-import customtkinter as ctk
-from PIL import Image, ImageDraw, ImageFilter, ImageTk
-
-GLASS_KEY = "#010101"
-
 def apply_windows_glass_backdrop(window, transparency=8, light=False):
     """Expose a Windows acrylic backdrop through transparent Tk root pixels."""
     if sys.platform != "win32":
@@ -692,15 +698,15 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
-APP_VERSION = "V2.4"
+APP_VERSION = "V2.5"
 PERSONAL_SITE = "https://adrianvaleitl-debug.github.io/"
 KOFI_URL = "https://ko-fi.com/marketinsight"
 
 # Keep this release history current whenever a new version is published.
 RELEASE_NOTES = [
     {
-        "version": "V2.4",
-        "title": "Two complete Classy and Royal themes",
+        "version": "V2.5",
+        "title": "Adrian Vale website-matched interface",
         "date": "13 November 2026",
         "items": [
             "Replaced the old six accent colours and Light/Dark/System options with two complete visual themes.",
@@ -1030,69 +1036,89 @@ def currency_to_usd_rate(currency):
 
 
 def palette_color(value):
-    """Map legacy neutral surfaces to the selected, complete app theme."""
-    royal = {
-        "#101010":"#24160E","#101012":"#24160E","#171A18":"#24160E","#1B1B1B":"#362316",
-        "#202622":"#432C1B","#212121":"#432C1B","#242424":"#432C1B","#282828":"#52351F",
-        "#292929":"#52351F","#2A2A2A":"#52351F","#323232":"#52351F","#383838":"#694523",
-        "#393939":"#694523","#3A3A3A":"#75512D","#3F3F3F":"#75512D","#404040":"#75512D",
-        "#414141":"#75512D","#464646":"#694523","#4D4D4D":"#75512D","#545454":"#75512D",
-        "#585858":"#75512D","#5C5C5C":"#75512D","#F0F0F0":"#24160E","#F7F7F7":"#432C1B",
-        "#FBFBFB":"#432C1B","#FFFFFF":"#F1D9A8","#EEEEEE":"#F1D9A8","#EBEBEB":"#F1D9A8",
-        "#ECECEC":"#F1D9A8","#E8E8E8":"#52351F","#E7E7E7":"#694523","#E3E3E3":"#694523",
-        "#E2E2E2":"#75512D","#E0E0E0":"#75512D","#DADADA":"#75512D","#D9D9D9":"#694523",
-        "#D8D8D8":"#694523","#D1D1D1":"#75512D","#CBCBCB":"#75512D","#C3C3C3":"#C5A978",
-        "#C0C5BC":"#C5A978","#BFBFBF":"#C5A978","#B8B8B8":"#C5A978","#B7C1BA":"#C5A978",
-        "#AFAFAF":"#C5A978","#A9A9A9":"#C5A978","#A0A0A0":"#D7B979","#888888":"#C5A978",
-        "#828282":"#C5A978","#808080":"#C5A978","#7F7F7F":"#C5A978","#7B7B7B":"#C5A978",
-        "#777777":"#C5A978","#757575":"#C5A978","#6A6A6A":"#C5A978","#686868":"#C5A978",
-        "#616161":"#C5A978","#5B5B5B":"#C5A978","#555555":"#C5A978","#4F4F4F":"#C5A978",
-        "#434343":"#F1D9A8","#313131":"#F1D9A8","#303030":"#F1D9A8","#222222":"#24160E","#202020":"#24160E"
+    """Map legacy widget colours to the exact Adrian Vale website palettes."""
+    royal = ACTIVE_COLOUR_THEME == "Royal"
+    palette = {
+        "#101010": "#241407" if royal else "#000412",
+        "#101012": "#241407" if royal else "#000412",
+        "#171A18": "#241407" if royal else "#000412",
+        "#1B1B1B": "#4a2e18" if royal else "#101d32",
+        "#202622": "#382313" if royal else "#081225",
+        "#212121": "#382313" if royal else "#081225",
+        "#242424": "#382313" if royal else "#081225",
+        "#282828": "#4a2e18" if royal else "#101d32",
+        "#292929": "#4a2e18" if royal else "#101d32",
+        "#2A2A2A": "#4a2e18" if royal else "#101d32",
+        "#323232": "#4a2e18" if royal else "#101d32",
+        "#383838": "#6b4a2c" if royal else "#26364d",
+        "#393939": "#6b4a2c" if royal else "#26364d",
+        "#3A3A3A": "#6b4a2c" if royal else "#26364d",
+        "#3F3F3F": "#6b4a2c" if royal else "#26364d",
+        "#404040": "#6b4a2c" if royal else "#26364d",
+        "#414141": "#6b4a2c" if royal else "#26364d",
+        "#464646": "#4a2e18" if royal else "#101d32",
+        "#4D4D4D": "#6b4a2c" if royal else "#26364d",
+        "#545454": "#6b4a2c" if royal else "#26364d",
+        "#585858": "#6b4a2c" if royal else "#26364d",
+        "#5C5C5C": "#6b4a2c" if royal else "#26364d",
+        "#F0F0F0": "#241407" if royal else "#000412",
+        "#F7F7F7": "#382313" if royal else "#081225",
+        "#FBFBFB": "#382313" if royal else "#081225",
+        "#FFFFFF": "#fff3d9" if royal else "#EBEEF2",
+        "#EEEEEE": "#fff3d9" if royal else "#EBEEF2",
+        "#EBEBEB": "#fff3d9" if royal else "#EBEEF2",
+        "#ECECEC": "#fff3d9" if royal else "#EBEEF2",
+        "#E8E8E8": "#4a2e18" if royal else "#101d32",
+        "#E7E7E7": "#4a2e18" if royal else "#101d32",
+        "#E3E3E3": "#6b4a2c" if royal else "#26364d",
+        "#E2E2E2": "#6b4a2c" if royal else "#26364d",
+        "#E0E0E0": "#6b4a2c" if royal else "#26364d",
+        "#DADADA": "#6b4a2c" if royal else "#26364d",
+        "#D9D9D9": "#6b4a2c" if royal else "#26364d",
+        "#D8D8D8": "#6b4a2c" if royal else "#26364d",
+        "#D1D1D1": "#6b4a2c" if royal else "#26364d",
+        "#CBCBCB": "#6b4a2c" if royal else "#26364d",
+        "#C3C3C3": "#d5bd94" if royal else "#aeb8c8",
+        "#BFBFBF": "#d5bd94" if royal else "#aeb8c8",
+        "#B8B8B8": "#d5bd94" if royal else "#aeb8c8",
+        "#B7C1BA": "#d5bd94" if royal else "#aeb8c8",
+        "#AFAFAF": "#d5bd94" if royal else "#aeb8c8",
+        "#A9A9A9": "#d5bd94" if royal else "#aeb8c8",
+        "#A0A0A0": "#d5bd94" if royal else "#aeb8c8",
+        "#888888": "#d5bd94" if royal else "#aeb8c8",
+        "#828282": "#d5bd94" if royal else "#aeb8c8",
+        "#808080": "#d5bd94" if royal else "#aeb8c8",
+        "#7F7F7F": "#d5bd94" if royal else "#aeb8c8",
+        "#7B7B7B": "#d5bd94" if royal else "#aeb8c8",
+        "#777777": "#d5bd94" if royal else "#aeb8c8",
+        "#757575": "#d5bd94" if royal else "#aeb8c8",
+        "#6A6A6A": "#d5bd94" if royal else "#aeb8c8",
+        "#686868": "#d5bd94" if royal else "#aeb8c8",
+        "#616161": "#d5bd94" if royal else "#aeb8c8",
+        "#5B5B5B": "#d5bd94" if royal else "#aeb8c8",
+        "#555555": "#d5bd94" if royal else "#aeb8c8",
+        "#4F4F4F": "#d5bd94" if royal else "#aeb8c8",
+        "#434343": "#fff3d9" if royal else "#EBEEF2",
+        "#313131": "#fff3d9" if royal else "#EBEEF2",
+        "#303030": "#fff3d9" if royal else "#EBEEF2",
+        "#222222": "#241407" if royal else "#000412",
+        "#202020": "#241407" if royal else "#000412",
     }
-    classy = {
-        "#101010":"#000412","#101012":"#000412","#171A18":"#000412","#1B1B1B":"#0B1020",
-        "#202622":"#111B2B","#212121":"#111B2B","#242424":"#111B2B","#282828":"#18243A",
-        "#292929":"#18243A","#2A2A2A":"#18243A","#323232":"#18243A","#383838":"#24334A",
-        "#393939":"#24334A","#3A3A3A":"#29364A","#3F3F3F":"#29364A","#404040":"#29364A",
-        "#414141":"#29364A","#464646":"#24334A","#4D4D4D":"#29364A","#545454":"#29364A",
-        "#585858":"#29364A","#5C5C5C":"#29364A","#F0F0F0":"#000412","#F7F7F7":"#111B2B",
-        "#FBFBFB":"#111B2B","#FFFFFF":"#EBEEF2","#EEEEEE":"#EBEEF2","#EBEBEB":"#EBEEF2",
-        "#ECECEC":"#EBEEF2","#E8E8E8":"#18243A","#E7E7E7":"#24334A","#E3E3E3":"#24334A",
-        "#E2E2E2":"#29364A","#E0E0E0":"#29364A","#DADADA":"#29364A","#D9D9D9":"#24334A",
-        "#D8D8D8":"#24334A","#D1D1D1":"#29364A","#CBCBCB":"#29364A","#C3C3C3":"#AAB4C2",
-        "#C0C5BC":"#AAB4C2","#BFBFBF":"#AAB4C2","#B8B8B8":"#AAB4C2","#B7C1BA":"#AAB4C2",
-        "#AFAFAF":"#AAB4C2","#A9A9A9":"#AAB4C2","#A0A0A0":"#DCE5F0","#888888":"#AAB4C2",
-        "#828282":"#AAB4C2","#808080":"#AAB4C2","#7F7F7F":"#AAB4C2","#7B7B7B":"#AAB4C2",
-        "#777777":"#AAB4C2","#757575":"#AAB4C2","#6A6A6A":"#AAB4C2","#686868":"#AAB4C2",
-        "#616161":"#AAB4C2","#5B5B5B":"#AAB4C2","#555555":"#AAB4C2","#4F4F4F":"#AAB4C2",
-        "#434343":"#EBEEF2","#313131":"#EBEEF2","#303030":"#EBEEF2","#222222":"#000412","#202020":"#000412"
-    }
-    palette = royal if ACTIVE_COLOUR_THEME == "Royal" else classy
     if value in palette:
         return palette[value]
-    legacy_green = {"#343A36", "#454D47", "#555D54", "#3B3B3B"}
-    if value in legacy_green:
-        return "#52351F" if ACTIVE_COLOUR_THEME == "Royal" else "#18243A"
-    if len(value) == 7 and value.startswith("#"):
+    if isinstance(value, str) and len(value) == 7 and value.startswith("#"):
         try:
             rgb = tuple(int(value[index:index + 2], 16) for index in (1, 3, 5))
             if max(rgb) - min(rgb) <= 2:
                 level = sum(rgb) // 3
-                if level <= 35:
-                    return "#24160E" if ACTIVE_COLOUR_THEME == "Royal" else "#000412"
-                if level <= 65:
-                    return "#75512D" if ACTIVE_COLOUR_THEME == "Royal" else "#29364A"
-                if level <= 125:
-                    return "#C5A978" if ACTIVE_COLOUR_THEME == "Royal" else "#AAB4C2"
-                if level <= 185:
-                    return "#75512D" if ACTIVE_COLOUR_THEME == "Royal" else "#29364A"
-                if level <= 225:
-                    return "#52351F" if ACTIVE_COLOUR_THEME == "Royal" else "#18243A"
-                return "#F1D9A8" if ACTIVE_COLOUR_THEME == "Royal" else "#EBEEF2"
+                if level < 40: return "#241407" if royal else "#000412"
+                if level < 90: return "#4a2e18" if royal else "#101d32"
+                if level < 150: return "#d5bd94" if royal else "#aeb8c8"
+                if level < 215: return "#382313" if royal else "#081225"
+                return "#fff3d9" if royal else "#EBEEF2"
         except ValueError:
             pass
     return value
-
 def apply_ctk_palette_theme():
     """Update CustomTkinter's built-in accent colours for the active palette."""
     # The base CustomTkinter theme is loaded once at startup. Do not replace
