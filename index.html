@@ -131,6 +131,10 @@ body>footer.wrap.footer{display:flex!important;flex-wrap:wrap!important;justify-
 body{position:relative}body:before{content:"";position:fixed;inset:-14%;z-index:0;pointer-events:none;background:radial-gradient(ellipse 42% 34% at 18% 8%,color-mix(in srgb,var(--av-accent,#9ebce9) 18%,transparent),transparent 78%),radial-gradient(ellipse 36% 30% at 82% 78%,color-mix(in srgb,var(--av-accent,#9ebce9) 11%,transparent),transparent 80%);filter:blur(54px)}body>*{position:relative;z-index:1}
 .nav,.site-rail,.feature,.cta,.other-project-card,.footer,.preview,.metric,.chart,.stock,.notice,.rail-stat{backdrop-filter:blur(18px) saturate(1.12);-webkit-backdrop-filter:blur(18px) saturate(1.12)}
 </style>
+
+<style id="accessibility-focus-indicators">
+:where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:3px solid #2878d0!important;outline-offset:3px!important;box-shadow:0 0 0 2px #fff!important}
+</style>
 </head>
 <body>
 <aside class="site-rail" aria-label="Market Insight website sidebar">
