@@ -130,3 +130,117 @@ body{
 @media(prefers-reduced-motion:no-preference){
  .surface,.metric-card,.quote-card,.btn,.sidebar nav button{transition:background .22s ease,border-color .22s ease,box-shadow .22s ease}
 }
+
+
+/* Adrian website background match — layered colour pools, never flat black/grey */
+:root{
+  --av-bg-base:#17304d;
+  --av-panel:rgba(28,54,82,.72);
+  --av-panel-strong:rgba(34,64,94,.84);
+  --av-panel-soft:rgba(42,76,108,.56);
+  --av-line:rgba(155,190,226,.28);
+  --av-glow-a:rgba(63,139,220,.48);
+  --av-glow-b:rgba(116,91,201,.34);
+  --av-glow-c:rgba(45,171,174,.28);
+  --av-glow-d:rgba(123,158,222,.22);
+}
+:root[data-theme="classy"]{
+  color-scheme:dark;
+  --bg:var(--av-bg-base);
+  --side:rgba(22,45,70,.84);
+  --panel:var(--av-panel);
+  --panel2:var(--av-panel-strong);
+  --line:var(--av-line);
+  --text:#f0f6ff;
+  --muted:#bfd0e4;
+  --accent:#a9d0ff;
+  --accent-strong:#d2e5ff;
+  --gold:#a9d0ff;
+  --gold-soft:#e2efff;
+  --accent-ink:#17304d;
+  --surface-top:rgba(39,75,111,.78);
+  --surface-bottom:rgba(24,51,79,.78);
+  --field:rgba(18,42,67,.86);
+  --site-glow:var(--av-glow-a);
+  --site-edge:var(--av-line);
+  --av-glow-a:rgba(58,143,232,.5);
+  --av-glow-b:rgba(126,88,211,.36);
+  --av-glow-c:rgba(35,177,177,.3);
+  --av-glow-d:rgba(114,154,229,.24);
+}
+:root[data-theme="royal"]{
+  color-scheme:dark;
+  --bg:#3a281b;
+  --side:rgba(63,42,27,.86);
+  --panel:rgba(83,57,36,.76);
+  --panel2:rgba(103,71,43,.82);
+  --line:rgba(231,195,137,.3);
+  --text:#fff4e1;
+  --muted:#e0c9a8;
+  --accent:#e7c17c;
+  --accent-strong:#f5dba7;
+  --gold:#e7c17c;
+  --gold-soft:#fff0cc;
+  --accent-ink:#402a18;
+  --surface-top:rgba(105,73,44,.8);
+  --surface-bottom:rgba(67,46,31,.82);
+  --field:rgba(58,39,26,.9);
+  --site-glow:rgba(231,178,91,.38);
+  --site-edge:rgba(239,204,148,.34);
+  --av-glow-a:rgba(194,126,54,.42);
+  --av-glow-b:rgba(230,186,105,.38);
+  --av-glow-c:rgba(144,91,51,.34);
+  --av-glow-d:rgba(245,218,166,.2);
+}
+html,body,#root,.app-shell,.main{
+  background-color:transparent!important;
+  color:var(--text);
+}
+html{background:var(--bg)!important}
+body{
+  min-height:100vh;
+  background-color:var(--bg)!important;
+  background-image:
+    radial-gradient(ellipse 58% 48% at 10% 8%,var(--av-glow-a),transparent 74%),
+    radial-gradient(ellipse 54% 46% at 88% 16%,var(--av-glow-b),transparent 76%),
+    radial-gradient(ellipse 62% 52% at 76% 92%,var(--av-glow-c),transparent 78%),
+    radial-gradient(ellipse 48% 42% at 18% 84%,var(--av-glow-d),transparent 78%),
+    linear-gradient(135deg,color-mix(in srgb,var(--bg) 86%,var(--accent) 14%),var(--bg))!important;
+  background-attachment:fixed!important;
+  background-repeat:no-repeat!important;
+}
+#root,.app-shell,.main{background:transparent!important}
+.sidebar{
+  background:linear-gradient(160deg,color-mix(in srgb,var(--side) 92%,var(--accent) 8%),var(--side) 58%,color-mix(in srgb,var(--side) 92%,var(--bg)))!important;
+  border-color:var(--site-edge)!important;
+  backdrop-filter:blur(28px) saturate(1.22);
+}
+.topbar{
+  background:color-mix(in srgb,var(--side) 78%,transparent)!important;
+  border-color:var(--site-edge)!important;
+  backdrop-filter:blur(26px) saturate(1.25);
+}
+.metric-card,.surface,.quote-card,.focus-card,.entry-modal,.creator-card,.searchbox,.toast,.table-wrap{
+  background:linear-gradient(145deg,var(--surface-top),var(--surface-bottom))!important;
+  border-color:var(--line)!important;
+  backdrop-filter:blur(22px) saturate(1.18);
+}
+.welcome-banner{
+  background:
+    radial-gradient(ellipse at 82% 28%,var(--site-glow),transparent 42%),
+    linear-gradient(115deg,var(--surface-top),var(--surface-bottom))!important;
+  border-color:var(--site-edge)!important;
+}
+.form-grid input,.form-grid select,.form-grid textarea,.timer-controls select,
+.settings-field input,.review-area,.scanner-controls select{
+  background:var(--field)!important;
+  border-color:var(--line)!important;
+  color:var(--text)!important;
+}
+.searchbox{background:var(--panel)!important}
+.record,.session-row,.task-progress,.section-title{border-color:var(--site-edge)!important}
+.btn.primary{background:linear-gradient(120deg,var(--accent-strong),var(--accent))!important;color:var(--accent-ink)!important}
+.btn.secondary,.theme-switch,.calendar-nav button{background:var(--panel)!important;border-color:var(--site-edge)!important;color:var(--text)!important}
+.modal-backdrop{background:color-mix(in srgb,var(--bg) 76%,transparent)!important}
+.progress-track{background:color-mix(in srgb,var(--panel2) 72%,var(--bg))!important}
+.app-footer,.breadcrumb,.record-meta,.section-toolbar p,.muted,.disclaimer{color:var(--muted)!important}
