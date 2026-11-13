@@ -514,7 +514,31 @@ def palette_color(value):
         "#616161":"#AAB4C2","#5B5B5B":"#AAB4C2","#555555":"#AAB4C2","#4F4F4F":"#AAB4C2",
         "#434343":"#EBEEF2","#313131":"#EBEEF2","#303030":"#EBEEF2","#222222":"#000412","#202020":"#000412"
     }
-    return (royal if ACTIVE_COLOUR_THEME == "Royal" else classy).get(value, value)
+    palette = royal if ACTIVE_COLOUR_THEME == "Royal" else classy
+    if value in palette:
+        return palette[value]
+    legacy_green = {"#343A36", "#454D47", "#555D54", "#3B3B3B"}
+    if value in legacy_green:
+        return "#52351F" if ACTIVE_COLOUR_THEME == "Royal" else "#18243A"
+    if len(value) == 7 and value.startswith("#"):
+        try:
+            rgb = tuple(int(value[index:index + 2], 16) for index in (1, 3, 5))
+            if max(rgb) - min(rgb) <= 2:
+                level = sum(rgb) // 3
+                if level <= 35:
+                    return "#24160E" if ACTIVE_COLOUR_THEME == "Royal" else "#000412"
+                if level <= 65:
+                    return "#75512D" if ACTIVE_COLOUR_THEME == "Royal" else "#29364A"
+                if level <= 125:
+                    return "#C5A978" if ACTIVE_COLOUR_THEME == "Royal" else "#AAB4C2"
+                if level <= 185:
+                    return "#75512D" if ACTIVE_COLOUR_THEME == "Royal" else "#29364A"
+                if level <= 225:
+                    return "#52351F" if ACTIVE_COLOUR_THEME == "Royal" else "#18243A"
+                return "#F1D9A8" if ACTIVE_COLOUR_THEME == "Royal" else "#EBEEF2"
+        except ValueError:
+            pass
+    return value
 
 def apply_ctk_palette_theme():
     """Update CustomTkinter's built-in accent colours for the active palette."""
