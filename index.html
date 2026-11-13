@@ -214,7 +214,54 @@ input,select,textarea{background:rgba(33,23,16,.72)!important;color:#f7efdf!impo
  .btn,.primary,.feature,.download-card,.project-card,.social-card,.other-project-card{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease!important}
  .feature:hover,.download-card:hover,.project-card:hover,.social-card:hover,.other-project-card:hover{transform:translateY(-3px)!important;border-color:rgba(236,207,151,.58)!important;box-shadow:0 24px 60px rgba(0,0,0,.3),0 0 24px rgba(216,189,131,.08)!important}
 }
-\n</style>\n</head>
+\n</style>\n
+<style id="av-two-theme-system">
+:root{--av-theme-bg:#000412;--av-theme-panel:#081225;--av-theme-panel2:#101d32;--av-theme-line:#26364d;--av-theme-text:#EBEEF2;--av-theme-muted:#aeb8c8;--av-theme-accent:#d8dde5;--av-theme-accent2:#aeb8c8;--av-theme-ink:#000412;--av-theme-glow:rgba(188,202,224,.12);--av-theme-serif:Georgia,'Times New Roman',serif;--av-theme-sans:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif}
+html[data-site-theme="royal"]{--av-theme-bg:#241407;--av-theme-panel:#382313;--av-theme-panel2:#4a2e18;--av-theme-line:rgba(241,217,168,.27);--av-theme-text:#fff3d9;--av-theme-muted:#d5bd94;--av-theme-accent:#F1D9A8;--av-theme-accent2:#FFC34D;--av-theme-ink:#2a1809;--av-theme-glow:rgba(255,195,77,.18);--av-theme-serif:'Cormorant Garamond',Georgia,'Times New Roman',serif;--av-theme-sans:Georgia,'Times New Roman',serif}
+html[data-site-theme="classy"]{color-scheme:dark}
+html[data-site-theme="royal"]{color-scheme:dark}
+html[data-site-theme] body{background-color:var(--av-theme-bg)!important;background-image:radial-gradient(ellipse at 78% 0%,var(--av-theme-glow),transparent 42%),linear-gradient(135deg,rgba(255,255,255,.018),transparent 55%)!important;color:var(--av-theme-text)!important;font-family:var(--av-theme-sans)!important}
+html[data-site-theme] body,html[data-site-theme] body *{border-color:var(--av-theme-line)}
+html[data-site-theme] h1,html[data-site-theme] h2,html[data-site-theme] h3,html[data-site-theme] h4,html[data-site-theme] .hero h1,html[data-site-theme] .brand,html[data-site-theme] .section-title{font-family:var(--av-theme-serif)!important;color:var(--av-theme-text)!important;letter-spacing:-.035em}
+html[data-site-theme="classy"] h1,html[data-site-theme="classy"] h2,html[data-site-theme="classy"] h3,html[data-site-theme="classy"] h4{font-family:var(--av-theme-sans)!important;font-weight:650!important;letter-spacing:-.045em}
+html[data-site-theme] p,html[data-site-theme] li,html[data-site-theme] small,html[data-site-theme] label{color:inherit}
+html[data-site-theme] .lead,html[data-site-theme] .muted,html[data-site-theme] .navlinks,html[data-site-theme] .eyebrow,html[data-site-theme] .small,html[data-site-theme] .description{color:var(--av-theme-muted)!important}
+html[data-site-theme] a{color:var(--av-theme-accent)!important}
+html[data-site-theme] a:hover{color:var(--av-theme-accent2)!important}
+html[data-site-theme] .nav,html[data-site-theme] .sidebar,html[data-site-theme] .site-rail,html[data-site-theme] .topline,html[data-site-theme] header,html[data-site-theme] .navlinks,
+html[data-site-theme] .preview,html[data-site-theme] .mock,html[data-site-theme] .screen,html[data-site-theme] .metric,html[data-site-theme] .stat,html[data-site-theme] .task,html[data-site-theme] .feature,html[data-site-theme] .feature-card,html[data-site-theme] .step,html[data-site-theme] .about-card,html[data-site-theme] .cta,html[data-site-theme] .download,html[data-site-theme] .download-card,html[data-site-theme] .project-card,html[data-site-theme] .social-card,html[data-site-theme] .side-card,html[data-site-theme] .theme-panel,html[data-site-theme] .release,html[data-site-theme] .notice,html[data-site-theme] .panel,html[data-site-theme] .hero-card,html[data-site-theme] .card,html[data-site-theme] .table,html[data-site-theme] .chart,html[data-site-theme] .stock,html[data-site-theme] .metric-grid,html[data-site-theme] .hero-detail-strip,html[data-site-theme] .hub-highlights article,html[data-site-theme] .top-appearance,html[data-site-theme] .rhythm-card,html[data-site-theme] .principle-card,html[data-site-theme] .value,html[data-site-theme] .build-card,html[data-site-theme] .download-card,html[data-site-theme] .about-grid>*,html[data-site-theme] .feature-grid>*{
+ background:linear-gradient(145deg,color-mix(in srgb,var(--av-theme-panel) 94%,white 6%),var(--av-theme-panel))!important;
+ color:var(--av-theme-text)!important;border-color:var(--av-theme-line)!important;
+ box-shadow:0 18px 54px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.045)!important;
+ backdrop-filter:blur(18px) saturate(1.08)!important;-webkit-backdrop-filter:blur(18px) saturate(1.08)!important
+}
+html[data-site-theme] .nav,html[data-site-theme] .topline,html[data-site-theme] header.nav{background:color-mix(in srgb,var(--av-theme-panel) 92%,transparent)!important}
+html[data-site-theme] .site-rail,html[data-site-theme] .sidebar{background:linear-gradient(165deg,var(--av-theme-panel2),var(--av-theme-bg))!important}
+html[data-site-theme] .btn,html[data-site-theme] button,html[data-site-theme] .primary,html[data-site-theme] .rail-download,html[data-site-theme] .get,html[data-site-theme] .modebtn,html[data-site-theme] input[type=submit]{
+ border:1px solid var(--av-theme-accent)!important;border-radius:10px!important;
+}
+html[data-site-theme] .btn.primary,html[data-site-theme] .primary,html[data-site-theme] .rail-download,html[data-site-theme] .get,html[data-site-theme] input[type=submit]{
+ background:linear-gradient(115deg,var(--av-theme-accent),var(--av-theme-accent2))!important;color:var(--av-theme-ink)!important;
+ box-shadow:0 10px 32px var(--av-theme-glow)!important
+}
+html[data-site-theme] .btn.secondary,html[data-site-theme] button.secondary{background:var(--av-theme-panel2)!important;color:var(--av-theme-text)!important}
+html[data-site-theme] input,html[data-site-theme] textarea,html[data-site-theme] select{background:var(--av-theme-panel2)!important;color:var(--av-theme-text)!important;border-color:var(--av-theme-line)!important}
+html[data-site-theme] .pill,html[data-site-theme] .eyebrow,html[data-site-theme] .tag,html[data-site-theme] .badge{color:var(--av-theme-accent)!important;border-color:var(--av-theme-line)!important;background:color-mix(in srgb,var(--av-theme-accent) 10%,transparent)!important}
+html[data-site-theme="royal"] .gradient{background:linear-gradient(100deg,#fff3d9,#F1D9A8 58%,#FFC34D)!important;background-clip:text!important;color:transparent!important}
+html[data-site-theme="classy"] .gradient{background:linear-gradient(100deg,#EBEEF2,#b8c7dc 58%,#7d91ae)!important;background-clip:text!important;color:transparent!important}
+html[data-site-theme] .positive,html[data-site-theme] .gain{color:#62c994!important}
+html[data-site-theme] .negative,html[data-site-theme] .loss{color:#ef8888!important}
+html[data-site-theme] #appearance{display:none!important}
+.av-theme-switcher{position:fixed;z-index:10020;left:16px;bottom:16px;display:flex;align-items:center;gap:5px;padding:6px;border:1px solid var(--av-theme-line);border-radius:999px;background:rgba(4,9,20,.9);box-shadow:0 12px 36px rgba(0,0,0,.38);backdrop-filter:blur(18px);font:11px/1.2 Inter,system-ui,sans-serif}
+.av-theme-switcher span{padding:0 7px;color:#dce3ed;letter-spacing:.08em;text-transform:uppercase;font-size:9px}
+.av-theme-switcher button{appearance:none;border:1px solid transparent;border-radius:999px;padding:8px 12px;background:transparent;color:#eef2f7;font:600 11px Inter,system-ui,sans-serif;cursor:pointer}
+.av-theme-switcher button[aria-pressed=true]{background:#EBEEF2;color:#000412;border-color:#EBEEF2}
+html[data-site-theme="royal"] .av-theme-switcher{background:rgba(42,24,9,.94);border-color:rgba(241,217,168,.4)}
+html[data-site-theme="royal"] .av-theme-switcher button[aria-pressed=true]{background:#FFC34D;color:#2a1809;border-color:#FFC34D}
+.av-theme-switcher button:focus-visible{outline:3px solid var(--av-theme-accent2);outline-offset:3px}
+@media(max-width:600px){.av-theme-switcher{left:10px;bottom:58px;transform:scale(.94);transform-origin:bottom left}}
+</style>
+</head>
 <body><a class="skip-link" href="#main-content">Skip to main content</a>
 <aside class="site-rail" aria-label="Market Insight website sidebar">
   <div class="rail-kicker">MARKET DESK</div>
@@ -456,5 +503,12 @@ body>footer.wrap.footer{position:fixed!important;left:calc(252px + (100vw - 252p
  .footer,body>footer.footer{position:static!important;width:100%!important;margin:16px 0 0!important}
 }
 </style>
+
+<script id="av-two-theme-controller">
+(()=>{const key='av-site-theme';const allowed=['classy','royal'];let saved='royal';try{const v=localStorage.getItem(key);if(allowed.includes(v))saved=v}catch{}
+const root=document.documentElement;function apply(theme){const value=allowed.includes(theme)?theme:'royal';root.dataset.siteTheme=value;try{localStorage.setItem(key,value)}catch{}const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=value==='royal'?'#603E1E':'#000412';document.querySelectorAll('.av-theme-switcher button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.theme===value)))}
+function mount(){if(document.querySelector('.av-theme-switcher'))return;const bar=document.createElement('div');bar.className='av-theme-switcher';bar.setAttribute('role','group');bar.setAttribute('aria-label','Choose website theme');bar.innerHTML='<span>Theme</span><button type="button" data-theme="classy">Classy</button><button type="button" data-theme="royal">Royal</button>';bar.addEventListener('click',e=>{const b=e.target.closest('button[data-theme]');if(b)apply(b.dataset.theme)});document.body.appendChild(bar);apply(root.dataset.siteTheme||saved)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();apply(saved)})();
+</script>
 </body>
 </html>
