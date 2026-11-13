@@ -26,118 +26,11 @@ from PIL import Image, ImageDraw, ImageFilter, ImageTk
 GLASS_KEY = "#010101"
 
 def apply_windows_glass_backdrop(window, transparency=8, light=False):
-    """Expose a Windows acrylic backdrop through transparent Tk root pixels."""
-    if sys.platform != "win32":
-        return False
-    key = GLASS_KEY
-    try:
-        # Tk's colour-key transparency lets DWM draw acrylic behind the client
-        # area without fading child text, icons or controls.
-        window.wm_attributes("-transparentcolor", key)
-        window.configure(fg_color=key)
-    except Exception:
-        # Keep the app usable if colour-key transparency is unavailable.
-        try:
-            window.configure(fg_color=palette_color("#EDEDED") if light else palette_color("#101012"))
-        except Exception:
-            pass
-    try:
-        window.update_idletasks()
-        user32 = ctypes.windll.user32
-        hwnd = ctypes.c_void_p(window.winfo_id())
-        try:
-            user32.GetAncestor.argtypes = [ctypes.c_void_p, ctypes.c_uint]
-            user32.GetAncestor.restype = ctypes.c_void_p
-            hwnd = ctypes.c_void_p(user32.GetAncestor(hwnd, 2) or hwnd.value)
-        except Exception:
-            pass
-
-        # Windows 11 system backdrop (transient acrylic).
-        backdrop_ok = False
-        try:
-            backdrop = ctypes.c_int(3)
-            dwm_set = ctypes.windll.dwmapi.DwmSetWindowAttribute
-            dwm_set.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_void_p, ctypes.c_uint]
-            dwm_set.restype = ctypes.c_long
-            result = dwm_set(hwnd, 38, ctypes.byref(backdrop), ctypes.sizeof(backdrop))
-            backdrop_ok = (result == 0)
-        except Exception:
-            pass
-
-        # Acrylic fallback also supplies a user-adjustable tint on Windows 10.
-        class ACCENT_POLICY(ctypes.Structure):
-            _fields_ = [("AccentState", ctypes.c_int), ("AccentFlags", ctypes.c_int),
-                        ("GradientColor", ctypes.c_int), ("AnimationId", ctypes.c_int)]
-        class WINDOWCOMPOSITIONATTRIBDATA(ctypes.Structure):
-            _fields_ = [("Attribute", ctypes.c_int), ("Data", ctypes.c_void_p),
-                        ("SizeOfData", ctypes.c_size_t)]
-        amount = max(0, min(35, int(transparency)))
-        alpha = 0xE8 - round((0xE8 - 0x70) * amount / 35)
-        colour = 0x00F0F0F0 if light else 0x0017171B
-        policy = ACCENT_POLICY(4, 2, (alpha << 24) | colour, 0)
-        data = WINDOWCOMPOSITIONATTRIBDATA(19, ctypes.addressof(policy), ctypes.sizeof(policy))
-        apply_attribute = user32.SetWindowCompositionAttribute
-        apply_attribute.argtypes = [ctypes.c_void_p, ctypes.POINTER(WINDOWCOMPOSITIONATTRIBDATA)]
-        apply_attribute.restype = ctypes.c_bool
-        accent_ok = bool(apply_attribute(hwnd, ctypes.byref(data)))
-        try:
-            user32.SetWindowPos.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_int,
-                                            ctypes.c_int, ctypes.c_int, ctypes.c_uint]
-            user32.SetWindowPos.restype = ctypes.c_bool
-            user32.SetWindowPos(hwnd, None, 0, 0, 0, 0,
-                                0x0001 | 0x0002 | 0x0004 | 0x0020)
-        except Exception:
-            pass
-        return backdrop_ok or accent_ok
-    except Exception:
-        return False
-
-
-
-def install_accent_spotlight(window, accent, background="#101012"):
-    """Render a soft multi-layer nebula glow behind the app's glass surfaces."""
-    try:
-        if not isinstance(accent, str) or len(accent) != 7 or not accent.startswith("#"):
-            return
-        window.update_idletasks()
-        width = max(900, int(window.winfo_width()))
-        height = max(620, int(window.winfo_height()))
-        rgb = tuple(int(accent[index:index + 2], 16) for index in (1, 3, 5))
-        glow = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-        draw = ImageDraw.Draw(glow)
-        # Broad atmospheric haze plus several softer nebula cores. Keep the
-        # edges diffuse so the colour never looks like a hard spotlight.
-        blobs = [
-            (0.76, 0.10, 0.48, 0.48, 68),
-            (0.92, 0.42, 0.34, 0.38, 46),
-            (0.18, 0.88, 0.42, 0.38, 32),
-            (0.46, 0.52, 0.34, 0.30, 22),
-        ]
-        for cx, cy, rx, ry, alpha in blobs:
-            bounds = (int((cx-rx)*width), int((cy-ry)*height),
-                      int((cx+rx)*width), int((cy+ry)*height))
-            draw.ellipse(bounds, fill=(*rgb, alpha))
-        glow = glow.filter(ImageFilter.GaussianBlur(max(90, int(min(width, height) * 0.19))))
-        photo = ImageTk.PhotoImage(glow)
-        previous = getattr(window, "_accent_spotlight_canvas", None)
-        if previous is not None and previous.winfo_exists():
-            previous.destroy()
-        canvas = tk.Canvas(window, width=width, height=height, highlightthickness=0,
-                           borderwidth=0, bg=background)
-        canvas.place(x=0, y=0, relwidth=1, relheight=1)
-        canvas.create_image(0, 0, anchor="nw", image=photo)
-        canvas.lower()
-        window._accent_spotlight_canvas = canvas
-        window._accent_spotlight_photo = photo
-        # Do not regenerate a blurred full-window bitmap for every resize event.
-        # Keeping the glow static removes expensive image processing while dragging.
-        window._active_spotlight_colour = accent
-    except Exception:
-        # A decorative layer must never interrupt app startup or navigation.
-        pass
-
-# Apply bold typography globally, including widgets that use CustomTkinter's
-# built-in default font (such as sidebar buttons and small helper/status text).
+    """Disable acrylic so app surfaces stay crisp and opaque like the website."""
+    return False
+def install_accent_spotlight(window, accent, background=None):
+    """No decorative blur layer: use the flat website palette instead."""
+    return None
 _original_ctkfont_init = ctk.CTkFont.__init__
 
 def _bold_ctkfont_init(self, *args, **kwargs):
@@ -1407,7 +1300,7 @@ class MarketInsightApp(ctk.CTk):
         if icon_path and icon_path.exists():
             self.update_idletasks()
             set_windows_window_icon(self, icon_path)
-        self.configure(fg_color=GLASS_KEY if sys.platform=="win32" else (palette_color("#EDEDED"), palette_color("#101010")))
+        self.configure(fg_color=palette_color("#101012"))
         self.apply_liquid_glass()
         self.results = {}
         self.scanning = False
@@ -1976,8 +1869,8 @@ class MarketInsightApp(ctk.CTk):
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self.sidebar = ctk.CTkFrame(self, width=252, corner_radius=20, fg_color=(palette_color("#F3F3F3"), palette_color("#1B1B1B")), border_width=1, border_color=(palette_color("#DBDBDB"), palette_color("#404040")))
-        self.sidebar.grid(row=0, column=0, sticky="nsew", padx=(14, 8), pady=14)
+        self.sidebar = ctk.CTkFrame(self, width=252, corner_radius=0, fg_color=palette_color("#19191D"), border_width=0)
+        self.sidebar.grid(row=0, column=0, sticky="nsew", padx=0, pady=0)
         self.sidebar.grid_propagate(False)
         ctk.CTkLabel(self.sidebar, text="MARKET\nINSIGHT", font=app_font(size=25, weight="bold"),
                      text_color=(palette_color(palette_color("#434343")), palette_color(palette_color("#D7D7D7"))), justify="left").pack(anchor="w", padx=22, pady=(28, 30))
@@ -2043,12 +1936,12 @@ class MarketInsightApp(ctk.CTk):
                       hover_color=COLOUR_ACCENTS.get(ACTIVE_COLOUR_THEME, COLOUR_ACCENTS["Classy"])[1],
                       text_color=palette_color("#202020"), command=lambda: webbrowser.open(KOFI_URL)).pack(fill="x", padx=2, pady=2)
 
-        self.main = ctk.CTkFrame(self, corner_radius=17, fg_color="transparent")
-        self.main.grid(row=0, column=1, sticky="nsew", padx=(8, 14), pady=14)
+        self.main = ctk.CTkFrame(self, corner_radius=0, fg_color="transparent")
+        self.main.grid(row=0, column=1, sticky="nsew", padx=0, pady=0)
         self.main.grid_columnconfigure(0, weight=1)
         self.main.grid_rowconfigure(1, weight=1)
 
-        header = ctk.CTkFrame(self.main, fg_color=palette_color("#202024"), corner_radius=17, border_width=1, border_color=palette_color("#38383E"), height=66)
+        header = ctk.CTkFrame(self.main, fg_color=palette_color("#202024"), corner_radius=0, border_width=0, height=67)
         header.grid(row=0, column=0, sticky="ew", pady=(0, 18), padx=(0, 2))
         header.grid_propagate(False)
         header.grid_columnconfigure(0, weight=1)
