@@ -24,6 +24,16 @@ This inventory records the direct Python packages declared or imported by this p
 
 PyInstaller is used by the Windows release workflow to package the desktop application. Its licence is GPL-2.0 with a bootloader exception, with additional files under Apache-2.0 as described by the upstream project: https://github.com/pyinstaller/pyinstaller/blob/develop/doc/license.rst
 
+
+## Market-data and update integrations
+
+- Yahoo Finance historical market data is requested through the `yfinance` Python package.
+- Alpaca Market Data provides IEX latest-trade snapshots when the user chooses to connect an Alpaca account.
+- Upcoming economic-calendar events are requested from the public Forex Factory feed hosted at `nfs.faireconomy.media`.
+- GitHub's Releases API is used for update checks and release metadata.
+
+These are data/update integrations, not advertising or analytics SDKs. Requests may expose ordinary connection metadata to the relevant provider. The app does not intentionally send the user's locally stored journal entries, plans or notes to these providers.
+
 ## Website SDK and tracking review
 
 The website source was reviewed for external script imports, embedded frames, analytics tags, advertising pixels and third-party JavaScript SDKs. None were found in the main project pages reviewed. Inline project scripts provide interface behaviour and, where applicable, request public release metadata from GitHub. This is a source review, not a guarantee about future third-party behaviour.
