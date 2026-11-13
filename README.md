@@ -1,177 +1,37 @@
-# Market Insight
+# Market Insight 3.0 — Adrian Vale
 
-## What's New
+A market research and risk-planning desktop workspace, rebuilt with React, TypeScript and Tauri 2. The previous Python UI and application implementation are not included.
 
-### V2.3 — Local data deletion and privacy controls
-- Added a user-controlled option to delete local settings, watchlists, scans, alerts, journals, plans and notes.
-- Added credential-removal attempts for saved Alpaca API keys and clearer feedback if Windows cannot confirm deletion.
-- Added an explicit browser-storage choice for website appearance preferences.
+## Core features
+- 50-symbol starter US stock and ETF watchlist, with editable folders and research notes
+- Native Yahoo Finance chart-data retrieval through the Tauri backend
+- Scanner with daily and 20-day change, EMA 20/50, RSI 14, MACD line, ATR 14 and volume versus its 20-day average
+- Transparent illustrative technical checklist score, caution flags, filters and sorting
+- Saved scan snapshots (latest 20)
+- Price-level alerts checked when quotes are refreshed
+- Position-size, risk-amount and reward-to-risk calculator
+- Trade journal
+- Sydney, Tokyo, London and New York forex-session references plus London, US, Tokyo and Hong Kong exchange hours, with UK GMT/BST conversion
+- Full JSON backup export, CSV export and a confirmed local-research-data deletion control
+- Classy blue and Royal gold appearance themes
 
-### V2.2 — Risk disclosure and first-launch acknowledgement
+## Run locally
+```bash
+npm install
+npm run tauri dev
+```
 
-- Added a required first-launch risk and liability notice before onboarding or app access.
-- Added a prominent risk and liability section to the project website and expanded the written disclaimer.
-- The acknowledgement is stored locally and will be requested again when the notice is materially revised.
+## Test and build
+```bash
+npm test
+npm run build
+npm run tauri build
+```
 
-### V2.1 — Stable colour themes and smoother window resizing
+## Data, market data and risk
+Watchlists, scan snapshots, alerts, plans and journal entries are stored locally in the app. Market prices and daily history are requested from Yahoo Finance by the native desktop backend; data may be delayed, incomplete or unavailable. No brokerage account is connected and the app does not place orders. Technical scores, indicators and position sizing are research aids, not predictions or financial advice. Confirm prices and decisions with your broker or exchange.
 
-- **Theme refresh:** removed live CustomTkinter theme resets that could leave existing widgets inconsistent during colour changes.
-- **Resize performance:** stopped rebuilding the full blurred spotlight bitmap on every window-size event.
-- **Window sizing:** returned the default and windowed dimensions to the 1380 × 900 / 1020 × 680 sizing used by the other desktop app.
-- **Research data preserved:** watchlists, scans, saved plans, alerts, credentials, journals and research data remain intact.
+## Technology
+React 18 · TypeScript · Vite · Tauri 2 · Rust · reqwest
 
-### V1.15 — A proper glass layer and clearer release history
-
-- **Windows glass host:** rebuilt the transparent host so the acrylic backdrop can show through without fading text or controls.
-- **Adjustable tint:** expanded the transparency slider's acrylic tint range and apply timing.
-- **Accent nebula:** moved the accent-colour glow onto the transparent host layer.
-- **Release history:** redesigned the in-app What's New page around a featured latest release and a version timeline.
-- **Research data preserved:** existing watchlists, scans, saved plans, alerts, credentials, journals and research data remain intact.
-
-### V1.14 — Accent spotlight and creator shortcuts
-
-- Added the accent-colour spotlight and persistent Adrian Vale / Ko-fi shortcuts.
-- Introduced the initial transparency control, refined in V1.15.
-
-
-## Features
-
-- Watchlist folders for organising symbols into named groups.
-- Local scan history with up to 20 recent summaries.
-- Ticker-specific research notes saved in app settings.
-- Reusable scan presets for watchlists, score thresholds, sorting and filters.
-- Daily briefing with scan leaders, market breadth and caution flags.
-- Scan snapshot showing average score, strongest and weakest daily moves, and highest-volume result.
-- Search scan results by ticker symbol or company name.
-- Sort results by score, biggest daily gain, biggest daily loss, highest RSI, or highest volume.
-- Filter results by all stocks, positive or negative daily move, score 70+, or caution warnings.
-- Export scan results to CSV, including prices, changes, indicators, volume data, and warnings.
-- Live scan progress: add each stock to the results list immediately after it has been checked.
-- In-app What's New page with version-by-version release notes.
-- Five selectable font families in Settings: Segoe UI, Arial, Verdana, Trebuchet MS, and Georgia.
-- Optional bold typography setting to switch between bold and regular text throughout the app, including the sidebar and smaller labels.
-- Market overview with the strongest result from the latest scan.
-- Dedicated Market Hours section with UK-local forex sessions, session overlaps and major stock-exchange hours.
-- Automatic GMT/BST and overseas daylight-saving time conversion for the market timetable.
-- Educational reference windows for commonly active trading periods.
-- Watchlist editor with support for up to 100 ticker symbols.
-- 50 starter US stock and ETF symbols included.
-- Technical indicators including EMA 20, EMA 50, RSI, MACD, and ATR.
-- Volume comparison against a 20-day average.
-- Daily and 20-day price-change calculations.
-- An illustrative technical score and caution warnings.
-- Alpaca IEX latest-trade snapshots when valid credentials are connected.
-- Yahoo Finance daily historical prices for technical indicator calculations.
-- Trading-platform preference for stock links: TradingView, MetaTrader 5, Interactive Brokers, Robinhood, eToro, or Other.
-- Optional custom stock URL template for the Other platform choice, using `{symbol}`.
-- Optional confirmation before opening a stock link.
-- Dark, Light, and System appearance choices.
-- Automatic scanning controls and configurable scan intervals.
-- ATR-based position-sizing and example risk calculations.
-- Secure storage of Alpaca credentials through Windows Credential Manager when supported by the system keyring.
-
-## Requirements
-
-- Windows 10 or Windows 11.
-- Python 3.10 or newer is recommended.
-- An internet connection.
-- An Alpaca account and API credentials for Alpaca IEX snapshots.
-- The Python packages listed in `requirements.txt`.
-
-## Installation
-
-1. Download the latest release ZIP and extract the **Market_Insight** folder.
-2. Double-click **SETUP_AND_START.bat**. This is the only file you need to run for setup.
-3. It installs the required packages and opens Market Insight without leaving a command window running. Opening `market_insight.py` directly runs in the current Python window; use `START_IN_DIAGNOSTIC_MODE.bat` to see startup errors. Normal setup and desktop shortcut launches remain windowless.
-
-The first time the app opens, it asks whether you want a desktop shortcut. Your answer is remembered, so it will not ask again. You can turn the shortcut on or off later in **Settings → Desktop shortcut**.
-
-Python 3 must be installed on the computer. If setup cannot find it, install Python from https://www.python.org/downloads/ and run the setup again.
-
-If Windows displays a security prompt, check that you downloaded the ZIP from the official repository before choosing whether to continue.
-
-## First-time setup
-
-1. On first launch, enter your Alpaca API Key ID and Secret Key.
-2. Use the Alpaca dashboard link shown in the app to create or find your API credentials.
-3. Market Insight checks the credentials before allowing setup to continue.
-4. After successful validation, choose the trading platform you use.
-5. The main scanner opens after the setup steps are complete.
-
-Your Alpaca credentials are stored using Windows Credential Manager via the Python `keyring` package. App preferences and diagnostic logs are stored in your Windows user AppData folder, separately from the program files. The app icon is loaded automatically when the Python file starts and is generated if it is missing. Do not share your API keys or include them in screenshots, support messages, or public posts.
-
-## Market Hours
-
-Open **Market Hours** in the left-hand navigation to view the Sydney, Tokyo, London and New York forex sessions, key session overlaps, and regular trading hours for the London, New York, Tokyo and Hong Kong stock exchanges. Times are converted to UK local time and refreshed using the relevant time-zone rules, including daylight-saving changes. The timetable shows standard weekday hours; exchange holidays, special sessions and early closes can differ. Suggested active windows are educational context, not trading signals or guarantees.
-
-## Using the scanner
-
-1. Open Overview and run a scan, or leave automatic scanning enabled.
-2. Review the top watchlist result and the snapshot of stronger results.
-3. Open Watchlist to add or remove ticker symbols; separate symbols with commas.
-4. Review the latest scan results and any caution warnings.
-5. Use the stock-opening action to open a symbol using your selected platform preference.
-6. Open Settings to change appearance, scanning options, platform preference, or calculator inputs.
-
-The selected platform affects the destination used by stock links. Some destinations may open a web page or search result rather than launching a native desktop trading application. For Other, enter a URL template containing `{symbol}` in Settings.
-
-## Market data and limitations
-
-Alpaca snapshots use the IEX feed. IEX is not the full consolidated US market, and a latest trade may not be available for every symbol at every moment.
-The app does not silently replace a missing Alpaca snapshot with another live or delayed quote.
-Technical indicators are calculated from historical daily data retrieved through Yahoo Finance.
-Price availability, timestamps, market sessions, and third-party service behaviour can vary.
-The technical score is a simple rule-based calculation; it is not a prediction or a guarantee of future performance.
-
-## Privacy and security
-
-Alpaca credentials are saved locally through the operating system's credential storage integration.
-The application needs an internet connection to request market data and historical prices.
-Never publish your API credentials or commit them to this GitHub repository.
-You can remove saved Alpaca credentials from the Live market data section in Settings.
-
-## Troubleshooting
-
-- If credentials are rejected, check that both the Key ID and Secret Key were copied correctly.
-- If a scan fails, check your internet connection and whether the data providers are responding.
-- If a symbol has no available IEX snapshot, try again later or review another symbol.
-- If the app closes unexpectedly, run `START_IN_DIAGNOSTIC_MODE.bat` from the extracted folder. It keeps the console open and displays startup errors. Logs are saved as `startup_error.log` in AppData, with a fallback beside the app.
-- If setup cannot install a dependency, check that Python is installed and available to the setup script.
-- Restart the app after changing system or Python installation settings.
-
-## Risk and liability disclaimer
-
-Market Insight is provided for educational, informational and independent research purposes only. It is not financial, investment, tax or legal advice, personal advice, or a recommendation to buy, sell or hold any asset. Nothing in the application or website takes account of an individual's objectives or financial circumstances.
-
-Prices, snapshots, historical data, scores, indicators, alerts, warnings and calculator outputs may be delayed, incomplete, inaccurate or unavailable. Third-party services may change or fail. Scores and indicators are estimates, not predictions or guarantees. Past performance does not guarantee future results.
-
-You are responsible for independently checking information, assessing risks and making your own trading and investment decisions. You may lose some or all of the money you invest. Market Insight does not place, manage or execute trades and cannot control markets, brokers, data providers, devices or user actions. Do not rely on the software as the sole basis for a financial decision; consider independent advice from an appropriately qualified financial adviser.
-
-To the fullest extent permitted by applicable law, Adrian Vale and the people involved in creating or maintaining Market Insight exclude responsibility for losses, damage or costs arising from or connected with use of, inability to use, or reliance on the app, website, data or outputs, including trading or investment losses, lost profits, data errors, service interruptions and software faults. This wording does not exclude or limit any liability or consumer right that cannot lawfully be excluded or limited under applicable law.
-
-Using Market Insight does not create an advisory, brokerage, fiduciary or other professional relationship with Adrian Vale. The app displays a first-launch acknowledgement of this notice before allowing access.
-
-## Project links
-
-- **Adrian Vale — personal website:** https://adrianvaleitl-debug.github.io/
-
-- **Website:** https://adrianvaleitl-debug.github.io/market-insight/
-- **Latest download:** https://github.com/adrianvaleitl-debug/market-insight/releases/latest
-- **Source code:** https://github.com/adrianvaleitl-debug/market-insight
-- **YouTube:** https://www.youtube.com/@Adrianvaleitl
-- **TikTok:** https://www.tiktok.com/@adrianvaleitl
-
-
-## Support Market Insight
-
-Market Insight is free to download and use. If you find the project useful and would like to support its continued development, you can make an optional contribution through Ko-fi.
-
-- **Support the project:** https://ko-fi.com/marketinsight
-- Contributions are voluntary; using the application does not require a payment.
-- Support helps with ongoing maintenance, improvements, and future development.
-
-Thank you for checking out Market Insight and supporting independent development.
-
-## Credits
-
-Created by Adrian Vale.
+Website: https://adrianvaleitl-debug.github.io/
