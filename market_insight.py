@@ -150,6 +150,548 @@ import winreg
 from tkinter import filedialog
 
 APP_NAME = "Market Insight"
+APP_VERSION = "V2.5"
+PERSONAL_SITE = "https://adrianvaleitl-debug.github.io/"
+KOFI_URL = "https://ko-fi.com/marketinsight"
+
+# Keep this release history current whenever a new version is published.
+RELEASE_NOTES = [
+    {
+        "version": "V2.4",
+        "title": "Two complete Classy and Royal themes",
+        "date": "13 November 2026",
+        "items": [
+            "Replaced the old six accent colours and Light/Dark/System options with two complete visual themes.",
+            "Classy uses midnight navy, ice white and subtle silver; Royal uses dark chocolate brown, pale gold and metallic gold.",
+            "Applied each palette consistently across navigation, panels, settings, controls and market research views.",
+            "Preserved watchlists, scans, saved plans, alerts, credentials and research data.",
+        ],
+    },
+    {
+        "version": "V2.2",
+        "title": "Risk disclosure and first-launch acknowledgement",
+        "date": "12 November 2026",
+        "items": [
+            "Added a required risk and liability notice before onboarding or app access.",
+            "Saved acknowledgement locally and request it again when the notice is revised.",
+            "Expanded the About-page disclaimer and published matching website wording.",
+        ],
+    },
+
+    {
+        "version": "V2.1",
+        "title": "Reliable colour themes and smoother resizing",
+        "date": "11 November 2026",
+        "items": [
+            "Stopped resetting CustomTkinter's global theme manager during live accent changes.",
+            "Removed repeated full-window spotlight image processing during interactive resizing.",
+            "Restored a consistent 1380 × 900 default window and 1020 × 680 minimum size.",
+            "Prevented theme refreshes from scheduling duplicate price-alert polling.",
+            "Preserved watchlists, scans, saved plans, alerts, credentials and research data.",
+        ],
+    },
+    {
+        "version": "V2.0",
+        "title": "Refined currency-inspired colour palettes",
+        "date": "11 November 2026",
+        "items": [
+            "Refined the USD, EUR, GBP, JPY and CHF-inspired accent palettes across Light and Dark modes.",
+        ],
+    },
+    {
+        "version": "V1.15",
+        "title": "Accent spotlight and creator shortcuts",
+        "date": "11 November 2026",
+        "items": [
+            "Added an accent-colour spotlight and persistent Adrian Vale / Ko-fi shortcuts.",
+            "Introduced the initial transparency control; the Windows backdrop implementation is refined in V1.15.",
+        ],
+    },
+    {
+        "version": "V1.11",
+        "title": "A quieter, more Mac-like workspace",
+        "date": "November 2026",
+        "items": [
+            "Introduced adjustable transparency preferences and neutral charcoal surfaces.",
+            "Standardised the app's typography, panels and settings controls.",
+        ],
+    },
+    {
+        "version": "V1.10",
+        "title": "A unified analyst workspace",
+        "date": "November 2026",
+        "items": [
+            "Reworked the desktop interface around a floating sidebar and rounded research panels.",
+            "Standardised navigation, market context and watchlist surfaces.",
+        ],
+    },
+    {
+        "version": "V1.9",
+        "title": "Currency colours that feel right",
+        "date": "November 2026",
+        "items": [
+            "Refined the five currency accent palettes to better match each currency visual identity.",
+            "Updated Light and Dark modes while keeping saved theme choices and status colours intact.",
+        ],
+    },
+    {
+        "version": "V1.8",
+        "title": "A more disciplined trading workspace",
+        "date": "November 2026",
+        "items": [
+            "Added the Trade Planner with risk-based position sizing and reward-to-risk calculations.",
+            "Saved trade plans locally and added input guardrails for price levels and risk.",
+        ],
+    },
+    {
+        "version": "V1.6",
+        "title": "A more focused analyst workspace",
+        "date": "November 2026",
+        "items": [
+            "Refined page hierarchy, scan actions, market context and watchlist research.",
+            "Introduced a denser terminal-style layout for market information.",
+        ],
+    },
+    {
+        "version": "V1.5",
+        "title": "Deeper research and smarter organisation",
+        "date": "November 2026",
+        "items": [
+            "Added watchlist folders, saved scan history, ticker notes and reusable scan presets.",
+            "Added a daily market briefing from the latest completed scan.",
+        ],
+    },
+    {
+        "version": "V1.4",
+        "title": "Scanner improvements",
+        "date": "November 2026",
+        "items": [
+            "Added scan snapshots, ticker search, sorting, filters and CSV export.",
+            "Added font, bold-text, currency and accent-colour preferences.",
+        ],
+    },
+]
+# Temporary QA switch: replay first-launch onboarding on every startup.
+# Existing credentials and preferences are preserved.
+ONBOARDING_TEST_MODE = False
+# v1.2.24 resolves the bundled icon from PyInstaller's runtime resource folder.
+GITHUB_RELEASES_API = "https://api.github.com/repos/adrianvaleitl-debug/market-insight/releases/latest"
+GITHUB_RELEASES_PAGE = "https://github.com/adrianvaleitl-debug/market-insight/releases/latest"
+_SINGLE_INSTANCE_MUTEX = None
+_WINDOW_ICON_HANDLES = []
+
+
+def set_windows_window_icon(window, icon_path):
+    """Set explicit high-resolution Windows taskbar and title-bar icons."""
+    if not sys.platform.startswith("win") or not icon_path or not Path(icon_path).is_file():
+        return
+    try:
+        user32 = ctypes.windll.user32
+        user32.LoadImageW.argtypes = [
+            ctypes.c_void_p, ctypes.c_wchar_p, ctypes.c_uint,
+            ctypes.c_int, ctypes.c_int, ctypes.c_uint
+        ]
+        user32.LoadImageW.restype = ctypes.c_void_p
+        user32.SendMessageW.argtypes = [
+            ctypes.c_void_p, ctypes.c_uint, ctypes.c_void_p, ctypes.c_void_p
+        ]
+        user32.SendMessageW.restype = ctypes.c_void_p
+        hwnd = ctypes.c_void_p(window.winfo_id())
+        load_from_file = 0x0010
+        image_icon = 1
+        wm_seticon = 0x0080
+        icon_small = 0
+        icon_big = 1
+        # Load the exact 256px and 32px frames from the multi-resolution ICO.
+        for size, kind in ((256, icon_big), (32, icon_small)):
+            handle = user32.LoadImageW(
+                None, str(icon_path), image_icon, size, size, load_from_file
+            )
+            if handle:
+                user32.SendMessageW(
+                    hwnd, wm_seticon, ctypes.c_void_p(kind), ctypes.c_void_p(handle)
+                )
+                _WINDOW_ICON_HANDLES.append(handle)
+    except Exception:
+        # Keep the existing Tk icon as a safe fallback on unsupported systems.
+        pass
+
+
+def acquire_single_instance():
+    """Prevent a second Market Insight process from opening on Windows."""
+    global _SINGLE_INSTANCE_MUTEX
+    try:
+        kernel32 = ctypes.windll.kernel32
+        kernel32.CreateMutexW.argtypes = [ctypes.c_void_p, ctypes.c_bool, ctypes.c_wchar_p]
+        kernel32.CreateMutexW.restype = ctypes.c_void_p
+        handle = kernel32.CreateMutexW(None, False, "Local\\AdrianVale.MarketInsight.Singleton")
+        if not handle:
+            return True
+        if kernel32.GetLastError() == 183:
+            kernel32.CloseHandle(handle)
+            ctypes.windll.user32.MessageBoxW(None, "Market Insight is already running.\n\nCheck your taskbar for the open window.", APP_NAME, 0x40)
+            return False
+        _SINGLE_INSTANCE_MUTEX = handle
+        return True
+    except Exception:
+        return True
+
+
+def set_windows_startup(enabled):
+    """Add or remove the app from the current user's Windows startup registry key."""
+    run_key = r"Software\Microsoft\Windows\CurrentVersion\Run"
+    with winreg.OpenKey(winreg.HKEY_CURRENT_USER, run_key, 0, winreg.KEY_SET_VALUE) as key:
+        if enabled:
+            launcher = APP_DIR / "Start_Market_Insight.vbs"
+            if not launcher.exists():
+                raise FileNotFoundError("The startup launcher is missing from the Market Insight folder.")
+            winreg.SetValueEx(key, "Market Insight", 0, winreg.REG_SZ, 'wscript.exe "' + str(launcher) + '"')
+        else:
+            try:
+                winreg.DeleteValue(key, "Market Insight")
+            except FileNotFoundError:
+                pass
+
+
+def version_tuple(value):
+    parts = []
+    for part in str(value).strip().lstrip("vV").split("."):
+        digits = "".join(ch for ch in part if ch.isdigit())
+        if not digits:
+            break
+        parts.append(int(digits))
+    return tuple(parts) if parts else (0,)
+
+
+APP_DIR = Path(sys.executable).resolve().parent if getattr(sys, "frozen", False) else Path(__file__).resolve().parent
+APP_DATA_DIR = Path(os.environ.get("APPDATA", str(Path.home() / "AppData" / "Roaming"))) / "Market Insight"
+CONFIG_FILE = APP_DATA_DIR / "settings.json"
+
+def write_diagnostic(details):
+    """Persist startup and callback errors, with a fallback beside the app."""
+    for path in (APP_DATA_DIR / "startup_error.log", APP_DIR / "startup_error.log"):
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with path.open("a", encoding="utf-8") as log:
+                log.write("\n" + "=" * 72 + "\n")
+                log.write(datetime.now().isoformat(timespec="seconds") + "\n")
+                log.write(str(details) + "\n")
+            return path
+        except Exception:
+            continue
+    return None
+
+def show_startup_error(details):
+    path = write_diagnostic(details)
+    message = "Market Insight couldn't start because something went wrong."
+    if path:
+        message += "\n\nA diagnostic report was saved to:\n" + str(path)
+    else:
+        message += "\n\nThe diagnostic report could not be saved."
+    try:
+        ctypes.windll.user32.MessageBoxW(None, message, APP_NAME, 0x10)
+    except Exception:
+        print(message)
+        print(details)
+
+DEFAULT_TICKERS = [
+    "SPY", "QQQ", "DIA", "IWM", "VTI", "VOO", "XLK", "XLF", "XLE", "XLV",
+    "XLI", "XLY", "XLP", "XLU", "GLD", "TLT", "AAPL", "MSFT", "NVDA", "AMZN",
+    "GOOGL", "META", "BRK-B", "JPM", "BAC", "WFC", "GS", "V", "MA", "COST",
+    "WMT", "HD", "MCD", "KO", "PEP", "PG", "JNJ", "LLY", "UNH", "ABBV",
+    "XOM", "CVX", "CAT", "GE", "AMD", "AVGO", "TSLA", "NFLX", "ORCL", "CRM"
+]
+
+STOCK_NAMES = {
+    "SPY":"SPDR S&P 500 ETF","QQQ":"Invesco QQQ Trust","DIA":"SPDR Dow Jones ETF","IWM":"iShares Russell 2000 ETF",
+    "VTI":"Vanguard Total Stock Market ETF","VOO":"Vanguard S&P 500 ETF","XLK":"Technology Select Sector SPDR",
+    "XLF":"Financial Select Sector SPDR","XLE":"Energy Select Sector SPDR","XLV":"Health Care Select Sector SPDR",
+    "AAPL":"Apple Inc.","MSFT":"Microsoft Corporation","NVDA":"NVIDIA Corporation","AMZN":"Amazon.com, Inc.",
+    "GOOGL":"Alphabet Inc.","META":"Meta Platforms, Inc.","BRK-B":"Berkshire Hathaway Inc.","JPM":"JPMorgan Chase & Co.",
+    "BAC":"Bank of America","WFC":"Wells Fargo & Company","GS":"Goldman Sachs Group","V":"Visa Inc.",
+    "MA":"Mastercard Incorporated","COST":"Costco Wholesale","WMT":"Walmart Inc.","HD":"The Home Depot",
+    "MCD":"McDonald's Corporation","KO":"The Coca-Cola Company","PEP":"PepsiCo, Inc.","PG":"Procter & Gamble",
+    "JNJ":"Johnson & Johnson","LLY":"Eli Lilly and Company","UNH":"UnitedHealth Group","ABBV":"AbbVie Inc.",
+    "XOM":"Exxon Mobil Corporation","CVX":"Chevron Corporation","CAT":"Caterpillar Inc.","GE":"GE Aerospace",
+    "AMD":"Advanced Micro Devices","AVGO":"Broadcom Inc.","TSLA":"Tesla, Inc.","NFLX":"Netflix, Inc.",
+    "ORCL":"Oracle Corporation","CRM":"Salesforce, Inc."
+}
+
+DEFAULTS = {
+    "appearance": "Dark",
+    "colour_theme": "Classy",
+    "transparency": 8,
+    "font_family": "Segoe UI",
+    "bold_text": True,
+    "startup_window_mode": "Maximised",
+    "auto_scan": True,
+    "scan_interval": 5,
+    "auto_open_tradingview": False,
+    "confirm_tradingview": False,
+    "threshold": 70,
+    "watchlist": DEFAULT_TICKERS,
+    "balance": 1000.0,
+    "currency": "USD",
+    "risk_percent": 1.0,
+    "selected_platform": "",
+    "custom_platform_url": "",
+    "auto_open_platform": False,
+    "shortcut_prompted": False,
+    "tutorial_completed": False,
+    "create_desktop_shortcut": False,
+    "run_on_windows_startup": False,
+    "check_for_updates": True,
+    "price_alerts": [],
+    "trade_journal": [],
+    "watchlist_folders": {},
+    "scan_history": [],
+    "ticker_notes": {},
+    "scan_presets": {},
+    "daily_briefing": "",
+    "trade_plans": [],
+}
+
+
+# Two complete visual palettes. Classy uses midnight navy and ice-white;
+# Royal uses dark chocolate brown and pale/metallic gold.
+ACTIVE_COLOUR_THEME = "Classy"
+ACTIVE_FONT_FAMILY = "Segoe UI"
+ACTIVE_BOLD_TEXT = True
+# Theme selection is intentionally independent of operating-system light/dark mode.
+COLOUR_THEME_HUES = {"Classy": 0, "Royal": 38}
+COLOUR_ACCENTS = {"Classy":("#DCE5F0","#AAB9CC"),"Royal":("#FFC34D","#DFA52F")}
+CURRENCY_OPTIONS = {
+    "USD": "USD ($)",
+    "GBP": "GBP (£)",
+    "EUR": "EUR (€)",
+    "CAD": "CAD ($)",
+    "AUD": "AUD ($)",
+    "JPY": "JPY (¥)",
+    "CHF": "CHF (Fr)",
+}
+CURRENCY_SYMBOLS = {
+    "USD": "$", "GBP": "£", "EUR": "€", "CAD": "C$",
+    "AUD": "A$", "JPY": "¥", "CHF": "Fr",
+}
+
+def currency_to_usd_rate(currency):
+    """Return the latest available units-to-USD FX rate using Yahoo Finance."""
+    if currency == "USD":
+        return 1.0
+    history = yf.Ticker("{}USD=X".format(currency)).history(period="5d")
+    if history.empty or "Close" not in history:
+        raise ValueError("The {} to USD exchange rate is currently unavailable.".format(currency))
+    rate = safe_num(history["Close"].dropna().iloc[-1], 0)
+    if rate <= 0:
+        raise ValueError("The {} to USD exchange rate is currently unavailable.".format(currency))
+    return rate
+
+
+def palette_color(value):
+    """Translate legacy widget colours into the Adrian Vale website palette."""
+    royal = ACTIVE_COLOUR_THEME == "Royal"
+    colors = {
+        "#101012": "#241407" if royal else "#000412",
+        "#19191D": "#4a2e18" if royal else "#101d32",
+        "#202024": "#382313" if royal else "#081225",
+        "#29292E": "#4a2e18" if royal else "#101d32",
+        "#38383E": "#6b4a2c" if royal else "#26364d",
+        "#404040": "#6b4a2c" if royal else "#26364d",
+        "#36363D": "#4a2e18" if royal else "#101d32",
+        "#1B1B20": "#241407" if royal else "#000412",
+        "#F2F2F2": "#fff3d9" if royal else "#EBEEF2",
+        "#EBEEF2": "#fff3d9" if royal else "#EBEEF2",
+        "#A9A9A9": "#d5bd94" if royal else "#aeb8c8",
+        "#AFAFAF": "#d5bd94" if royal else "#aeb8c8",
+        "#EDEDED": "#241407" if royal else "#000412",
+        "#FBFBFB": "#382313" if royal else "#081225",
+        "#F9F9F9": "#4a2e18" if royal else "#101d32",
+        "#FFFFFF": "#fff3d9" if royal else "#EBEEF2",
+        "#E9E9E9": "#4a2e18" if royal else "#101d32",
+        "#E4E4E4": "#6b4a2c" if royal else "#26364d",
+        "#DBDBDB": "#6b4a2c" if royal else "#26364d",
+        "#7E7E7E": "#d5bd94" if royal else "#aeb8c8",
+        "#333333": "#fff3d9" if royal else "#EBEEF2",
+        "#1E1E1E": "#241407" if royal else "#000412",
+        "#282828": "#4a2e18" if royal else "#101d32",
+        "#1F1F1F": "#382313" if royal else "#081225",
+        "#7F7F7F": "#d5bd94" if royal else "#aeb8c8",
+        "#D6D6D6": "#6b4a2c" if royal else "#26364d",
+        "#CBCBCB": "#6b4a2c" if royal else "#26364d",
+        "#585858": "#4a2e18" if royal else "#101d32",
+        "#343434": "#4a2e18" if royal else "#101d32",
+        "#B9B9B9": "#F1D9A8" if royal else "#d8dde5",
+        "#A0A0A0": "#d5bd94" if royal else "#aeb8c8",
+        "#696969": "#d5bd94" if royal else "#aeb8c8",
+        "#C3C3C3": "#d5bd94" if royal else "#aeb8c8",
+    }
+    if value in colors:
+        return colors[value]
+    if isinstance(value, str) and len(value) == 7 and value.startswith("#"):
+        try:
+            rgb = tuple(int(value[i:i + 2], 16) for i in (1, 3, 5))
+            if max(rgb) - min(rgb) <= 2:
+                level = sum(rgb) // 3
+                if level < 40: return "#241407" if royal else "#000412"
+                if level < 90: return "#4a2e18" if royal else "#101d32"
+                if level < 150: return "#d5bd94" if royal else "#aeb8c8"
+                if level < 215: return "#382313" if royal else "#081225"
+                return "#fff3d9" if royal else "#EBEEF2"
+        except ValueError:
+            pass
+    return value
+import json
+import math
+import csv
+import os
+import hashlib
+import sys
+import subprocess
+import shutil
+import threading
+import traceback
+import colorsys
+import webbrowser
+import requests
+import certifi
+import keyring
+import tkinter as tk
+from datetime import datetime, date, time
+from zoneinfo import ZoneInfo
+from pathlib import Path
+
+import customtkinter as ctk
+from PIL import Image, ImageDraw, ImageFilter, ImageTk
+
+GLASS_KEY = "#010101"
+
+def apply_windows_glass_backdrop(window, transparency=8, light=False):
+    """Expose a Windows acrylic backdrop through transparent Tk root pixels."""
+    if sys.platform != "win32":
+        return False
+    key = GLASS_KEY
+    try:
+        # Tk's colour-key transparency lets DWM draw acrylic behind the client
+        # area without fading child text, icons or controls.
+        window.wm_attributes("-transparentcolor", key)
+        window.configure(fg_color=key)
+    except Exception:
+        # Keep the app usable if colour-key transparency is unavailable.
+        try:
+            window.configure(fg_color=palette_color("#EDEDED") if light else palette_color("#101012"))
+        except Exception:
+            pass
+    try:
+        window.update_idletasks()
+        user32 = ctypes.windll.user32
+        hwnd = ctypes.c_void_p(window.winfo_id())
+        try:
+            user32.GetAncestor.argtypes = [ctypes.c_void_p, ctypes.c_uint]
+            user32.GetAncestor.restype = ctypes.c_void_p
+            hwnd = ctypes.c_void_p(user32.GetAncestor(hwnd, 2) or hwnd.value)
+        except Exception:
+            pass
+
+        # Windows 11 system backdrop (transient acrylic).
+        backdrop_ok = False
+        try:
+            backdrop = ctypes.c_int(3)
+            dwm_set = ctypes.windll.dwmapi.DwmSetWindowAttribute
+            dwm_set.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_void_p, ctypes.c_uint]
+            dwm_set.restype = ctypes.c_long
+            result = dwm_set(hwnd, 38, ctypes.byref(backdrop), ctypes.sizeof(backdrop))
+            backdrop_ok = (result == 0)
+        except Exception:
+            pass
+
+        # Acrylic fallback also supplies a user-adjustable tint on Windows 10.
+        class ACCENT_POLICY(ctypes.Structure):
+            _fields_ = [("AccentState", ctypes.c_int), ("AccentFlags", ctypes.c_int),
+                        ("GradientColor", ctypes.c_int), ("AnimationId", ctypes.c_int)]
+        class WINDOWCOMPOSITIONATTRIBDATA(ctypes.Structure):
+            _fields_ = [("Attribute", ctypes.c_int), ("Data", ctypes.c_void_p),
+                        ("SizeOfData", ctypes.c_size_t)]
+        amount = max(0, min(35, int(transparency)))
+        alpha = 0xE8 - round((0xE8 - 0x70) * amount / 35)
+        colour = 0x00F0F0F0 if light else 0x0017171B
+        policy = ACCENT_POLICY(4, 2, (alpha << 24) | colour, 0)
+        data = WINDOWCOMPOSITIONATTRIBDATA(19, ctypes.addressof(policy), ctypes.sizeof(policy))
+        apply_attribute = user32.SetWindowCompositionAttribute
+        apply_attribute.argtypes = [ctypes.c_void_p, ctypes.POINTER(WINDOWCOMPOSITIONATTRIBDATA)]
+        apply_attribute.restype = ctypes.c_bool
+        accent_ok = bool(apply_attribute(hwnd, ctypes.byref(data)))
+        try:
+            user32.SetWindowPos.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_int,
+                                            ctypes.c_int, ctypes.c_int, ctypes.c_uint]
+            user32.SetWindowPos.restype = ctypes.c_bool
+            user32.SetWindowPos(hwnd, None, 0, 0, 0, 0,
+                                0x0001 | 0x0002 | 0x0004 | 0x0020)
+        except Exception:
+            pass
+        return backdrop_ok or accent_ok
+    except Exception:
+        return False
+
+
+
+def install_accent_spotlight(window, accent, background="#101012"):
+    """Render a soft multi-layer nebula glow behind the app's glass surfaces."""
+    try:
+        if not isinstance(accent, str) or len(accent) != 7 or not accent.startswith("#"):
+            return
+        window.update_idletasks()
+        width = max(900, int(window.winfo_width()))
+        height = max(620, int(window.winfo_height()))
+        rgb = tuple(int(accent[index:index + 2], 16) for index in (1, 3, 5))
+        glow = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(glow)
+        # Broad atmospheric haze plus several softer nebula cores. Keep the
+        # edges diffuse so the colour never looks like a hard spotlight.
+        blobs = [
+            (0.76, 0.10, 0.48, 0.48, 68),
+            (0.92, 0.42, 0.34, 0.38, 46),
+            (0.18, 0.88, 0.42, 0.38, 32),
+            (0.46, 0.52, 0.34, 0.30, 22),
+        ]
+        for cx, cy, rx, ry, alpha in blobs:
+            bounds = (int((cx-rx)*width), int((cy-ry)*height),
+                      int((cx+rx)*width), int((cy+ry)*height))
+            draw.ellipse(bounds, fill=(*rgb, alpha))
+        glow = glow.filter(ImageFilter.GaussianBlur(max(90, int(min(width, height) * 0.19))))
+        photo = ImageTk.PhotoImage(glow)
+        previous = getattr(window, "_accent_spotlight_canvas", None)
+        if previous is not None and previous.winfo_exists():
+            previous.destroy()
+        canvas = tk.Canvas(window, width=width, height=height, highlightthickness=0,
+                           borderwidth=0, bg=background)
+        canvas.place(x=0, y=0, relwidth=1, relheight=1)
+        canvas.create_image(0, 0, anchor="nw", image=photo)
+        canvas.lower()
+        window._accent_spotlight_canvas = canvas
+        window._accent_spotlight_photo = photo
+        # Do not regenerate a blurred full-window bitmap for every resize event.
+        # Keeping the glow static removes expensive image processing while dragging.
+        window._active_spotlight_colour = accent
+    except Exception:
+        # A decorative layer must never interrupt app startup or navigation.
+        pass
+
+# Apply bold typography globally, including widgets that use CustomTkinter's
+# built-in default font (such as sidebar buttons and small helper/status text).
+_original_ctkfont_init = ctk.CTkFont.__init__
+
+def _bold_ctkfont_init(self, *args, **kwargs):
+    kwargs["weight"] = "bold"
+    _original_ctkfont_init(self, *args, **kwargs)
+
+ctk.CTkFont.__init__ = _bold_ctkfont_init
+import pandas as pd
+import yfinance as yf
+import ctypes
+import winreg
+from tkinter import filedialog
+
+APP_NAME = "Market Insight"
 APP_VERSION = "V2.4"
 PERSONAL_SITE = "https://adrianvaleitl-debug.github.io/"
 KOFI_URL = "https://ko-fi.com/marketinsight"
@@ -574,7 +1116,7 @@ def apply_ctk_palette_theme():
 
 def app_font(*args, **kwargs):
     """Create a consistently bold app font using the user-selected font family."""
-    kwargs.setdefault("family", ACTIVE_FONT_FAMILY)
+    kwargs.setdefault("family", "Georgia" if ACTIVE_COLOUR_THEME == "Royal" else "Manrope")
     kwargs.setdefault("weight", "bold" if ACTIVE_BOLD_TEXT else "normal")
     return ctk.CTkFont(*args, **kwargs)
 
@@ -1406,7 +1948,7 @@ class MarketInsightApp(ctk.CTk):
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self.sidebar = ctk.CTkFrame(self, width=224, corner_radius=26, fg_color=(palette_color("#F3F3F3"), palette_color("#1B1B1B")), border_width=1, border_color=(palette_color("#DBDBDB"), palette_color("#404040")))
+        self.sidebar = ctk.CTkFrame(self, width=252, corner_radius=20, fg_color=(palette_color("#F3F3F3"), palette_color("#1B1B1B")), border_width=1, border_color=(palette_color("#DBDBDB"), palette_color("#404040")))
         self.sidebar.grid(row=0, column=0, sticky="nsew", padx=(14, 8), pady=14)
         self.sidebar.grid_propagate(False)
         ctk.CTkLabel(self.sidebar, text="MARKET\nINSIGHT", font=app_font(size=25, weight="bold"),
@@ -1473,7 +2015,7 @@ class MarketInsightApp(ctk.CTk):
                       hover_color=COLOUR_ACCENTS.get(ACTIVE_COLOUR_THEME, COLOUR_ACCENTS["Classy"])[1],
                       text_color=palette_color("#202020"), command=lambda: webbrowser.open(KOFI_URL)).pack(fill="x", padx=2, pady=2)
 
-        self.main = ctk.CTkFrame(self, corner_radius=24, fg_color="transparent")
+        self.main = ctk.CTkFrame(self, corner_radius=17, fg_color="transparent")
         self.main.grid(row=0, column=1, sticky="nsew", padx=(8, 14), pady=14)
         self.main.grid_columnconfigure(0, weight=1)
         self.main.grid_rowconfigure(1, weight=1)
@@ -1481,7 +2023,7 @@ class MarketInsightApp(ctk.CTk):
         header = ctk.CTkFrame(self.main, fg_color="transparent")
         header.grid(row=0, column=0, sticky="ew", pady=(0, 18))
         header.grid_columnconfigure(0, weight=1)
-        self.page_title = ctk.CTkLabel(header, text="Market overview", font=app_font(size=29, weight="bold"),
+        self.page_title = ctk.CTkLabel(header, text="Market overview", font=ctk.CTkFont(family="Cormorant Garamond" if ACTIVE_COLOUR_THEME == "Royal" else "Manrope", size=32, weight="bold"),
                                        text_color=(palette_color(palette_color("#313131")), palette_color(palette_color("#ECECEC"))))
         self.page_title.grid(row=0, column=0, sticky="w")
         self.status = ctk.CTkLabel(header, text="Ready", corner_radius=16, padx=14, pady=8,
@@ -1509,7 +2051,7 @@ class MarketInsightApp(ctk.CTk):
         self.bind_all("<Escape>", self._exit_fullscreen)
 
     def card(self, parent, title, subtitle=None, wraplength=None):
-        frame = ctk.CTkFrame(parent, corner_radius=24, border_width=1, border_color=(palette_color("#404040"), palette_color("#404040")), fg_color=(palette_color("#FBFBFB"), palette_color("#1F1F1F")))
+        frame = ctk.CTkFrame(parent, corner_radius=17, border_width=1, border_color=(palette_color("#404040"), palette_color("#404040")), fg_color=(palette_color("#FBFBFB"), palette_color("#1F1F1F")))
         frame.pack(fill="x", padx=14, pady=10)
         heading = ctk.CTkLabel(frame, text=title, font=app_font(size=19, weight="bold"),
                                text_color=(palette_color(palette_color("#464646")), palette_color(palette_color("#DCDCDC"))), justify="left")
