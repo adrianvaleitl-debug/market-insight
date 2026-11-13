@@ -1,0 +1,58 @@
+name: Publish Windows installers
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "src-tauri/**"
+      - "package.json"
+      - "index.html"
+      - "public/**"
+      - "tests/**"
+      - "vite.config.ts"
+      - "tsconfig.json"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install dependencies
+        run: npm install
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
+      - name: Run tests
+        run: npm test
+      - name: Build frontend
+        run: npm run build
+      - name: Build Windows installers
+        run: npm run tauri build
+      - name: Prepare stable release filenames
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path release-assets | Out-Null
+          $exe = Get-ChildItem -Path "src-tauri/target/release/bundle/nsis" -Filter "*.exe" | Select-Object -First 1
+          $msi = Get-ChildItem -Path "src-tauri/target/release/bundle/msi" -Filter "*.msi" | Select-Object -First 1
+          if (-not $exe -or -not $msi) { throw "Expected NSIS EXE and MSI installers were not produced." }
+          Copy-Item $exe.FullName "release-assets/Market_Insight_Setup_V3.0.exe"
+          Copy-Item $msi.FullName "release-assets/Market_Insight_V3.0.msi"
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "V3.0"
+          name: "Market Insight V3.0 — Windows"
+          body: |
+            Fresh React + TypeScript + Tauri 2 rebuild. 50-symbol watchlist, Yahoo Finance daily OHLCV, technical scanner, alerts, risk planner and journal. Market data may be delayed; no brokerage connection or trade execution. Local data is not migrated from the previous app.
+          files: release-assets/*
+          overwrite_files: true
+          fail_on_unmatched_files: true
+          make_latest: true
