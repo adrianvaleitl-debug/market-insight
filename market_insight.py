@@ -5,6 +5,7 @@ import os
 import hashlib
 import sys
 import subprocess
+import shutil
 import threading
 import traceback
 import colorsys
@@ -2459,6 +2460,22 @@ class MarketInsightApp(ctk.CTk):
             updates, text="Check for updates now", command=self.check_for_updates
         ).pack(anchor="w", padx=18, pady=(6, 14))
 
+        local_data = self.card(
+            page, "Your local data",
+            "Watchlists, preferences, alerts, journal entries, plans and research notes are stored on this device. Export anything you want to keep before deleting."
+        )
+        ctk.CTkLabel(
+            local_data,
+            text="Deleting local data also attempts to remove saved Alpaca API credentials from the Windows credential store.",
+            font=app_font(size=13), justify="left", anchor="w",
+            text_color=(palette_color("#777777"), palette_color("#B0B0B0"))
+        ).pack(fill="x", padx=18, pady=(8, 10))
+        ctk.CTkButton(
+            local_data, text="Delete all Market Insight data…",
+            fg_color=("#9B3434", "#9B3434"), hover_color=("#7E2929", "#7E2929"),
+            command=self.delete_all_local_data
+        ).pack(anchor="w", padx=18, pady=(0, 14))
+
         # Connection credentials stay together in one separate section.
         connection = self.card(
             page, "Live market data connection",
@@ -2927,13 +2944,61 @@ class MarketInsightApp(ctk.CTk):
             self.alpaca_status.configure(text=f"Could not save credentials securely: {exc}")
 
     def remove_alpaca_keys(self):
+        failures = []
         for account in ("alpaca_api_key", "alpaca_secret_key"):
             try:
-                keyring.delete_password("Market Insight", account)
-            except Exception:
-                pass
-        self.alpaca_status.configure(text="Your saved Alpaca keys have been removed.")
-        self.status.configure(text="Your Alpaca keys have been removed.")
+                if keyring.get_password("Market Insight", account) is not None:
+                    keyring.delete_password("Market Insight", account)
+            except Exception as exc:
+                failures.append(str(exc))
+        if failures:
+            message = "Windows could not confirm that every saved credential was removed. Check Windows Credential Manager."
+            self.alpaca_status.configure(text=message)
+            self.status.configure(text=message)
+        else:
+            self.alpaca_status.configure(text="Your saved Alpaca keys have been removed.")
+            self.status.configure(text="Your Alpaca keys have been removed.")
+
+    def delete_all_local_data(self):
+        from tkinter import messagebox
+        if not messagebox.askyesno(
+            "Delete all Market Insight data",
+            "This permanently deletes local settings, watchlists, scans, alerts, journal entries, plans and notes. It also attempts to remove saved Alpaca API credentials from Windows Credential Manager. Back up or export anything you want to keep first. This cannot be undone.\\n\\nContinue?",
+            parent=self
+        ):
+            return
+        failures = []
+        for account in ("alpaca_api_key", "alpaca_secret_key"):
+            try:
+                if keyring.get_password("Market Insight", account) is not None:
+                    keyring.delete_password("Market Insight", account)
+            except Exception as exc:
+                failures.append("Alpaca credential " + account + ": " + str(exc))
+        try:
+            if APP_DATA_DIR.exists():
+                shutil.rmtree(APP_DATA_DIR)
+        except Exception as exc:
+            failures.append("App data folder: " + str(exc))
+        for path in (APP_DIR / "settings.json", APP_DIR / "startup_error.log"):
+            try:
+                if path.exists():
+                    path.unlink()
+            except Exception as exc:
+                failures.append(str(path) + ": " + str(exc))
+        if failures:
+            messagebox.showwarning(
+                "Deletion needs checking",
+                "The app is closing, but some items could not be confirmed as deleted. Check Windows Credential Manager and these locations:\\n" +
+                "\\n".join(failures),
+                parent=self
+            )
+        else:
+            messagebox.showinfo(
+                "Local data deleted",
+                "Market Insight settings and local research data were deleted. Saved Alpaca credentials were removed where present.",
+                parent=self
+            )
+        self.destroy()
 
     def change_calculator_currency(self, selected_label):
         currency = next((code for code, label in CURRENCY_OPTIONS.items() if label == selected_label), "USD")
