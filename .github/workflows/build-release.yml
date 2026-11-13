@@ -66,26 +66,26 @@ jobs:
         shell: pwsh
         run: |
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
-          if (!(Test-Path "installer-output/Market_Insight_Setup_V2.6.exe")) { throw "The Windows installer was not created." }
+          if (!(Test-Path "installer-output/Market_Insight_Setup_V2.7.exe")) { throw "The Windows installer was not created." }
 
       - name: Assemble source ZIP for existing users
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path Market_Insight | Out-Null
           Copy-Item market_insight.py, requirements.txt, SETUP_AND_START.bat, Start_Market_Insight.vbs, market_insight.ico, START_IN_DIAGNOSTIC_MODE.bat, Create_Desktop_Shortcut.ps1, README.md, THIRD_PARTY_NOTICES.md, THIRD_PARTY_LICENSES.md -Destination Market_Insight
-          Compress-Archive -Path Market_Insight -DestinationPath Market_Insight_V2.6.zip -Force
+          Compress-Archive -Path Market_Insight -DestinationPath Market_Insight_V2.7.zip -Force
 
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: pwsh
         run: |
-          gh release view V2.6 --repo adrianvaleitl-debug/market-insight 2>$null
+          gh release view V2.7 --repo adrianvaleitl-debug/market-insight 2>$null
           if ($LASTEXITCODE -ne 0) {
-            gh release create V2.6 --repo adrianvaleitl-debug/market-insight --title "Market Insight V2.6" --notes "Market Insight V2.6 introduces a temporary unstyled interface baseline, removing custom visual styling while retaining the existing tools and functionality." --target main
-            if ($LASTEXITCODE -ne 0) { throw "Could not create the V2.6 GitHub release." }
+            gh release create V2.7 --repo adrianvaleitl-debug/market-insight --title "Market Insight V2.7" --notes "Market Insight V2.7 rebuilds the desktop interface around the Adrian Vale website design, removes acrylic blur and transparency controls, and preserves existing market tools and user data." --target main
+            if ($LASTEXITCODE -ne 0) { throw "Could not create the V2.7 GitHub release." }
           }
-          gh release upload V2.6 "installer-output/Market_Insight_Setup_V2.6.exe" "Market_Insight_V2.6.zip" --repo adrianvaleitl-debug/market-insight --clobber
-          if ($LASTEXITCODE -ne 0) { throw "Could not upload the V2.6 release assets." }
-          gh release edit V2.6 --repo adrianvaleitl-debug/market-insight --title "Market Insight V2.6" --notes "Market Insight V2.6 introduces a temporary unstyled interface baseline, removing custom visual styling while retaining the existing tools and functionality."
-          if ($LASTEXITCODE -ne 0) { throw "Could not update the V2.6 release notes." }
+          gh release upload V2.7 "installer-output/Market_Insight_Setup_V2.7.exe" "Market_Insight_V2.7.zip" --repo adrianvaleitl-debug/market-insight --clobber
+          if ($LASTEXITCODE -ne 0) { throw "Could not upload the V2.7 release assets." }
+          gh release edit V2.7 --repo adrianvaleitl-debug/market-insight --title "Market Insight V2.7" --notes "Market Insight V2.7 rebuilds the desktop interface around the Adrian Vale website design, removes acrylic blur and transparency controls, and preserves existing market tools and user data."
+          if ($LASTEXITCODE -ne 0) { throw "Could not update the V2.7 release notes." }
