@@ -306,6 +306,14 @@ button:focus-visible,a:focus-visible{outline:3px solid #e6c98f!important;outline
 }
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 </style>
+<style id="adrian-shared-layout-flow-fix">
+html,body{overflow-x:hidden!important;overflow-y:auto!important}
+body>.wrap{height:auto!important;min-height:100vh!important;overflow:visible!important}
+body>.wrap>main,body>main{height:auto!important;min-height:100vh!important;max-height:none!important;display:block!important;overflow:visible!important;overflow-x:visible!important;overflow-y:visible!important}
+body>.wrap>main>section,body>main>section{flex:none!important;width:auto!important;min-width:0!important;max-width:none!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}
+body>.wrap>main>.hero,body>main>.hero{display:grid!important;grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr)!important}
+@media(max-width:760px){body>.wrap>main>.hero,body>main>.hero{grid-template-columns:1fr!important}}
+</style>
 </head>
 <body><a class="skip-link" href="#main-content">Skip to main content</a>
 <aside class="site-rail" aria-label="Market Insight website sidebar">
