@@ -1,27 +1,34 @@
-# Market Insight
+# Market Insight 3.0 — clean rebuild
 
-Research with a clearer view.
+A market research and risk-planning desktop workspace by Adrian Vale, rebuilt with React, TypeScript and Tauri 2. The legacy application UI and Python application code are not carried forward.
 
-Fresh React + TypeScript + Tauri 2 rebuild by Adrian Vale. No legacy UI or Python application code is included.
+## Core workspace
+- Personal watchlist and symbol scanner
+- Native market quote retrieval and daily close history via Yahoo Finance chart data
+- SMA 20 and RSI 14 technical reference indicators
+- Position sizing and reward-to-risk calculator
+- Price level alerts checked when quotes are refreshed
+- Trade journal
+- Tokyo, London and New York market session reference times
+- Classy blue and Royal gold appearance modes
 
-## Run
+## Run locally
 ```bash
 npm install
 npm run tauri dev
 ```
 
-## Build
+## Test and build
 ```bash
+npm test
+npm run build
 npm run tauri build
 ```
 
-## Product areas
-- Overview
-- Watchlist
-- Research
-- Risk
-- Market hours
+## Data, market data and risk
+Watchlists, alerts, plans and journal entries are stored locally in the app. Market quotes are requested from Yahoo Finance by the native desktop backend; data may be delayed, incomplete or unavailable. No brokerage account is connected and the app does not place orders. Technical indicators and sizing are research aids, not financial advice. Confirm prices and all trading decisions with your broker or exchange.
 
-The first rebuild milestone includes the new visual foundation and local workspace entry flows. Existing application data is not imported or overwritten.
+## Stack
+React 18 · TypeScript · Vite · Tauri 2 · Rust · reqwest
 
-Created by Adrian Vale · https://adrianvaleitl-debug.github.io/
+Website: https://adrianvaleitl-debug.github.io/
