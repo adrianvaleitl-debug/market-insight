@@ -1025,7 +1025,7 @@ class MarketInsightApp(ctk.CTk):
             keyring.set_password("Market Insight", "alpaca_api_key", api_key)
             keyring.set_password("Market Insight", "alpaca_secret_key", secret_key)
         except Exception as exc:
-            self.setup_status.configure(text="We couldn't save your keys securely: {}".format(exc))
+            self.setup_status.configure(text="Could not store your keys in Windows Credential Manager: {}".format(exc))
             return
         self.setup_window.grab_release()
         self.setup_window.destroy()
