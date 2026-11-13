@@ -12,7 +12,7 @@ A market research and risk-planning desktop workspace, rebuilt with React, TypeS
 - Position-size, risk-amount and reward-to-risk calculator
 - Trade journal
 - Sydney, Tokyo, London and New York forex-session references plus London, US, Tokyo and Hong Kong exchange hours
-- Full JSON backup export and CSV export
+- Full JSON backup export, CSV export and a confirmed local-research-data deletion control
 - Classy blue and Royal gold appearance themes
 
 ## Run locally
