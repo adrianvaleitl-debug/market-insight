@@ -1,5 +1,11 @@
 # Changelog
 
+## V2.3 — 13 November 2026
+- Added a Settings control to delete local settings, watchlists, scan history, alerts, trade journal entries, plans and notes.
+- Added an attempt to remove saved Alpaca API credentials from Windows Credential Manager and report deletion failures.
+- Added an explicit browser-storage choice to the website; no analytics or advertising tags were found in the reviewed source.
+
+
 ## V2.2 — 12 November 2026
 - Added a required first-launch risk and liability acknowledgement before onboarding or app access.
 - Added a prominent risk and liability section to the website and expanded the written disclaimer.
