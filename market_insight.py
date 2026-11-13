@@ -36,7 +36,7 @@ def apply_windows_glass_backdrop(window, transparency=8, light=False):
     except Exception:
         # Keep the app usable if colour-key transparency is unavailable.
         try:
-            window.configure(fg_color="#EDEDED" if light else "#101012")
+            window.configure(fg_color=palette_color("#EDEDED") if light else palette_color("#101012"))
         except Exception:
             pass
     try:
@@ -92,7 +92,7 @@ def apply_windows_glass_backdrop(window, transparency=8, light=False):
 
 
 
-def install_accent_spotlight(window, accent, background="#101012"):
+def install_accent_spotlight(window, accent, background=palette_color("#101012")):
     """Render a soft multi-layer nebula glow behind the app's glass surfaces."""
     try:
         if not isinstance(accent, str) or len(accent) != 7 or not accent.startswith("#"):
@@ -408,7 +408,7 @@ STOCK_NAMES = {
 
 DEFAULTS = {
     "appearance": "Dark",
-    "colour_theme": "Black",
+    "colour_theme": "Classy",
     "transparency": 8,
     "font_family": "Segoe UI",
     "bold_text": True,
@@ -443,12 +443,12 @@ DEFAULTS = {
 
 # Five high-contrast accent identities. The hue is applied consistently across
 # cards, controls and highlights while preserving each surface's lightness.
-ACTIVE_COLOUR_THEME = "Black"
+ACTIVE_COLOUR_THEME = "Classy"
 ACTIVE_FONT_FAMILY = "Segoe UI"
 ACTIVE_BOLD_TEXT = True
 # Currency-inspired hues, softened to work across both Light and Dark modes.
-COLOUR_THEME_HUES = {"Black": 0, "Amber": 38, "Azure": 215, "Lavender": 270, "Rose": 345, "Teal": 185, "Dollar": 0, "Euro": 215, "Pound": 270, "Yen": 345, "Franc": 185}
-COLOUR_ACCENTS = {"Black":("#B9B9B9","#A0A0A0"),"Amber":("#D7B77F","#BFA16A"),"Azure":("#91AFE0","#7897C8"),"Lavender":("#B5A0D8","#9B86BE"),"Rose":("#D99EAD","#C48495"),"Teal":("#91BEC3","#76A6AB")}
+COLOUR_THEME_HUES = {"Classy": 0, "Royal": 38}
+COLOUR_ACCENTS = {"Classy":("#DCE5F0","#AAB9CC"),"Royal":("#FFC34D","#DFA52F")}
 CURRENCY_OPTIONS = {
     "USD": "USD ($)",
     "GBP": "GBP (£)",
@@ -477,8 +477,46 @@ def currency_to_usd_rate(currency):
 
 
 def palette_color(value):
-    """Keep the forest-green glass surfaces neutral; accents are applied by controls."""
-    return value
+    """Map legacy neutral surfaces to the selected, complete app theme."""
+    royal = {
+        palette_color("#101010"):palette_color("#24160E"),palette_color("#101012"):palette_color("#24160E"),palette_color("#171A18"):palette_color("#24160E"),palette_color("#1B1B1B"):palette_color("#362316"),
+        palette_color("#202622"):palette_color("#432C1B"),palette_color("#212121"):palette_color("#432C1B"),palette_color("#242424"):palette_color("#432C1B"),palette_color("#282828"):palette_color("#52351F"),
+        palette_color("#292929"):palette_color("#52351F"),palette_color("#2A2A2A"):palette_color("#52351F"),palette_color("#323232"):palette_color("#52351F"),palette_color("#383838"):palette_color("#694523"),
+        palette_color("#393939"):palette_color("#694523"),palette_color("#3A3A3A"):palette_color("#75512D"),palette_color("#3F3F3F"):palette_color("#75512D"),palette_color("#404040"):palette_color("#75512D"),
+        palette_color("#414141"):palette_color("#75512D"),palette_color("#464646"):palette_color("#694523"),palette_color("#4D4D4D"):palette_color("#75512D"),palette_color("#545454"):palette_color("#75512D"),
+        palette_color("#585858"):palette_color("#75512D"),palette_color("#5C5C5C"):palette_color("#75512D"),palette_color("#F0F0F0"):palette_color("#24160E"),palette_color("#F7F7F7"):palette_color("#432C1B"),
+        palette_color("#FBFBFB"):palette_color("#432C1B"),palette_color("#FFFFFF"):palette_color("#F1D9A8"),palette_color("#EEEEEE"):palette_color("#F1D9A8"),palette_color("#EBEBEB"):palette_color("#F1D9A8"),
+        palette_color("#ECECEC"):palette_color("#F1D9A8"),palette_color("#E8E8E8"):palette_color("#52351F"),palette_color("#E7E7E7"):palette_color("#694523"),palette_color("#E3E3E3"):palette_color("#694523"),
+        palette_color("#E2E2E2"):palette_color("#75512D"),palette_color("#E0E0E0"):palette_color("#75512D"),palette_color("#DADADA"):palette_color("#75512D"),palette_color("#D9D9D9"):palette_color("#694523"),
+        palette_color("#D8D8D8"):palette_color("#694523"),palette_color("#D1D1D1"):palette_color("#75512D"),palette_color("#CBCBCB"):palette_color("#75512D"),palette_color("#C3C3C3"):palette_color("#C5A978"),
+        palette_color("#C0C5BC"):palette_color("#C5A978"),palette_color("#BFBFBF"):palette_color("#C5A978"),palette_color("#B8B8B8"):palette_color("#C5A978"),palette_color("#B7C1BA"):palette_color("#C5A978"),
+        palette_color("#AFAFAF"):palette_color("#C5A978"),palette_color("#A9A9A9"):palette_color("#C5A978"),palette_color("#A0A0A0"):palette_color("#D7B979"),palette_color("#888888"):palette_color("#C5A978"),
+        palette_color("#828282"):palette_color("#C5A978"),palette_color("#808080"):palette_color("#C5A978"),palette_color("#7F7F7F"):palette_color("#C5A978"),palette_color("#7B7B7B"):palette_color("#C5A978"),
+        palette_color("#777777"):palette_color("#C5A978"),palette_color("#757575"):palette_color("#C5A978"),palette_color("#6A6A6A"):palette_color("#C5A978"),palette_color("#686868"):palette_color("#C5A978"),
+        palette_color("#616161"):palette_color("#C5A978"),palette_color("#5B5B5B"):palette_color("#C5A978"),palette_color("#555555"):palette_color("#C5A978"),palette_color("#4F4F4F"):palette_color("#C5A978"),
+        palette_color("#464646"):palette_color("#C5A978"),palette_color("#434343"):palette_color("#F1D9A8"),palette_color("#414141"):palette_color("#F1D9A8"),palette_color("#383838"):palette_color("#F1D9A8"),
+        palette_color("#313131"):palette_color("#F1D9A8"),palette_color("#303030"):palette_color("#F1D9A8"),palette_color("#222222"):palette_color("#24160E"),palette_color("#202020"):palette_color("#24160E")
+    }
+    classy = {
+        palette_color("#101010"):palette_color("#000412"),palette_color("#101012"):palette_color("#000412"),palette_color("#171A18"):palette_color("#000412"),palette_color("#1B1B1B"):palette_color("#0B1020"),
+        palette_color("#202622"):palette_color("#111B2B"),palette_color("#212121"):palette_color("#111B2B"),palette_color("#242424"):palette_color("#111B2B"),palette_color("#282828"):palette_color("#18243A"),
+        palette_color("#292929"):palette_color("#18243A"),palette_color("#2A2A2A"):palette_color("#18243A"),palette_color("#323232"):palette_color("#18243A"),palette_color("#383838"):palette_color("#24334A"),
+        palette_color("#393939"):palette_color("#24334A"),palette_color("#3A3A3A"):palette_color("#29364A"),palette_color("#3F3F3F"):palette_color("#29364A"),palette_color("#404040"):palette_color("#29364A"),
+        palette_color("#414141"):palette_color("#29364A"),palette_color("#464646"):palette_color("#24334A"),palette_color("#4D4D4D"):palette_color("#29364A"),palette_color("#545454"):palette_color("#29364A"),
+        palette_color("#585858"):palette_color("#29364A"),palette_color("#5C5C5C"):palette_color("#29364A"),palette_color("#F0F0F0"):palette_color("#000412"),palette_color("#F7F7F7"):palette_color("#111B2B"),
+        palette_color("#FBFBFB"):palette_color("#111B2B"),palette_color("#FFFFFF"):palette_color("#EBEEF2"),palette_color("#EEEEEE"):palette_color("#EBEEF2"),palette_color("#EBEBEB"):palette_color("#EBEEF2"),
+        palette_color("#ECECEC"):palette_color("#EBEEF2"),palette_color("#E8E8E8"):palette_color("#18243A"),palette_color("#E7E7E7"):palette_color("#24334A"),palette_color("#E3E3E3"):palette_color("#24334A"),
+        palette_color("#E2E2E2"):palette_color("#29364A"),palette_color("#E0E0E0"):palette_color("#29364A"),palette_color("#DADADA"):palette_color("#29364A"),palette_color("#D9D9D9"):palette_color("#24334A"),
+        palette_color("#D8D8D8"):palette_color("#24334A"),palette_color("#D1D1D1"):palette_color("#29364A"),palette_color("#CBCBCB"):palette_color("#29364A"),palette_color("#C3C3C3"):palette_color("#AAB4C2"),
+        palette_color("#C0C5BC"):palette_color("#AAB4C2"),palette_color("#BFBFBF"):palette_color("#AAB4C2"),palette_color("#B8B8B8"):palette_color("#AAB4C2"),palette_color("#B7C1BA"):palette_color("#AAB4C2"),
+        palette_color("#AFAFAF"):palette_color("#AAB4C2"),palette_color("#A9A9A9"):palette_color("#AAB4C2"),palette_color("#A0A0A0"):"#DCE5F0",palette_color("#888888"):palette_color("#AAB4C2"),
+        palette_color("#828282"):palette_color("#AAB4C2"),palette_color("#808080"):palette_color("#AAB4C2"),palette_color("#7F7F7F"):palette_color("#AAB4C2"),palette_color("#7B7B7B"):palette_color("#AAB4C2"),
+        palette_color("#777777"):palette_color("#AAB4C2"),palette_color("#757575"):palette_color("#AAB4C2"),palette_color("#6A6A6A"):palette_color("#AAB4C2"),palette_color("#686868"):palette_color("#AAB4C2"),
+        palette_color("#616161"):palette_color("#AAB4C2"),palette_color("#5B5B5B"):palette_color("#AAB4C2"),palette_color("#555555"):palette_color("#AAB4C2"),palette_color("#4F4F4F"):palette_color("#AAB4C2"),
+        palette_color("#464646"):palette_color("#AAB4C2"),palette_color("#434343"):palette_color("#EBEEF2"),palette_color("#414141"):palette_color("#EBEEF2"),palette_color("#383838"):palette_color("#EBEEF2"),
+        palette_color("#313131"):palette_color("#EBEEF2"),palette_color("#303030"):palette_color("#EBEEF2"),palette_color("#222222"):palette_color("#000412"),palette_color("#202020"):palette_color("#000412")
+    }
+    return (royal if ACTIVE_COLOUR_THEME == "Royal" else classy).get(value, value)
 
 def apply_ctk_palette_theme():
     """Update CustomTkinter's built-in accent colours for the active palette."""
@@ -487,10 +525,10 @@ def apply_ctk_palette_theme():
     theme = ctk.ThemeManager.theme
     primary, hover = COLOUR_ACCENTS.get(ACTIVE_COLOUR_THEME, COLOUR_ACCENTS["Black"])
     muted = {
-        "CTkButton": {"fg_color": [primary, primary], "hover_color": [hover, hover], "text_color": ["#202020", "#202020"], "corner_radius": 13},
-        "CTkCheckBox": {"fg_color": [primary, primary], "hover_color": [hover, hover], "border_color": ["#7F7F7F", "#7F7F7F"], "checkmark_color": ["#202020", "#202020"]},
-        "CTkSwitch": {"fg_color": ["#434343", "#434343"], "progress_color": [primary, primary], "button_color": ["#F2F2F2", "#F2F2F2"], "button_hover_color": ["#FFFFFF", "#FFFFFF"]},
-        "CTkOptionMenu": {"fg_color": ["#282828", "#282828"], "button_color": [primary, primary], "button_hover_color": [hover, hover], "text_color": ["#F2F2F2", "#F2F2F2"], "dropdown_fg_color": ["#1F1F1F", "#1F1F1F"], "dropdown_hover_color": ["#363636", "#363636"], "dropdown_text_color": ["#F2F2F2", "#F2F2F2"], "corner_radius": 13},
+        "CTkButton": {"fg_color": [primary, primary], "hover_color": [hover, hover], "text_color": [palette_color("#202020"), palette_color("#202020")], "corner_radius": 13},
+        "CTkCheckBox": {"fg_color": [primary, primary], "hover_color": [hover, hover], "border_color": [palette_color("#7F7F7F"), palette_color("#7F7F7F")], "checkmark_color": [palette_color("#202020"), palette_color("#202020")]},
+        "CTkSwitch": {"fg_color": [palette_color("#434343"), palette_color("#434343")], "progress_color": [primary, primary], "button_color": [palette_color("#F2F2F2"), palette_color("#F2F2F2")], "button_hover_color": [palette_color("#FFFFFF"), palette_color("#FFFFFF")]},
+        "CTkOptionMenu": {"fg_color": [palette_color("#282828"), palette_color("#282828")], "button_color": [primary, primary], "button_hover_color": [hover, hover], "text_color": [palette_color("#F2F2F2"), palette_color("#F2F2F2")], "dropdown_fg_color": [palette_color("#1F1F1F"), palette_color("#1F1F1F")], "dropdown_hover_color": [palette_color("#363636"), palette_color("#363636")], "dropdown_text_color": [palette_color("#F2F2F2"), palette_color("#F2F2F2")], "corner_radius": 13},
         "CTkSlider": {"progress_color": [primary, primary], "button_color": [primary, primary], "button_hover_color": [hover, hover]},
         "CTkProgressBar": {"progress_color": [primary, primary]},
         "CTkRadioButton": {"fg_color": [primary, primary], "hover_color": [hover, hover]},
@@ -517,13 +555,13 @@ def styled_settings_dropdown(parent, values, command=None):
         width=230,
         height=36,
         corner_radius=10,
-        fg_color=(palette_color("#E8E8E8"), palette_color("#383838")),
-        button_color=(palette_color("#D6D6D6"), palette_color("#4D4D4D")),
-        button_hover_color=(palette_color("#CBCBCB"), palette_color("#5C5C5C")),
-        text_color=(palette_color("#383838"), palette_color("#EBEBEB")),
-        dropdown_fg_color=(palette_color("#F7F7F7"), palette_color("#2A2A2A")),
-        dropdown_hover_color=(palette_color("#E7E7E7"), palette_color("#424242")),
-        dropdown_text_color=(palette_color("#383838"), palette_color("#EBEBEB")),
+        fg_color=(palette_color(palette_color("#E8E8E8")), palette_color(palette_color("#383838"))),
+        button_color=(palette_color(palette_color("#D6D6D6")), palette_color(palette_color("#4D4D4D"))),
+        button_hover_color=(palette_color(palette_color("#CBCBCB")), palette_color(palette_color("#5C5C5C"))),
+        text_color=(palette_color(palette_color("#383838")), palette_color(palette_color("#EBEBEB"))),
+        dropdown_fg_color=(palette_color(palette_color("#F7F7F7")), palette_color(palette_color("#2A2A2A"))),
+        dropdown_hover_color=(palette_color(palette_color("#E7E7E7")), palette_color(palette_color("#424242"))),
+        dropdown_text_color=(palette_color(palette_color("#383838")), palette_color(palette_color("#EBEBEB"))),
         font=app_font(size=13, weight="bold"),
         dropdown_font=app_font(size=13, weight="bold"),
         anchor="w",
@@ -734,23 +772,21 @@ class MarketInsightApp(ctk.CTk):
         super().__init__()
         self.settings = load_settings()
         global ACTIVE_COLOUR_THEME
-        previous_theme_names = {
-            "Emerald": "Black", "Sapphire": "Azure", "Violet": "Lavender",
-            "Crimson": "Rose", "Amber": "Amber", "Dollar": "Black", "Euro": "Azure", "Pound": "Lavender", "Yen": "Rose", "Franc": "Teal",
-        }
-        saved_theme = self.settings.get("colour_theme", "Black")
-        ACTIVE_COLOUR_THEME = previous_theme_names.get(saved_theme, saved_theme)
+        previous_theme_names = {"Amber": "Royal", "Royal": "Royal", "Classy": "Classy"}
+        saved_theme = self.settings.get("colour_theme", "Classy")
+        ACTIVE_COLOUR_THEME = previous_theme_names.get(saved_theme, "Classy")
         global ACTIVE_FONT_FAMILY, ACTIVE_BOLD_TEXT
         ACTIVE_FONT_FAMILY = self.settings.get("font_family", "Segoe UI")
         ACTIVE_BOLD_TEXT = bool(self.settings.get("bold_text", True))
         if ACTIVE_FONT_FAMILY not in ("Segoe UI", "Arial", "Verdana", "Trebuchet MS", "Georgia"):
             ACTIVE_FONT_FAMILY = "Segoe UI"
         if ACTIVE_COLOUR_THEME not in COLOUR_THEME_HUES:
-            ACTIVE_COLOUR_THEME = "Black"
+            ACTIVE_COLOUR_THEME = "Classy"
         self.settings["colour_theme"] = ACTIVE_COLOUR_THEME
         if self.settings.get("currency") not in CURRENCY_OPTIONS:
             self.settings["currency"] = "USD"
-        ctk.set_appearance_mode(self.settings["appearance"].lower())
+        self.settings["appearance"] = "Dark"
+        ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("green")
         apply_ctk_palette_theme()
         self.title(APP_NAME)
@@ -768,7 +804,7 @@ class MarketInsightApp(ctk.CTk):
         if icon_path and icon_path.exists():
             self.update_idletasks()
             set_windows_window_icon(self, icon_path)
-        self.configure(fg_color=GLASS_KEY if sys.platform=="win32" else ("#EDEDED", "#101010"))
+        self.configure(fg_color=GLASS_KEY if sys.platform=="win32" else (palette_color("#EDEDED"), palette_color("#101010")))
         self.apply_liquid_glass()
         self.results = {}
         self.scanning = False
@@ -790,7 +826,7 @@ class MarketInsightApp(ctk.CTk):
         dialog.transient(self)
         dialog.protocol("WM_DELETE_WINDOW", self.destroy)
         dialog.grab_set()
-        dialog.configure(fg_color=("#F2F3F2", "#171A18"))
+        dialog.configure(fg_color=(palette_color("#F2F3F2"), palette_color("#171A18")))
 
         ctk.CTkLabel(
             dialog, text="Before you use Market Insight",
@@ -799,11 +835,11 @@ class MarketInsightApp(ctk.CTk):
         ctk.CTkLabel(
             dialog,
             text="Please read this important information. You must acknowledge it before continuing.",
-            font=app_font(size=13, weight="bold"), text_color=("#555555", "#B7C1BA"),
+            font=app_font(size=13, weight="bold"), text_color=(palette_color("#555555"), palette_color("#B7C1BA")),
             anchor="w", wraplength=690, justify="left"
         ).pack(fill="x", padx=28, pady=(0, 14))
 
-        body = ctk.CTkScrollableFrame(dialog, corner_radius=14, fg_color=("#FFFFFF", "#202622"))
+        body = ctk.CTkScrollableFrame(dialog, corner_radius=14, fg_color=(palette_color("#FFFFFF"), palette_color("#202622")))
         body.pack(fill="both", expand=True, padx=24, pady=(0, 16))
         notice = (
             "EDUCATIONAL AND INFORMATIONAL USE ONLY\n\n"
@@ -843,8 +879,8 @@ class MarketInsightApp(ctk.CTk):
         actions = ctk.CTkFrame(dialog, fg_color="transparent")
         actions.pack(fill="x", padx=24, pady=(0, 22))
         ctk.CTkButton(
-            actions, text="Exit Market Insight", fg_color=("#E7E7E7", "#343A36"),
-            text_color=("#222222", "#F2F5F2"), hover_color=("#D8D8D8", "#454D47"),
+            actions, text="Exit Market Insight", fg_color=(palette_color("#E7E7E7"), palette_color("#343A36")),
+            text_color=(palette_color("#222222"), palette_color("#F2F5F2")), hover_color=(palette_color("#D8D8D8"), palette_color("#454D47")),
             command=self.destroy, width=170
         ).pack(side="left")
         def accept_notice():
@@ -963,10 +999,10 @@ class MarketInsightApp(ctk.CTk):
                 pass
         win.geometry("650x590")
         win.minsize(560, 520)
-        win.configure(fg_color=(palette_color("#F0F0F0"), palette_color("#212121")))
+        win.configure(fg_color=(palette_color(palette_color("#F0F0F0")), palette_color(palette_color("#212121"))))
         win.protocol("WM_DELETE_WINDOW", self.destroy)
         win.grab_set()
-        panel = ctk.CTkFrame(win, corner_radius=24, fg_color=(palette_color("#F7F7F7"), palette_color("#323232")))
+        panel = ctk.CTkFrame(win, corner_radius=24, fg_color=(palette_color(palette_color("#F7F7F7")), palette_color(palette_color("#323232"))))
         panel.pack(fill="both", expand=True, padx=22, pady=22)
         ctk.CTkLabel(panel, text="MARKET INSIGHT", font=app_font(size=16, weight="bold")).pack(anchor="w", padx=30, pady=(25, 8))
         ctk.CTkLabel(panel, text=title, font=app_font(size=28, weight="bold"),
@@ -995,7 +1031,7 @@ class MarketInsightApp(ctk.CTk):
         self.setup_secret_entry = ctk.CTkEntry(panel, height=44, show="•", placeholder_text="Paste your Alpaca Secret Access Key")
         self.setup_secret_entry.pack(fill="x", padx=30)
         ctk.CTkButton(panel, text="Get your API keys from Alpaca ↗", fg_color="transparent",
-                      text_color=(palette_color("#757575"), palette_color("#BFBFBF")),
+                      text_color=(palette_color(palette_color("#757575")), palette_color(palette_color("#BFBFBF"))),
                       command=lambda: webbrowser.open("https://app.alpaca.markets/")).pack(anchor="w", padx=25, pady=12)
         self.setup_status = ctk.CTkLabel(panel, text="Your keys are stored in Windows Credential Manager on this device.",
                                          font=app_font(size=13, weight="bold"), justify="left")
@@ -1043,7 +1079,7 @@ class MarketInsightApp(ctk.CTk):
             ("Other", "Use your own platform link (you can add it in Settings)"),
         ]
         for name, detail in choices:
-            row = ctk.CTkFrame(panel, corner_radius=12, fg_color=(palette_color("#EBEBEB"), palette_color("#323232")))
+            row = ctk.CTkFrame(panel, corner_radius=12, fg_color=(palette_color(palette_color("#EBEBEB")), palette_color(palette_color("#323232"))))
             row.pack(fill="x", padx=30, pady=3)
             ctk.CTkRadioButton(row, text=name, value=name, variable=self.setup_platform_var).pack(anchor="w", padx=14, pady=(7, 0))
             ctk.CTkLabel(row, text=detail, font=app_font(size=13, weight="bold")).pack(anchor="w", padx=39, pady=(0, 6))
@@ -1108,7 +1144,7 @@ class MarketInsightApp(ctk.CTk):
         win.title("Getting started · Market Insight")
         win.geometry("720x560")
         win.minsize(620, 500)
-        win.configure(fg_color=(palette_color("#F0F0F0"), palette_color("#212121")))
+        win.configure(fg_color=(palette_color(palette_color("#F0F0F0")), palette_color(palette_color("#212121"))))
         win.transient(self)
         win.protocol("WM_DELETE_WINDOW", lambda: self._close_beginner_tutorial(win))
         try:
@@ -1118,11 +1154,11 @@ class MarketInsightApp(ctk.CTk):
         except Exception:
             pass
 
-        panel = ctk.CTkFrame(win, corner_radius=24, fg_color=(palette_color("#F7F7F7"), palette_color("#323232")))
+        panel = ctk.CTkFrame(win, corner_radius=24, fg_color=(palette_color(palette_color("#F7F7F7")), palette_color(palette_color("#323232"))))
         panel.pack(fill="both", expand=True, padx=20, pady=20)
         ctk.CTkLabel(panel, text="MARKET INSIGHT  ·  QUICK START",
                      font=app_font(size=12, weight="bold"),
-                     text_color=(palette_color("#828282"), palette_color("#BFBFBF"))).pack(anchor="w", padx=28, pady=(26, 10))
+                     text_color=(palette_color(palette_color("#828282")), palette_color(palette_color("#BFBFBF")))).pack(anchor="w", padx=28, pady=(26, 10))
         title = ctk.CTkLabel(panel, text="", font=app_font(size=27, weight="bold"),
                              justify="left", anchor="w", wraplength=610)
         title.pack(fill="x", padx=28, pady=(8, 12))
@@ -1130,14 +1166,14 @@ class MarketInsightApp(ctk.CTk):
                             justify="left", anchor="nw", wraplength=610)
         body.pack(fill="both", expand=True, padx=28, pady=(4, 14))
         progress = ctk.CTkLabel(panel, text="", font=app_font(size=12, weight="bold"),
-                                text_color=(palette_color("#7B7B7B"), palette_color("#B0B0B0")))
+                                text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#B0B0B0"))))
         progress.pack(anchor="w", padx=28, pady=(0, 8))
         buttons = ctk.CTkFrame(panel, fg_color="transparent")
         buttons.pack(fill="x", padx=24, pady=(0, 22))
         back_button = ctk.CTkButton(buttons, text="Back", width=100, state="disabled")
         back_button.pack(side="left", padx=4)
         skip_button = ctk.CTkButton(buttons, text="Close tour", width=110, fg_color="transparent",
-                                    text_color=(palette_color("#757575"), palette_color("#BFBFBF")),
+                                    text_color=(palette_color(palette_color("#757575")), palette_color(palette_color("#BFBFBF"))),
                                     command=lambda: self._close_beginner_tutorial(win))
         skip_button.pack(side="right", padx=4)
         next_button = ctk.CTkButton(buttons, text="Next", width=130)
@@ -1333,50 +1369,50 @@ class MarketInsightApp(ctk.CTk):
         webbrowser.open(url)
 
     def _build_ui(self):
-        install_accent_spotlight(self, COLOUR_ACCENTS.get(ACTIVE_COLOUR_THEME, COLOUR_ACCENTS["Black"])[0], GLASS_KEY if sys.platform=="win32" else ("#F0F0F0" if ctk.get_appearance_mode()=="Light" else "#101012"))
+        install_accent_spotlight(self, COLOUR_ACCENTS.get(ACTIVE_COLOUR_THEME, COLOUR_ACCENTS["Black"])[0], GLASS_KEY if sys.platform=="win32" else (palette_color("#F0F0F0") if ctk.get_appearance_mode()=="Light" else palette_color("#101012")))
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self.sidebar = ctk.CTkFrame(self, width=224, corner_radius=26, fg_color=("#F3F3F3", "#1B1B1B"), border_width=1, border_color=("#DBDBDB", "#404040"))
+        self.sidebar = ctk.CTkFrame(self, width=224, corner_radius=26, fg_color=(palette_color("#F3F3F3"), palette_color("#1B1B1B")), border_width=1, border_color=(palette_color("#DBDBDB"), palette_color("#404040")))
         self.sidebar.grid(row=0, column=0, sticky="nsew", padx=(14, 8), pady=14)
         self.sidebar.grid_propagate(False)
         ctk.CTkLabel(self.sidebar, text="MARKET\nINSIGHT", font=app_font(size=25, weight="bold"),
-                     text_color=(palette_color("#434343"), palette_color("#D7D7D7")), justify="left").pack(anchor="w", padx=22, pady=(28, 30))
+                     text_color=(palette_color(palette_color("#434343")), palette_color(palette_color("#D7D7D7"))), justify="left").pack(anchor="w", padx=22, pady=(28, 30))
         self.nav_buttons = {}
         for label in ["Overview", "What's New", "Market Hours", "Watchlist", "Economic Calendar", "Price Alerts", "Trading Journal", "Settings", "About"]:
             btn = ctk.CTkButton(self.sidebar, text=label, anchor="w", height=42, corner_radius=12,
-                                fg_color="transparent", text_color=(palette_color("#4F4F4F"), palette_color("#E0E0E0")),
-                                hover_color=(palette_color("#D9D9D9"), palette_color("#383838")),
+                                fg_color="transparent", text_color=(palette_color(palette_color("#4F4F4F")), palette_color(palette_color("#E0E0E0"))),
+                                hover_color=(palette_color(palette_color("#D9D9D9")), palette_color(palette_color("#383838"))),
                                 command=lambda name=label: self.show_page(name))
             btn.pack(fill="x", padx=12, pady=4)
             self.nav_buttons[label] = btn
         side_info = ctk.CTkScrollableFrame(
             self.sidebar, width=174, corner_radius=16,
-            fg_color=("#E9E9E9", "#282828"),
-            scrollbar_button_color=(palette_color("#BBBBBB"), palette_color("#585858"))
+            fg_color=(palette_color("#E9E9E9"), palette_color("#282828")),
+            scrollbar_button_color=(palette_color(palette_color("#BBBBBB")), palette_color(palette_color("#585858")))
         )
         side_info.pack(fill="both", expand=True, padx=10, pady=(18, 10))
         ctk.CTkLabel(side_info, text="ACCOUNT CONNECTION",
                      font=app_font(size=12, weight="bold"),
-                     text_color=(palette_color("#7B7B7B"), palette_color("#B0B0B0"))).pack(anchor="w", padx=8, pady=(10, 4))
+                     text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#B0B0B0")))).pack(anchor="w", padx=8, pady=(10, 4))
         saved_key, saved_secret = get_alpaca_credentials()
         connected = bool(saved_key and saved_secret)
         ctk.CTkLabel(side_info, text="●  Alpaca connected" if connected else "○  Alpaca not connected",
                      font=app_font(size=13, weight="bold"),
-                     text_color=(palette_color("#757575"), palette_color("#BFBFBF")) if connected else (palette_color("#808080"), palette_color("#AFAFAF")),
+                     text_color=(palette_color(palette_color("#757575")), palette_color(palette_color("#BFBFBF"))) if connected else (palette_color(palette_color("#808080")), palette_color(palette_color("#AFAFAF"))),
                      justify="left").pack(anchor="w", padx=8, pady=3)
         key_hint = ("Key ID: ••••" + saved_key[-4:]) if connected else "API keys not saved"
         ctk.CTkLabel(side_info, text=key_hint, font=app_font(size=12, weight="bold"),
-                     text_color=(palette_color("#7B7B7B"), palette_color("#A9A9A9"))).pack(anchor="w", padx=8, pady=(0, 10))
+                     text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#A9A9A9")))).pack(anchor="w", padx=8, pady=(0, 10))
         ctk.CTkLabel(side_info, text="YOUR TRADING PLATFORM",
                      font=app_font(size=12, weight="bold"),
-                     text_color=(palette_color("#7B7B7B"), palette_color("#B0B0B0"))).pack(anchor="w", padx=8, pady=(8, 4))
+                     text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#B0B0B0")))).pack(anchor="w", padx=8, pady=(8, 4))
         ctk.CTkLabel(side_info, text=self.settings.get("selected_platform") or "Not selected",
                      font=app_font(size=13, weight="bold"),
-                     text_color=(palette_color("#4F4F4F"), palette_color("#DCDCDC"))).pack(anchor="w", padx=8, pady=(0, 10))
+                     text_color=(palette_color(palette_color("#4F4F4F")), palette_color(palette_color("#DCDCDC")))).pack(anchor="w", padx=8, pady=(0, 10))
         ctk.CTkLabel(side_info, text="QUICK LINKS",
                      font=app_font(size=12, weight="bold"),
-                     text_color=(palette_color("#7B7B7B"), palette_color("#B0B0B0"))).pack(anchor="w", padx=8, pady=(8, 4))
+                     text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#B0B0B0")))).pack(anchor="w", padx=8, pady=(8, 4))
         for link_name, link_url in [
             ("Alpaca dashboard ↗", "https://app.alpaca.markets/"),
             ("TradingView ↗", "https://www.tradingview.com/"),
@@ -1385,24 +1421,24 @@ class MarketInsightApp(ctk.CTk):
         ]:
             ctk.CTkButton(side_info, text=link_name, anchor="w", height=30,
                           corner_radius=12, fg_color="transparent",
-                          text_color=(palette_color("#616161"), palette_color("#C3C3C3")),
-                          hover_color=(palette_color("#D1D1D1"), palette_color("#3C3C3C")),
+                          text_color=(palette_color(palette_color("#616161")), palette_color(palette_color("#C3C3C3"))),
+                          hover_color=(palette_color(palette_color("#D1D1D1")), palette_color(palette_color("#3C3C3C"))),
                           font=app_font(size=12, weight="bold"),
                           command=lambda url=link_url: webbrowser.open(url)
                           ).pack(fill="x", padx=4, pady=2)
         ctk.CTkLabel(self.sidebar, text="Market Insight  •  Research only  •  Adrian Vale",
-                     font=app_font(size=12, weight="bold"), text_color=(palette_color("#7F7F7F"), palette_color("#929292")),
+                     font=app_font(size=12, weight="bold"), text_color=(palette_color(palette_color("#7F7F7F")), palette_color(palette_color("#929292"))),
                      justify="left").pack(side="bottom", anchor="w", padx=14, pady=(8, 4))
         creator_actions = ctk.CTkFrame(self.sidebar, fg_color="transparent")
         creator_actions.pack(side="bottom", fill="x", padx=12, pady=(0, 8))
         ctk.CTkButton(creator_actions, text="My website ↗", height=31, corner_radius=10,
-                      fg_color="transparent", hover_color=(palette_color("#D9D9D9"), palette_color("#383838")),
-                      text_color=(palette_color("#555555"), palette_color("#D7D7D7")),
+                      fg_color="transparent", hover_color=(palette_color(palette_color("#D9D9D9")), palette_color(palette_color("#383838"))),
+                      text_color=(palette_color(palette_color("#555555")), palette_color(palette_color("#D7D7D7"))),
                       command=lambda: webbrowser.open(PERSONAL_SITE)).pack(fill="x", padx=2, pady=2)
         ctk.CTkButton(creator_actions, text="Optional support · Ko-fi ↗", height=31, corner_radius=10,
                       fg_color=COLOUR_ACCENTS.get(ACTIVE_COLOUR_THEME, COLOUR_ACCENTS["Black"])[0],
                       hover_color=COLOUR_ACCENTS.get(ACTIVE_COLOUR_THEME, COLOUR_ACCENTS["Black"])[1],
-                      text_color="#202020", command=lambda: webbrowser.open(KOFI_URL)).pack(fill="x", padx=2, pady=2)
+                      text_color=palette_color("#202020"), command=lambda: webbrowser.open(KOFI_URL)).pack(fill="x", padx=2, pady=2)
 
         self.main = ctk.CTkFrame(self, corner_radius=24, fg_color="transparent")
         self.main.grid(row=0, column=1, sticky="nsew", padx=(8, 14), pady=14)
@@ -1413,15 +1449,15 @@ class MarketInsightApp(ctk.CTk):
         header.grid(row=0, column=0, sticky="ew", pady=(0, 18))
         header.grid_columnconfigure(0, weight=1)
         self.page_title = ctk.CTkLabel(header, text="Market overview", font=app_font(size=29, weight="bold"),
-                                       text_color=(palette_color("#313131"), palette_color("#ECECEC")))
+                                       text_color=(palette_color(palette_color("#313131")), palette_color(palette_color("#ECECEC"))))
         self.page_title.grid(row=0, column=0, sticky="w")
         self.status = ctk.CTkLabel(header, text="Ready", corner_radius=16, padx=14, pady=8,
-                                   fg_color=(palette_color("#E3E3E3"), palette_color("#393939")), text_color=(palette_color("#757575"), palette_color("#BFBFBF")))
+                                   fg_color=(palette_color(palette_color("#E3E3E3")), palette_color(palette_color("#393939"))), text_color=(palette_color(palette_color("#757575")), palette_color(palette_color("#BFBFBF"))))
         self.status.grid(row=0, column=1, sticky="e")
 
         self.pages = {}
         for name in ["Overview", "What's New", "Market Hours", "Watchlist", "Economic Calendar", "Price Alerts", "Trading Journal", "Settings", "About"]:
-            frame = ctk.CTkScrollableFrame(self.main, corner_radius=24, border_width=1, border_color=(palette_color("#E2E2E2"), palette_color("#3F3F3F")), fg_color="transparent")
+            frame = ctk.CTkScrollableFrame(self.main, corner_radius=24, border_width=1, border_color=(palette_color(palette_color("#E2E2E2")), palette_color(palette_color("#3F3F3F"))), fg_color="transparent")
             frame.grid(row=1, column=0, sticky="nsew", padx=(0, 2), pady=(0, 2))
             self.pages[name] = frame
         self._build_overview()
@@ -1440,15 +1476,15 @@ class MarketInsightApp(ctk.CTk):
         self.bind_all("<Escape>", self._exit_fullscreen)
 
     def card(self, parent, title, subtitle=None, wraplength=None):
-        frame = ctk.CTkFrame(parent, corner_radius=24, border_width=1, border_color=("#404040", "#404040"), fg_color=("#FBFBFB", "#1F1F1F"))
+        frame = ctk.CTkFrame(parent, corner_radius=24, border_width=1, border_color=(palette_color("#404040"), palette_color("#404040")), fg_color=(palette_color("#FBFBFB"), palette_color("#1F1F1F")))
         frame.pack(fill="x", padx=14, pady=10)
         heading = ctk.CTkLabel(frame, text=title, font=app_font(size=19, weight="bold"),
-                               text_color=(palette_color("#464646"), palette_color("#DCDCDC")), justify="left")
+                               text_color=(palette_color(palette_color("#464646")), palette_color(palette_color("#DCDCDC"))), justify="left")
         heading.pack(anchor="w", fill="x", padx=18, pady=(14, 3))
         self._fit_text_to_width(heading, frame, 40)
         if subtitle:
             description = ctk.CTkLabel(frame, text=subtitle, font=app_font(size=13, weight="bold"),
-                                       text_color=(palette_color("#7B7B7B"), palette_color("#A9A9A9")), justify="left")
+                                       text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#A9A9A9"))), justify="left")
             description.pack(anchor="w", fill="x", padx=18, pady=(0, 9))
             self._fit_text_to_width(description, frame, 40)
         return frame
@@ -1460,17 +1496,17 @@ class MarketInsightApp(ctk.CTk):
         ctk.CTkButton(actions, text="Scan watchlist", height=42, corner_radius=16,
                       command=self.start_scan).pack(side="left")
         ctk.CTkButton(actions, text="Trade planner", height=40, corner_radius=12,
-                      fg_color=(palette_color("#E3E3E3"), palette_color("#404040")),
-                      text_color=(palette_color("#676767"), palette_color("#E3E3E3")),
+                      fg_color=(palette_color(palette_color("#E3E3E3")), palette_color(palette_color("#404040"))),
+                      text_color=(palette_color(palette_color("#676767")), palette_color(palette_color("#E3E3E3"))),
                       command=self.open_trade_planner).pack(side="left", padx=8)
         ctk.CTkButton(actions, text="Open highest-rated stock", height=40, corner_radius=12,
-                      fg_color=(palette_color("#E3E3E3"), palette_color("#404040")), text_color=(palette_color("#676767"), palette_color("#E3E3E3")),
+                      fg_color=(palette_color(palette_color("#E3E3E3")), palette_color(palette_color("#404040"))), text_color=(palette_color(palette_color("#676767")), palette_color(palette_color("#E3E3E3"))),
                       command=self.open_top_result).pack(side="left", padx=8)
         self.scan_info = ctk.CTkLabel(
             actions, text="50 stocks included",
             font=app_font(size=15, weight="bold"),
-            text_color=(palette_color("#E4E4E4"), palette_color("#E4E4E4")),
-            fg_color=(palette_color("#595959"), palette_color("#3D3D3D")),
+            text_color=(palette_color(palette_color("#E4E4E4")), palette_color(palette_color("#E4E4E4"))),
+            fg_color=(palette_color(palette_color("#595959")), palette_color(palette_color("#3D3D3D"))),
             corner_radius=18, padx=16, pady=9
         )
         self.scan_info.pack(side="right", padx=8)
@@ -1491,16 +1527,16 @@ class MarketInsightApp(ctk.CTk):
         self._fit_text_to_width(self.top_symbol, top, 40)
         self.top_details = ctk.CTkLabel(top, text="Connect Alpaca in Settings, then scan your watchlist to see available live prices.",
                                         font=app_font(size=13, weight="bold"),
-                                        text_color=(palette_color("#7B7B7B"), palette_color("#B0B0B0")), justify="left")
+                                        text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#B0B0B0"))), justify="left")
         self.top_details.pack(anchor="w", fill="x", padx=18, pady=(2, 16))
         self._fit_text_to_width(self.top_details, top, 40)
 
         self.watch_card = self.card(left_column, "Watchlist highlights", "The highest-scoring stocks from your latest scan")
-        self.watch_table = ctk.CTkScrollableFrame(self.watch_card, height=260, corner_radius=12, fg_color=(palette_color("#F7F7F7"), palette_color("#2A2A2A")))
+        self.watch_table = ctk.CTkScrollableFrame(self.watch_card, height=260, corner_radius=12, fg_color=(palette_color(palette_color("#F7F7F7")), palette_color(palette_color("#2A2A2A"))))
         self.watch_table.pack(fill="x", padx=16, pady=(8, 16))
 
         caution = self.card(left_column, "Stocks to review", "Stocks showing two or more warning signs. These are prompts to take a closer look, not instructions to buy or sell.")
-        self.caution_text = ctk.CTkScrollableFrame(caution, height=170, corner_radius=12, fg_color=(palette_color("#F7F7F7"), palette_color("#2A2A2A")))
+        self.caution_text = ctk.CTkScrollableFrame(caution, height=170, corner_radius=12, fg_color=(palette_color(palette_color("#F7F7F7")), palette_color(palette_color("#2A2A2A"))))
         self.caution_text.pack(fill="x", padx=16, pady=(8, 16))
 
         pulse = self.card(right_column, "Market pulse", "Daily market direction from Yahoo Finance. Updates when you scan.")
@@ -1508,16 +1544,16 @@ class MarketInsightApp(ctk.CTk):
         for symbol, name in [("SPY", "S&P 500"), ("QQQ", "Nasdaq 100"), ("DIA", "Dow Jones"), ("IWM", "Russell 2000"), ("^VIX", "Volatility (VIX)")]:
             line = ctk.CTkFrame(pulse, fg_color="transparent")
             line.pack(fill="x", padx=14, pady=3)
-            ctk.CTkLabel(line, text=name, font=app_font(size=13, weight="bold"), text_color=(palette_color("#6A6A6A"), palette_color("#BBBBBB"))).pack(side="left")
-            value = ctk.CTkLabel(line, text="Waiting for scan", font=app_font(size=13, weight="bold"), text_color=(palette_color("#6A6A6A"), palette_color("#C3C3C3")))
+            ctk.CTkLabel(line, text=name, font=app_font(size=13, weight="bold"), text_color=(palette_color(palette_color("#6A6A6A")), palette_color(palette_color("#BBBBBB")))).pack(side="left")
+            value = ctk.CTkLabel(line, text="Waiting for scan", font=app_font(size=13, weight="bold"), text_color=(palette_color(palette_color("#6A6A6A")), palette_color(palette_color("#C3C3C3"))))
             value.pack(side="right")
             self.market_pulse_labels[symbol] = value
-        self.market_breadth = ctk.CTkLabel(pulse, text="Watchlist breadth: waiting for scan", font=app_font(size=13, weight="bold"), text_color=(palette_color("#6A6A6A"), palette_color("#C3C3C3")), justify="left")
+        self.market_breadth = ctk.CTkLabel(pulse, text="Watchlist breadth: waiting for scan", font=app_font(size=13, weight="bold"), text_color=(palette_color(palette_color("#6A6A6A")), palette_color(palette_color("#C3C3C3"))), justify="left")
         self.market_breadth.pack(anchor="w", padx=14, pady=(8, 12))
         checklist = self.card(right_column, "Before you trade", "A quick discipline check")
         checklist_items = ["Is there a clear reason for this trade?", "Have I checked the wider market trend?", "Is my stop level defined before entry?", "Does the position fit my risk limit?", "Is the potential reward worth the risk?", "Am I avoiding an emotional decision?"]
         for item in checklist_items:
-            ctk.CTkLabel(checklist, text="•  " + item, font=app_font(size=12, weight="bold"), text_color=(palette_color("#6A6A6A"), palette_color("#BBBBBB")), justify="left", wraplength=260).pack(anchor="w", padx=14, pady=3)
+            ctk.CTkLabel(checklist, text="•  " + item, font=app_font(size=12, weight="bold"), text_color=(palette_color(palette_color("#6A6A6A")), palette_color(palette_color("#BBBBBB"))), justify="left", wraplength=260).pack(anchor="w", padx=14, pady=3)
         calculator = self.card(right_column, "Position size calculator",
                                "Estimate how many shares may fit your balance and risk limit. This is a guide only; it does not place trades.",
                                wraplength=270)
@@ -1525,7 +1561,7 @@ class MarketInsightApp(ctk.CTk):
         balance_heading.pack(fill="x", padx=14, pady=(8, 3))
         self.balance_label = ctk.CTkLabel(
             balance_heading, text="Account balance ({})".format(self.settings.get("currency", "USD")),
-            text_color=(palette_color("#6A6A6A"), palette_color("#C3C3C3"))
+            text_color=(palette_color(palette_color("#6A6A6A")), palette_color(palette_color("#C3C3C3")))
         )
         self.balance_label.pack(anchor="w")
         self.currency_menu = styled_settings_dropdown(
@@ -1539,7 +1575,7 @@ class MarketInsightApp(ctk.CTk):
         self.balance_entry.insert(0, str(self.settings["balance"]))
         self.balance_entry.pack(fill="x", padx=14, pady=(0, 8))
         ctk.CTkLabel(calculator, text="Risk per trade (%)",
-                     text_color=(palette_color("#6A6A6A"), palette_color("#C3C3C3"))).pack(anchor="w", padx=14, pady=(2, 3))
+                     text_color=(palette_color(palette_color("#6A6A6A")), palette_color(palette_color("#C3C3C3")))).pack(anchor="w", padx=14, pady=(2, 3))
         self.risk_entry = ctk.CTkEntry(calculator, placeholder_text="e.g. 1")
         self.risk_entry.insert(0, str(self.settings["risk_percent"]))
         self.risk_entry.pack(fill="x", padx=14, pady=(0, 8))
@@ -1548,7 +1584,7 @@ class MarketInsightApp(ctk.CTk):
         self.calc_output = ctk.CTkLabel(
             calculator,
             text="Run a scan to see example position size and price levels for the highest-scoring stock.",
-            font=app_font(size=13, weight="bold"), text_color=(palette_color("#7B7B7B"), palette_color("#A9A9A9")), justify="left"
+            font=app_font(size=13, weight="bold"), text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#A9A9A9"))), justify="left"
         )
         self.calc_output.pack(anchor="w", fill="x", padx=14, pady=(0, 16))
         self._fit_text_to_width(self.calc_output, calculator, 32)
@@ -1558,30 +1594,30 @@ class MarketInsightApp(ctk.CTk):
         ctk.CTkLabel(
             footer, text="ADRIAN VALE  ·  MARKET INSIGHT",
             font=app_font(size=13, weight="bold"),
-            text_color=(palette_color("#6A6A6A"), palette_color("#C3C3C3"))
+            text_color=(palette_color(palette_color("#6A6A6A")), palette_color(palette_color("#C3C3C3")))
         ).pack(side="left")
         creator_links = ctk.CTkFrame(footer, fg_color="transparent")
         creator_links.pack(side="right")
         ctk.CTkButton(
             creator_links, text="YouTube  ↗", width=100, height=28,
             corner_radius=12, fg_color="transparent",
-            text_color=(palette_color("#757575"), palette_color("#BFBFBF")),
-            hover_color=(palette_color("#E3E3E3"), palette_color("#404040")),
+            text_color=(palette_color(palette_color("#757575")), palette_color(palette_color("#BFBFBF"))),
+            hover_color=(palette_color(palette_color("#E3E3E3")), palette_color(palette_color("#404040"))),
             command=lambda: webbrowser.open("https://www.youtube.com/@Adrianvaleitl")
         ).pack(side="right", padx=(6, 0))
         ctk.CTkButton(
             creator_links, text="TikTok  ↗", width=90, height=28,
             corner_radius=12, fg_color="transparent",
-            text_color=(palette_color("#757575"), palette_color("#BFBFBF")),
-            hover_color=(palette_color("#E3E3E3"), palette_color("#404040")),
+            text_color=(palette_color(palette_color("#757575")), palette_color(palette_color("#BFBFBF"))),
+            hover_color=(palette_color(palette_color("#E3E3E3")), palette_color(palette_color("#404040"))),
             command=lambda: webbrowser.open("https://www.tiktok.com/@adrianvaleitl")
         ).pack(side="right", padx=(6, 0))
         ctk.CTkButton(
             creator_links, text="☕ Optional support on Ko-fi  ↗", width=150, height=28,
             corner_radius=12,
-            fg_color=(palette_color("#D9D9D9"), palette_color("#464646")),
-            hover_color=(palette_color("#CACACA"), palette_color("#545454")),
-            text_color=(palette_color("#464646"), palette_color("#E4E4E4")),
+            fg_color=(palette_color(palette_color("#D9D9D9")), palette_color(palette_color("#464646"))),
+            hover_color=(palette_color(palette_color("#CACACA")), palette_color(palette_color("#545454"))),
+            text_color=(palette_color(palette_color("#464646")), palette_color(palette_color("#E4E4E4"))),
             command=lambda: webbrowser.open("https://ko-fi.com/marketinsight")
         ).pack(side="right", padx=(6, 0))
 
@@ -1590,9 +1626,9 @@ class MarketInsightApp(ctk.CTk):
         page = self.pages["What's New"]
         hero = ctk.CTkFrame(
             page, corner_radius=24,
-            fg_color=(palette_color("#EEEEEE"), palette_color("#292929")),
+            fg_color=(palette_color(palette_color("#EEEEEE")), palette_color(palette_color("#292929"))),
             border_width=1,
-            border_color=(palette_color("#DADADA"), palette_color("#414141"))
+            border_color=(palette_color(palette_color("#DADADA")), palette_color(palette_color("#414141")))
         )
         hero.pack(fill="x", padx=14, pady=(14, 18))
         head = ctk.CTkFrame(hero, fg_color="transparent")
@@ -1605,24 +1641,24 @@ class MarketInsightApp(ctk.CTk):
         ctk.CTkLabel(
             head, text="LATEST RELEASE",
             font=app_font(size=10, weight="bold"),
-            text_color=(palette_color("#777777"), palette_color("#B8B8B8"))
+            text_color=(palette_color(palette_color("#777777")), palette_color(palette_color("#B8B8B8")))
         ).pack(side="right")
         ctk.CTkLabel(
             hero, text=RELEASE_NOTES[0]["title"],
             font=app_font(size=19, weight="bold"),
-            text_color=(palette_color("#303030"), palette_color("#EEEEEE"))
+            text_color=(palette_color(palette_color("#303030")), palette_color(palette_color("#EEEEEE")))
         ).pack(anchor="w", padx=22, pady=(0, 4))
         ctk.CTkLabel(
             hero, text=RELEASE_NOTES[0]["date"] + "  ·  Windows desktop",
             font=app_font(size=11, weight="bold"),
-            text_color=(palette_color("#777777"), palette_color("#AFAFAF"))
+            text_color=(palette_color(palette_color("#777777")), palette_color(palette_color("#AFAFAF")))
         ).pack(anchor="w", padx=22)
         ctk.CTkLabel(
             hero,
             text="A focused summary of what changed, why it matters and which earlier releases introduced the tools you already use.",
             font=app_font(size=12, weight="bold"),
             justify="left", anchor="w", wraplength=850,
-            text_color=(palette_color("#686868"), palette_color("#C3C3C3"))
+            text_color=(palette_color(palette_color("#686868")), palette_color(palette_color("#C3C3C3")))
         ).pack(fill="x", padx=22, pady=(12, 14))
         for item in RELEASE_NOTES[0]["items"]:
             row = ctk.CTkFrame(hero, fg_color="transparent")
@@ -1635,20 +1671,20 @@ class MarketInsightApp(ctk.CTk):
             ctk.CTkLabel(
                 row, text=item, anchor="w", justify="left", wraplength=820,
                 font=app_font(size=11, weight="bold"),
-                text_color=(palette_color("#555555"), palette_color("#D0D0D0"))
+                text_color=(palette_color(palette_color("#555555")), palette_color(palette_color("#D0D0D0")))
             ).pack(side="left", fill="x", expand=True)
         ctk.CTkFrame(hero, height=10, fg_color="transparent").pack()
         ctk.CTkLabel(
             page, text="RELEASE HISTORY",
             font=app_font(size=10, weight="bold"),
-            text_color=(palette_color("#777777"), palette_color("#AFAFAF"))
+            text_color=(palette_color(palette_color("#777777")), palette_color(palette_color("#AFAFAF")))
         ).pack(anchor="w", padx=18, pady=(0, 5))
         for release in RELEASE_NOTES[1:]:
             card = ctk.CTkFrame(
                 page, corner_radius=18,
-                fg_color=(palette_color("#F0F0F0"), palette_color("#242424")),
+                fg_color=(palette_color(palette_color("#F0F0F0")), palette_color(palette_color("#242424"))),
                 border_width=1,
-                border_color=(palette_color("#E0E0E0"), palette_color("#3A3A3A"))
+                border_color=(palette_color(palette_color("#E0E0E0")), palette_color(palette_color("#3A3A3A")))
             )
             card.pack(fill="x", padx=14, pady=5)
             header = ctk.CTkFrame(card, fg_color="transparent")
@@ -1661,18 +1697,18 @@ class MarketInsightApp(ctk.CTk):
             ctk.CTkLabel(
                 header, text=release["date"],
                 font=app_font(size=10, weight="bold"),
-                text_color=(palette_color("#888888"), palette_color("#A9A9A9"))
+                text_color=(palette_color(palette_color("#888888")), palette_color(palette_color("#A9A9A9")))
             ).pack(side="right")
             ctk.CTkLabel(
                 card, text=release["title"],
                 font=app_font(size=13, weight="bold"),
-                text_color=(palette_color("#414141"), palette_color("#DEDEDE"))
+                text_color=(palette_color(palette_color("#414141")), palette_color(palette_color("#DEDEDE")))
             ).pack(anchor="w", padx=18, pady=(0, 5))
             for item in release["items"]:
                 ctk.CTkLabel(
                     card, text="•  " + item, justify="left", anchor="w",
                     wraplength=850, font=app_font(size=11, weight="bold"),
-                    text_color=(palette_color("#686868"), palette_color("#C3C3C3"))
+                    text_color=(palette_color(palette_color("#686868")), palette_color(palette_color("#C3C3C3")))
                 ).pack(fill="x", padx=22, pady=2)
             ctk.CTkFrame(card, height=9, fg_color="transparent").pack()
 
@@ -1710,20 +1746,20 @@ class MarketInsightApp(ctk.CTk):
                          font=app_font(size=13, weight="bold")).pack(side="left")
             label = ctk.CTkLabel(row, text=detail, anchor="w", justify="left",
                          font=app_font(size=12, weight="bold"),
-                         text_color=(palette_color("#7B7B7B"), palette_color("#A9A9A9")))
+                         text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#A9A9A9"))))
             label.pack(side="left", fill="x", expand=True)
             self._fit_text_to_width(label, row, 440, 150)
         warning = ctk.CTkLabel(
             tips, text="Higher activity is not the same as a better trade. Check spreads, scheduled economic news, instrument-specific hours and your risk plan.",
             font=app_font(size=12, weight="bold"), justify="left",
-            text_color=(palette_color("#808080"), palette_color("#B0B0B0"))
+            text_color=(palette_color(palette_color("#808080")), palette_color(palette_color("#B0B0B0")))
         )
         warning.pack(anchor="w", fill="x", padx=18, pady=(8, 14))
         self._fit_text_to_width(warning, tips, 40)
         ctk.CTkButton(page, text="Refresh market times", height=38,
                       command=self.refresh_market_hours).pack(anchor="e", padx=18, pady=8)
         self.market_hours_updated = ctk.CTkLabel(page, text="", font=app_font(size=12, weight="bold"),
-            text_color=(palette_color("#7B7B7B"), palette_color("#A9A9A9")))
+            text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#A9A9A9"))))
         self.market_hours_updated.pack(anchor="e", padx=20, pady=(0, 14))
         self.refresh_market_hours()
 
@@ -1745,7 +1781,7 @@ class MarketInsightApp(ctk.CTk):
         ]
         for name, zone, start, end, pairs in sessions:
             row = ctk.CTkFrame(self.fx_schedule_frame, corner_radius=12,
-                fg_color=(palette_color("#E7E7E7"), palette_color("#393939")))
+                fg_color=(palette_color(palette_color("#E7E7E7")), palette_color(palette_color("#393939"))))
             row.pack(fill="x", padx=10, pady=3)
             ctk.CTkLabel(row, text=name, width=115, anchor="w",
                          font=app_font(size=14, weight="bold")).pack(side="left", padx=12, pady=10)
@@ -1753,7 +1789,7 @@ class MarketInsightApp(ctk.CTk):
                          anchor="w", font=app_font(size=14, weight="bold")).pack(side="left")
             ctk.CTkLabel(row, text="Main pairs: " + pairs, anchor="w",
                          font=app_font(size=12, weight="bold"),
-                         text_color=(palette_color("#7B7B7B"), palette_color("#A9A9A9"))).pack(side="left", padx=8)
+                         text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#A9A9A9")))).pack(side="left", padx=8)
 
         overlaps = [
             ("Sydney–Tokyo", "Australia/Sydney", ((7, 0), (16, 0)), "Asia/Tokyo", ((9, 0), (18, 0)), "AUD / NZD / JPY pairs"),
@@ -1762,14 +1798,14 @@ class MarketInsightApp(ctk.CTk):
         ]
         for name, zone_a, hours_a, zone_b, hours_b, pairs in overlaps:
             row = ctk.CTkFrame(self.fx_overlap_frame, corner_radius=12,
-                fg_color=(palette_color("#E7E7E7"), palette_color("#393939")))
+                fg_color=(palette_color(palette_color("#E7E7E7")), palette_color(palette_color("#393939"))))
             row.pack(fill="x", padx=10, pady=3)
             ctk.CTkLabel(row, text=name, width=155, anchor="w",
                          font=app_font(size=14, weight="bold")).pack(side="left", padx=12, pady=10)
             ctk.CTkLabel(row, text=_uk_market_overlap(today, zone_a, hours_a, zone_b, hours_b), width=160,
                          anchor="w", font=app_font(size=14, weight="bold")).pack(side="left")
             ctk.CTkLabel(row, text=pairs, anchor="w", font=app_font(size=12, weight="bold"),
-                         text_color=(palette_color("#7B7B7B"), palette_color("#A9A9A9"))).pack(side="left", padx=8)
+                         text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#A9A9A9")))).pack(side="left", padx=8)
 
         exchanges = [
             ("London Stock Exchange", "Europe/London", [((8, 0), (16, 30))], "FTSE 100 / UK shares", "08:00–09:30 and 15:30–16:30 UK"),
@@ -1780,7 +1816,7 @@ class MarketInsightApp(ctk.CTk):
         for name, zone, periods, instruments, best in exchanges:
             hours = " / ".join(_uk_market_range(today, zone, start, end) for start, end in periods)
             row = ctk.CTkFrame(self.stock_schedule_frame, corner_radius=12,
-                fg_color=(palette_color("#E7E7E7"), palette_color("#393939")))
+                fg_color=(palette_color(palette_color("#E7E7E7")), palette_color(palette_color("#393939"))))
             row.pack(fill="x", padx=10, pady=4)
             ctk.CTkLabel(row, text=name, font=app_font(size=14, weight="bold"),
                          anchor="w").pack(anchor="w", padx=12, pady=(9, 2))
@@ -1788,7 +1824,7 @@ class MarketInsightApp(ctk.CTk):
                          font=app_font(size=13, weight="bold"), anchor="w").pack(anchor="w", padx=12)
             ctk.CTkLabel(row, text=instruments + " • Commonly watched: " + best,
                          font=app_font(size=12, weight="bold"), anchor="w", justify="left",
-                         text_color=(palette_color("#7B7B7B"), palette_color("#A9A9A9"))).pack(anchor="w", padx=12, pady=(2, 9))
+                         text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#A9A9A9")))).pack(anchor="w", padx=12, pady=(2, 9))
         self.market_hours_updated.configure(text="Times refreshed: " + now.strftime("%H:%M:%S UK"))
 
     def _build_watchlist(self):
@@ -1805,11 +1841,11 @@ class MarketInsightApp(ctk.CTk):
             ("average", "AVERAGE SCORE"), ("best", "BEST DAILY MOVE"),
             ("worst", "WORST DAILY MOVE"), ("volume", "HIGH VOLUME")
         ]):
-            tile = ctk.CTkFrame(summary_grid, corner_radius=12, fg_color=(palette_color("#E5E5E5"), palette_color("#3B3B3B")))
+            tile = ctk.CTkFrame(summary_grid, corner_radius=12, fg_color=(palette_color(palette_color("#E5E5E5")), palette_color(palette_color("#3B3B3B"))))
             tile.grid(row=0, column=index, sticky="nsew", padx=4, pady=4)
             summary_grid.grid_columnconfigure(index, weight=1)
             ctk.CTkLabel(tile, text=heading, font=app_font(size=10, weight="bold"),
-                         text_color=(palette_color("#7B7B7B"), palette_color("#B0B0B0"))).pack(anchor="w", padx=10, pady=(9, 2))
+                         text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#B0B0B0")))).pack(anchor="w", padx=10, pady=(9, 2))
             value = ctk.CTkLabel(tile, text="—", font=app_font(size=17, weight="bold"))
             value.pack(anchor="w", padx=10, pady=(0, 9))
             self.scan_summary_labels[key] = value
@@ -1836,9 +1872,9 @@ class MarketInsightApp(ctk.CTk):
         self.results_filter.pack(side="left", padx=4, pady=4)
         ctk.CTkButton(controls, text="Export CSV", width=105, command=self.export_scan_csv).pack(side="right", padx=4, pady=4)
         self.results_count = ctk.CTkLabel(results, text="No scan results yet", font=app_font(size=12, weight="bold"),
-                                          text_color=(palette_color("#7B7B7B"), palette_color("#B0B0B0")))
+                                          text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#B0B0B0"))))
         self.results_count.pack(anchor="w", padx=18, pady=(0, 4))
-        self.results_text = ctk.CTkScrollableFrame(results, height=520, corner_radius=12, fg_color=(palette_color("#F7F7F7"), palette_color("#2A2A2A")))
+        self.results_text = ctk.CTkScrollableFrame(results, height=520, corner_radius=12, fg_color=(palette_color(palette_color("#F7F7F7")), palette_color(palette_color("#2A2A2A"))))
         self.results_text.pack(fill="x", padx=16, pady=(4, 16))
 
         folders = self.card(page, "Watchlist folders", "Group symbols into your own lists such as Tech, ETFs or Long-term. Folders organise your watchlist; they do not remove symbols from scans.")
@@ -2002,7 +2038,7 @@ class MarketInsightApp(ctk.CTk):
         window.geometry("760x650")
         window.minsize(650,560)
         window.transient(self)
-        window.configure(fg_color=(palette_color("#F0F0F0"),palette_color("#212121")))
+        window.configure(fg_color=(palette_color(palette_color("#F0F0F0")),palette_color(palette_color("#212121"))))
         self.card(window,"Trade Planner","Plan risk, stop distance and potential reward before placing an order.")
         form=ctk.CTkFrame(window,fg_color="transparent")
         form.pack(fill="x",padx=20,pady=12)
@@ -2089,7 +2125,7 @@ class MarketInsightApp(ctk.CTk):
         if not rows:
             ctk.CTkLabel(self.calendar_frame, text="No upcoming events were returned for this week.").pack(anchor="w", padx=10, pady=12)
         for moment, impact, country, title, forecast, previous in rows[:80]:
-            tile = ctk.CTkFrame(self.calendar_frame, corner_radius=12, fg_color=(palette_color("#EEEEEE"), palette_color("#323232")))
+            tile = ctk.CTkFrame(self.calendar_frame, corner_radius=12, fg_color=(palette_color(palette_color("#EEEEEE")), palette_color(palette_color("#323232"))))
             tile.pack(fill="x", padx=4, pady=4)
             ctk.CTkLabel(tile, text=moment.strftime("%a %d %b · %H:%M") + "  ·  " + impact.upper(),
                          font=app_font(size=12, weight="bold")).pack(anchor="w", padx=12, pady=(8, 2))
@@ -2143,7 +2179,7 @@ class MarketInsightApp(ctk.CTk):
         if not alerts:
             ctk.CTkLabel(self.alert_list, text="No alerts saved yet.").pack(anchor="w", padx=10, pady=12)
         for index, alert in enumerate(alerts):
-            row = ctk.CTkFrame(self.alert_list, corner_radius=12, fg_color=(palette_color("#EEEEEE"), palette_color("#323232")))
+            row = ctk.CTkFrame(self.alert_list, corner_radius=12, fg_color=(palette_color(palette_color("#EEEEEE")), palette_color(palette_color("#323232"))))
             row.pack(fill="x", padx=4, pady=4)
             state = "TRIGGERED" if alert.get("triggered") else "WAITING"
             label = "{} · {} USD {:.4f} · {}".format(alert.get("symbol", "?"), alert.get("direction", "Rises to or above"), safe_num(alert.get("target")), state)
@@ -2265,7 +2301,7 @@ class MarketInsightApp(ctk.CTk):
             ctk.CTkLabel(self.journal_list, text="Your saved trades will appear here.").pack(anchor="w", padx=10, pady=12)
         for index, trade in enumerate(trades):
             pnl = safe_num(trade.get("pnl"))
-            tile = ctk.CTkFrame(self.journal_list, corner_radius=12, fg_color=(palette_color("#EEEEEE"), palette_color("#323232")))
+            tile = ctk.CTkFrame(self.journal_list, corner_radius=12, fg_color=(palette_color(palette_color("#EEEEEE")), palette_color(palette_color("#323232"))))
             tile.pack(fill="x", padx=4, pady=4)
             ctk.CTkLabel(tile, text="{} {} · Entry {:.4f} → Exit {:.4f} · Qty {} · P/L {:+,.2f} USD".format(
                 trade.get("symbol", "?"), trade.get("side", "Long"), safe_num(trade.get("entry")),
@@ -2274,7 +2310,7 @@ class MarketInsightApp(ctk.CTk):
             if trade.get("notes"):
                 ctk.CTkLabel(tile, text=trade["notes"], font=app_font(size=12, weight="bold"), justify="left").pack(anchor="w", padx=12, pady=2)
             ctk.CTkLabel(tile, text=trade.get("closed", "").replace("T", " ")[:16],
-                         font=app_font(size=11, weight="bold"), text_color=(palette_color("#7B7B7B"), palette_color("#A9A9A9"))).pack(anchor="w", padx=12, pady=(0, 6))
+                         font=app_font(size=11, weight="bold"), text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#A9A9A9")))).pack(anchor="w", padx=12, pady=(0, 6))
             ctk.CTkButton(tile, text="Delete", width=72, height=26, command=lambda i=index: self.remove_journal_trade(i)).pack(anchor="e", padx=10, pady=(0, 8))
 
     def remove_journal_trade(self, index):
@@ -2292,23 +2328,19 @@ class MarketInsightApp(ctk.CTk):
             page, "Preferences and display",
             "Choose how Market Insight looks, opens and keeps your watchlist up to date."
         )
-        ctk.CTkLabel(preferences, text="Appearance",
+        ctk.CTkLabel(preferences, text="Colour theme — choose one complete palette",
                      font=app_font(size=14, weight="bold"),
-                     text_color=(palette_color("#5B5B5B"), palette_color("#C3C3C3"))).pack(anchor="w", padx=18, pady=(10, 3))
-        self.appearance_menu = styled_settings_dropdown(
-            preferences, values=["System", "Dark", "Light"], command=self.change_appearance
+                     text_color=(palette_color(palette_color("#5B5B5B")), palette_color(palette_color("#C3C3C3")))).pack(anchor="w", padx=18, pady=(10, 3))
+        self.colour_theme_menu = styled_settings_dropdown(
+            preferences, values=["Classy", "Royal"], command=self.change_colour_theme
         )
-        self.appearance_menu.set(self.settings["appearance"])
-        self.appearance_menu.pack(anchor="w", padx=18, pady=(0, 12))
-        ctk.CTkLabel(preferences, text="Accent colour", font=app_font(size=14, weight="bold"), text_color=(palette_color("#5B5B5B"), palette_color("#C3C3C3"))).pack(anchor="w", padx=18, pady=(4, 3))
-        self.colour_theme_menu = styled_settings_dropdown(preferences, values=["Black", "Amber", "Azure", "Lavender", "Rose", "Teal"], command=self.change_colour_theme)
-        self.colour_theme_menu.set(self.settings.get("colour_theme", "Black"))
+        self.colour_theme_menu.set(self.settings.get("colour_theme", "Classy"))
         self.colour_theme_menu.pack(anchor="w", padx=18, pady=(0, 12))
 
         ctk.CTkLabel(
             preferences, text="Window transparency",
             font=app_font(size=14, weight="bold"),
-            text_color=(palette_color("#555D54"), palette_color("#C0C5BC"))
+            text_color=(palette_color(palette_color("#555D54")), palette_color(palette_color("#C0C5BC")))
         ).pack(anchor="w", padx=18, pady=(4, 3))
         self.transparency_value = ctk.CTkLabel(
             preferences, text="{}%".format(int(self.settings.get("transparency", 8))),
@@ -2325,7 +2357,7 @@ class MarketInsightApp(ctk.CTk):
         ctk.CTkLabel(
             preferences, text="Font style",
             font=app_font(size=14),
-            text_color=(palette_color("#5B5B5B"), palette_color("#C3C3C3"))
+            text_color=(palette_color(palette_color("#5B5B5B")), palette_color(palette_color("#C3C3C3")))
         ).pack(anchor="w", padx=18, pady=(4, 3))
         self.font_family_menu = styled_settings_dropdown(
             preferences,
@@ -2342,25 +2374,25 @@ class MarketInsightApp(ctk.CTk):
             variable=self.bold_text_var,
             command=self.change_bold_text,
             font=app_font(size=13),
-            text_color=(palette_color("#5B5B5B"), palette_color("#C3C3C3")),
-            fg_color=(palette_color("#A5A5A5"), palette_color("#939393")),
-            hover_color=(palette_color("#939393"), palette_color("#A9A9A9")),
-            border_color=(palette_color("#B3B3B3"), palette_color("#7C7C7C")),
-            checkmark_color="#FFFFFF"
+            text_color=(palette_color(palette_color("#5B5B5B")), palette_color(palette_color("#C3C3C3"))),
+            fg_color=(palette_color(palette_color("#A5A5A5")), palette_color(palette_color("#939393"))),
+            hover_color=(palette_color(palette_color("#939393")), palette_color(palette_color("#A9A9A9"))),
+            border_color=(palette_color(palette_color("#B3B3B3")), palette_color(palette_color("#7C7C7C"))),
+            checkmark_color=palette_color("#FFFFFF")
         )
         self.bold_text_checkbox.pack(anchor="w", padx=18, pady=(0, 8))
         font_note = ctk.CTkLabel(
             preferences,
             text="Choose from five font styles and turn bold text on or off for the whole app, including the sidebar and smaller labels.",
             font=app_font(size=13), justify="left", anchor="w",
-            text_color=(palette_color("#7B7B7B"), palette_color("#A9A9A9"))
+            text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#A9A9A9")))
         )
         font_note.pack(fill="x", padx=18, pady=(0, 12))
         self._fit_text_to_width(font_note, preferences, 40)
 
         ctk.CTkLabel(preferences, text="How the program opens",
                      font=app_font(size=14, weight="bold"),
-                     text_color=(palette_color("#5B5B5B"), palette_color("#C3C3C3"))).pack(anchor="w", padx=18, pady=(4, 3))
+                     text_color=(palette_color(palette_color("#5B5B5B")), palette_color(palette_color("#C3C3C3")))).pack(anchor="w", padx=18, pady=(4, 3))
         self.startup_mode_menu = styled_settings_dropdown(
             preferences, values=["Maximised", "Full screen", "Windowed"],
             command=self.change_startup_window_mode
@@ -2371,7 +2403,7 @@ class MarketInsightApp(ctk.CTk):
             preferences,
             text="Maximised fills the screen but keeps the Windows title bar and taskbar. Full screen hides them. Press F11 or Escape to leave full screen.",
             font=app_font(size=13, weight="bold"), justify="left", anchor="w",
-            text_color=(palette_color("#7B7B7B"), palette_color("#A9A9A9"))
+            text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#A9A9A9")))
         )
         mode_note.pack(fill="x", padx=18, pady=(0, 12))
         self._fit_text_to_width(mode_note, preferences, 40)
@@ -2385,7 +2417,7 @@ class MarketInsightApp(ctk.CTk):
         ctk.CTkLabel(
             preferences, text="Desktop shortcut",
             font=app_font(size=14, weight="bold"),
-            text_color=(palette_color("#5B5B5B"), palette_color("#C3C3C3"))
+            text_color=(palette_color(palette_color("#5B5B5B")), palette_color(palette_color("#C3C3C3")))
         ).pack(anchor="w", padx=18, pady=(8, 3))
         shortcut_actions = ctk.CTkFrame(preferences, fg_color="transparent")
         shortcut_actions.pack(fill="x", padx=18, pady=(0, 12))
@@ -2395,8 +2427,8 @@ class MarketInsightApp(ctk.CTk):
         ).pack(side="left", padx=(0, 8))
         ctk.CTkButton(
             shortcut_actions, text="Remove desktop shortcut",
-            fg_color=(palette_color("#E3E3E3"), palette_color("#3E3E3E")),
-            text_color=(palette_color("#787878"), palette_color("#C5C5C5")),
+            fg_color=(palette_color(palette_color("#E3E3E3")), palette_color(palette_color("#3E3E3E"))),
+            text_color=(palette_color(palette_color("#787878")), palette_color(palette_color("#C5C5C5"))),
             command=self.remove_desktop_shortcut
         ).pack(side="left")
 
@@ -2407,14 +2439,14 @@ class MarketInsightApp(ctk.CTk):
         ).pack(anchor="w", padx=18, pady=(4, 7))
         ctk.CTkLabel(preferences, text="Automatic scan interval (minutes)",
                      font=app_font(size=13, weight="bold"),
-                     text_color=(palette_color("#7B7B7B"), palette_color("#A9A9A9"))).pack(anchor="w", padx=18, pady=(0, 3))
+                     text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#A9A9A9")))).pack(anchor="w", padx=18, pady=(0, 3))
         self.interval_menu = styled_settings_dropdown(preferences, values=["5", "15", "30", "60"])
         self.interval_menu.set(str(self.settings["scan_interval"]))
         self.interval_menu.pack(anchor="w", padx=18, pady=(0, 12))
 
         ctk.CTkLabel(preferences, text="Your trading platform",
                      font=app_font(size=14, weight="bold"),
-                     text_color=(palette_color("#5B5B5B"), palette_color("#C3C3C3"))).pack(anchor="w", padx=18, pady=(4, 3))
+                     text_color=(palette_color(palette_color("#5B5B5B")), palette_color(palette_color("#C3C3C3")))).pack(anchor="w", padx=18, pady=(4, 3))
         self.platform_menu = styled_settings_dropdown(
             preferences, values=["TradingView", "MetaTrader 5", "Interactive Brokers", "Robinhood", "eToro", "Other"],
             command=self.change_platform
@@ -2434,7 +2466,7 @@ class MarketInsightApp(ctk.CTk):
         ).pack(anchor="w", padx=18, pady=(8, 7))
         ctk.CTkLabel(preferences, text="Minimum score for automatic opening",
                      font=app_font(size=13, weight="bold"),
-                     text_color=(palette_color("#7B7B7B"), palette_color("#A9A9A9"))).pack(anchor="w", padx=18, pady=(0, 3))
+                     text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#A9A9A9")))).pack(anchor="w", padx=18, pady=(0, 3))
         self.threshold_menu = styled_settings_dropdown(preferences, values=["60", "70", "80", "90"])
         self.threshold_menu.set(str(self.settings["threshold"]))
         self.threshold_menu.pack(anchor="w", padx=18, pady=(0, 10))
@@ -2448,7 +2480,7 @@ class MarketInsightApp(ctk.CTk):
         )
         self.update_status = ctk.CTkLabel(
             updates, text="Current version: {}".format(APP_VERSION),
-            font=app_font(size=13, weight="bold"), text_color=(palette_color("#7B7B7B"), palette_color("#A9A9A9")), justify="left"
+            font=app_font(size=13, weight="bold"), text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#A9A9A9"))), justify="left"
         )
         self.update_status.pack(anchor="w", padx=18, pady=(8, 5))
         self.auto_update_check_var = ctk.BooleanVar(value=self.settings.get("check_for_updates", True))
@@ -2468,7 +2500,7 @@ class MarketInsightApp(ctk.CTk):
             local_data,
             text="Deleting local data also attempts to remove saved Alpaca API credentials from the Windows credential store.",
             font=app_font(size=13), justify="left", anchor="w",
-            text_color=(palette_color("#777777"), palette_color("#B0B0B0"))
+            text_color=(palette_color(palette_color("#777777")), palette_color(palette_color("#B0B0B0")))
         ).pack(fill="x", padx=18, pady=(8, 10))
         ctk.CTkButton(
             local_data, text="Read privacy & legal information",
@@ -2476,7 +2508,7 @@ class MarketInsightApp(ctk.CTk):
         ).pack(anchor="w", padx=18, pady=(0, 8))
         ctk.CTkButton(
             local_data, text="Delete all Market Insight data…",
-            fg_color=("#9B3434", "#9B3434"), hover_color=("#7E2929", "#7E2929"),
+            fg_color=(palette_color("#9B3434"), palette_color("#9B3434")), hover_color=(palette_color("#7E2929"), palette_color("#7E2929")),
             command=self.delete_all_local_data
         ).pack(anchor="w", padx=18, pady=(0, 14))
 
@@ -2499,7 +2531,7 @@ class MarketInsightApp(ctk.CTk):
         ).pack(anchor="w", padx=18, pady=(4, 8))
         key_status = "Your Alpaca keys are stored in Windows Credential Manager." if all(get_alpaca_credentials()) else "No Alpaca keys have been saved yet."
         self.alpaca_status = ctk.CTkLabel(
-            connection, text=key_status, text_color=(palette_color("#797979"), palette_color("#B1B1B1"))
+            connection, text=key_status, text_color=(palette_color(palette_color("#797979")), palette_color(palette_color("#B1B1B1")))
         )
         self.alpaca_status.pack(anchor="w", padx=18, pady=(4, 4))
         alpaca_actions = ctk.CTkFrame(connection, fg_color="transparent")
@@ -2507,14 +2539,14 @@ class MarketInsightApp(ctk.CTk):
         ctk.CTkButton(alpaca_actions, text="Save Alpaca keys", command=self.save_alpaca_keys).pack(side="left")
         ctk.CTkButton(
             alpaca_actions, text="Remove saved keys",
-            fg_color=(palette_color("#E3E3E3"), palette_color("#3E3E3E")), text_color=(palette_color("#787878"), palette_color("#C5C5C5")),
+            fg_color=(palette_color(palette_color("#E3E3E3")), palette_color(palette_color("#3E3E3E"))), text_color=(palette_color(palette_color("#787878")), palette_color(palette_color("#C5C5C5"))),
             command=self.remove_alpaca_keys
         ).pack(side="left", padx=8)
         price_note = ctk.CTkLabel(
             connection,
             text="Price data comes from IEX, which does not cover every US market trade. Live prices are available only when the market is open and an IEX trade is available. Past-price indicators come from Yahoo Finance. If Alpaca can't provide a live price, the app will show an error rather than silently using delayed data.",
             justify="left", font=app_font(size=13, weight="bold"),
-            text_color=(palette_color("#818181"), palette_color("#B2B2B2"))
+            text_color=(palette_color(palette_color("#818181")), palette_color(palette_color("#B2B2B2")))
         )
         price_note.pack(anchor="w", fill="x", padx=18, pady=(0, 14))
         self._fit_text_to_width(price_note, connection, 40)
@@ -2537,13 +2569,13 @@ class MarketInsightApp(ctk.CTk):
         ]:
             ctk.CTkButton(
                 extras, text=label + "  ↗", corner_radius=16,
-                fg_color=(palette_color("#D9D9D9"), palette_color("#464646")),
-                hover_color=(palette_color("#CACACA"), palette_color("#545454")),
-                text_color=(palette_color("#464646"), palette_color("#E4E4E4")),
+                fg_color=(palette_color(palette_color("#D9D9D9")), palette_color(palette_color("#464646"))),
+                hover_color=(palette_color(palette_color("#CACACA")), palette_color(palette_color("#545454"))),
+                text_color=(palette_color(palette_color("#464646")), palette_color(palette_color("#E4E4E4"))),
                 command=lambda target=url: webbrowser.open(target)
             ).pack(anchor="center", pady=4)
 
-        ctk.CTkFrame(extras, height=1, fg_color=(palette_color("#D9D9D9"), palette_color("#464646"))).pack(
+        ctk.CTkFrame(extras, height=1, fg_color=(palette_color(palette_color("#D9D9D9")), palette_color(palette_color("#464646")))).pack(
             fill="x", padx=18, pady=(12, 8)
         )
 
@@ -2556,11 +2588,11 @@ class MarketInsightApp(ctk.CTk):
         for heading, description in setting_notes:
             ctk.CTkLabel(
                 extras, text=heading, font=app_font(size=13, weight="bold"),
-                text_color=(palette_color("#5B5B5B"), palette_color("#DCDCDC"))
+                text_color=(palette_color(palette_color("#5B5B5B")), palette_color(palette_color("#DCDCDC")))
             ).pack(anchor="w", padx=18, pady=(7, 1))
             note = ctk.CTkLabel(
                 extras, text=description, font=app_font(size=13, weight="bold"),
-                justify="left", anchor="w", text_color=(palette_color("#7B7B7B"), palette_color("#A9A9A9"))
+                justify="left", anchor="w", text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#A9A9A9")))
             )
             note.pack(fill="x", padx=18, pady=(0, 5))
             self._fit_text_to_width(note, extras, 40)
@@ -2568,7 +2600,7 @@ class MarketInsightApp(ctk.CTk):
         ctk.CTkLabel(
             extras, text="Created by Adrian Vale  ·  Market Insight",
             font=app_font(size=15, weight="bold"),
-            text_color=(palette_color("#6A6A6A"), palette_color("#C3C3C3"))
+            text_color=(palette_color(palette_color("#6A6A6A")), palette_color(palette_color("#C3C3C3")))
         ).pack(anchor="center", pady=(10, 14))
 
     def _build_about(self):
@@ -2576,21 +2608,21 @@ class MarketInsightApp(ctk.CTk):
         card = self.card(page, "About Market Insight")
         intro = ctk.CTkLabel(card, text="A straightforward tool for researching stocks and keeping track of the ones you're interested in.",
                              font=app_font(size=17, weight="bold"),
-                             text_color=(palette_color("#6A6A6A"), palette_color("#C3C3C3")), justify="left")
+                             text_color=(palette_color(palette_color("#6A6A6A")), palette_color(palette_color("#C3C3C3"))), justify="left")
         intro.pack(anchor="w", fill="x", padx=18, pady=(6, 8))
         self._fit_text_to_width(intro, card, 40)
         data_note = ctk.CTkLabel(card, text="When connected, live prices come from Alpaca's IEX data feed. Stock indicators are calculated using past daily prices from Yahoo Finance. IEX does not include every US market trade, so some prices may not be available.",
                                  font=app_font(size=13, weight="bold"), justify="left",
-                                 text_color=(palette_color("#7B7B7B"), palette_color("#A9A9A9")))
+                                 text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#A9A9A9"))))
         data_note.pack(anchor="w", fill="x", padx=18, pady=5)
         self._fit_text_to_width(data_note, card, 40)
         disclaimer = ctk.CTkLabel(card, text="Educational and informational use only — not financial, investment, tax or legal advice. Data, scores and calculations may be inaccurate, incomplete or delayed and are not guaranteed. You are responsible for your own research and decisions, including any losses. To the fullest extent permitted by law, Adrian Vale and the Market Insight project exclude liability arising from use of or reliance on the app, its data or outputs. This does not limit rights or liability that cannot legally be excluded. Market Insight does not execute trades.",
                                   font=app_font(size=13, weight="bold"), justify="left",
-                                  text_color=(palette_color("#808080"), palette_color("#AFAFAF")))
+                                  text_color=(palette_color(palette_color("#808080")), palette_color(palette_color("#AFAFAF"))))
         disclaimer.pack(anchor="w", fill="x", padx=18, pady=5)
         self._fit_text_to_width(disclaimer, card, 40)
         ctk.CTkLabel(card, text="Created by Adrian Vale  •  Market Insight",
-                     font=app_font(size=15, weight="bold"), text_color=(palette_color("#6A6A6A"), palette_color("#C3C3C3"))).pack(anchor="w", padx=18, pady=(14, 18))
+                     font=app_font(size=15, weight="bold"), text_color=(palette_color(palette_color("#6A6A6A")), palette_color(palette_color("#C3C3C3")))).pack(anchor="w", padx=18, pady=(14, 18))
 
         indicators = self.card(page, "What the scanner looks at",
                                "A quick guide to the figures shown on each stock.")
@@ -2607,10 +2639,10 @@ class MarketInsightApp(ctk.CTk):
             row.pack(fill="x", padx=18, pady=5)
             ctk.CTkLabel(row, text=name, width=105, anchor="w",
                          font=app_font(size=13, weight="bold"),
-                         text_color=(palette_color("#4F4F4F"), palette_color("#DCDCDC"))).pack(side="left", anchor="nw")
+                         text_color=(palette_color(palette_color("#4F4F4F")), palette_color(palette_color("#DCDCDC")))).pack(side="left", anchor="nw")
             detail = ctk.CTkLabel(row, text=description, font=app_font(size=13, weight="bold"),
                                   justify="left", anchor="w",
-                                  text_color=(palette_color("#7B7B7B"), palette_color("#A9A9A9")))
+                                  text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#A9A9A9"))))
             detail.pack(side="left", fill="x", expand=True)
             self._fit_text_to_width(detail, indicators, 150)
 
@@ -2627,7 +2659,7 @@ class MarketInsightApp(ctk.CTk):
         for item in routine:
             ctk.CTkLabel(workflow, text=item, font=app_font(size=13, weight="bold"),
                          justify="left", anchor="w",
-                         text_color=(palette_color("#6A6A6A"), palette_color("#C3C3C3"))).pack(fill="x", padx=18, pady=4)
+                         text_color=(palette_color(palette_color("#6A6A6A")), palette_color(palette_color("#C3C3C3")))).pack(fill="x", padx=18, pady=4)
 
         sources = self.card(page, "Data sources and useful websites",
                             "Open the services Market Insight uses or the platform you selected.")
@@ -2638,9 +2670,9 @@ class MarketInsightApp(ctk.CTk):
             ("TradingView charts", "https://www.tradingview.com/")
         ]:
             ctk.CTkButton(sources, text=label + "  ↗", corner_radius=16,
-                          fg_color=(palette_color("#D9D9D9"), palette_color("#464646")),
-                          hover_color=(palette_color("#CACACA"), palette_color("#545454")),
-                          text_color=(palette_color("#464646"), palette_color("#E4E4E4")),
+                          fg_color=(palette_color(palette_color("#D9D9D9")), palette_color(palette_color("#464646"))),
+                          hover_color=(palette_color(palette_color("#CACACA")), palette_color(palette_color("#545454"))),
+                          text_color=(palette_color(palette_color("#464646")), palette_color(palette_color("#E4E4E4"))),
                           command=lambda target=url: webbrowser.open(target)
                           ).pack(anchor="center", pady=4)
 
@@ -2660,7 +2692,7 @@ class MarketInsightApp(ctk.CTk):
         elif name == "Trading Journal":
             self.render_journal()
         for label, button in self.nav_buttons.items():
-            button.configure(fg_color=(palette_color("#DCDCDC"), palette_color("#484848")) if label == name else "transparent")
+            button.configure(fg_color=(palette_color(palette_color("#DCDCDC")), palette_color(palette_color("#484848"))) if label == name else "transparent")
 
     def _refresh_watchlist_text(self):
         if hasattr(self, "watch_input"):
@@ -2677,8 +2709,8 @@ class MarketInsightApp(ctk.CTk):
         save_settings(self.settings)
         self.scan_info.configure(
             text=f"{len(symbols)} symbols in watchlist",
-            fg_color=(palette_color("#595959"), palette_color("#3D3D3D")),
-            text_color=(palette_color("#E4E4E4"), palette_color("#E4E4E4"))
+            fg_color=(palette_color(palette_color("#595959")), palette_color(palette_color("#3D3D3D"))),
+            text_color=(palette_color(palette_color("#E4E4E4")), palette_color(palette_color("#E4E4E4")))
         )
         self.status.configure(text="Your watchlist has been saved.")
 
@@ -2843,10 +2875,9 @@ class MarketInsightApp(ctk.CTk):
     def change_colour_theme(self, value):
         """Apply a palette immediately and rebuild the UI so every surface updates."""
         global ACTIVE_COLOUR_THEME
-        display_to_theme = {"USD":"Black","EUR":"Azure","GBP":"Lavender","JPY":"Rose","CHF":"Teal","Dollar":"Black","Euro":"Azure","Pound":"Lavender","Yen":"Rose","Franc":"Teal"}
-        value = display_to_theme.get(value, value)
+        value = "Royal" if str(value).lower() in ("royal", "amber") else "Classy"
         if value not in COLOUR_ACCENTS:
-            value = "Black"
+            value = "Classy"
         self.settings["colour_theme"] = value
         ACTIVE_COLOUR_THEME = value
         apply_ctk_palette_theme()
@@ -2870,11 +2901,11 @@ class MarketInsightApp(ctk.CTk):
                 for child in self.winfo_children():
                     cancel_render_jobs(child)
                     child.destroy()
-                self.configure(fg_color=GLASS_KEY if sys.platform=="win32" else (palette_color("#F0F0F0"), palette_color("#101012")))
+                self.configure(fg_color=GLASS_KEY if sys.platform=="win32" else (palette_color(palette_color("#F0F0F0")), palette_color(palette_color("#101012"))))
                 self._build_ui()
                 self.apply_liquid_glass()
                 install_accent_spotlight(self, COLOUR_ACCENTS[ACTIVE_COLOUR_THEME][0],
-                                         GLASS_KEY if sys.platform=="win32" else ("#F0F0F0" if ctk.get_appearance_mode()=="Light" else "#101012"))
+                                         GLASS_KEY if sys.platform=="win32" else (palette_color("#F0F0F0") if ctk.get_appearance_mode()=="Light" else palette_color("#101012")))
                 self._refresh_watchlist_text()
                 self.show_page(current_page if current_page in self.pages else "Settings")
                 self.status.configure(text="{} colour theme applied and saved.".format(value))
@@ -2900,7 +2931,7 @@ class MarketInsightApp(ctk.CTk):
         current_page = getattr(self, "current_page", "Settings")
         for child in self.winfo_children():
             child.destroy()
-        self.configure(fg_color=(palette_color("#F0F0F0"), palette_color("#212121")))
+        self.configure(fg_color=(palette_color(palette_color("#F0F0F0")), palette_color(palette_color("#212121"))))
         self._build_ui()
         self._refresh_watchlist_text()
         self.show_page(current_page if current_page in self.pages else "Settings")
@@ -2915,7 +2946,7 @@ class MarketInsightApp(ctk.CTk):
         current_page = getattr(self, "current_page", "Settings")
         for child in self.winfo_children():
             child.destroy()
-        self.configure(fg_color=(palette_color("#F0F0F0"), palette_color("#212121")))
+        self.configure(fg_color=(palette_color(palette_color("#F0F0F0")), palette_color(palette_color("#212121"))))
         self._build_ui()
         self._refresh_watchlist_text()
         self.show_page(current_page if current_page in self.pages else "Settings")
@@ -3055,8 +3086,8 @@ class MarketInsightApp(ctk.CTk):
             self._refresh_results_view()
         self.scan_info.configure(
             text="Getting recent stock price data…",
-            fg_color=(palette_color("#595959"), palette_color("#3D3D3D")),
-            text_color=(palette_color("#E4E4E4"), palette_color("#E4E4E4"))
+            fg_color=(palette_color(palette_color("#595959")), palette_color(palette_color("#3D3D3D"))),
+            text_color=(palette_color(palette_color("#E4E4E4")), palette_color(palette_color("#E4E4E4")))
         )
         threading.Thread(target=self._scan_worker, daemon=True).start()
 
@@ -3092,7 +3123,7 @@ class MarketInsightApp(ctk.CTk):
         if not rows:
             ctk.CTkLabel(
                 parent, text="No stocks to show yet. Run a scan to see results here.",
-                text_color=(palette_color("#888888"), palette_color("#B0B0B0"))
+                text_color=(palette_color(palette_color("#888888")), palette_color(palette_color("#B0B0B0")))
             ).pack(anchor="w", padx=12, pady=14)
             return
 
@@ -3100,7 +3131,7 @@ class MarketInsightApp(ctk.CTk):
             parent._render_job = None
             end_index = min(index + 6, len(rows))
             for symbol, data in rows[index:end_index]:
-                tile = ctk.CTkFrame(parent, corner_radius=18, fg_color=(palette_color("#EEEEEE"), palette_color("#323232")))
+                tile = ctk.CTkFrame(parent, corner_radius=18, fg_color=(palette_color(palette_color("#EEEEEE")), palette_color(palette_color("#323232"))))
                 tile.pack(fill="x", padx=5, pady=5)
                 head = ctk.CTkFrame(tile, fg_color="transparent")
                 head.pack(fill="x", padx=13, pady=(9, 2))
@@ -3114,19 +3145,19 @@ class MarketInsightApp(ctk.CTk):
                 self._fit_text_to_width(company_name, title_area, 12)
                 ctk.CTkLabel(
                     title_area, text=symbol, font=app_font(size=13, weight="bold"),
-                    text_color=(palette_color("#7B7B7B"), palette_color("#B0B0B0"))
+                    text_color=(palette_color(palette_color("#7B7B7B")), palette_color(palette_color("#B0B0B0")))
                 ).pack(anchor="w")
 
                 if caution:
                     warning_text = ctk.CTkLabel(
                         tile, text=", ".join(data.get("warnings", [])) or "Needs a closer look",
-                        font=app_font(size=13, weight="bold"), text_color=(palette_color("#838383"), palette_color("#AFAFAF")),
+                        font=app_font(size=13, weight="bold"), text_color=(palette_color(palette_color("#838383")), palette_color(palette_color("#AFAFAF"))),
                         justify="left"
                     )
                     warning_text.pack(anchor="w", fill="x", padx=13, pady=(2, 9))
                     self._fit_text_to_width(warning_text, tile, 30)
                 else:
-                    tone = (palette_color("#828282"), palette_color("#BFBFBF")) if data["day_change"] >= 0 else (palette_color("#838383"), palette_color("#AFAFAF"))
+                    tone = (palette_color(palette_color("#828282")), palette_color(palette_color("#BFBFBF"))) if data["day_change"] >= 0 else (palette_color(palette_color("#838383")), palette_color(palette_color("#AFAFAF")))
                     info = ctk.CTkFrame(tile, fg_color="transparent")
                     info.pack(fill="x", padx=13, pady=(5, 10))
                     ctk.CTkLabel(
@@ -3142,7 +3173,7 @@ class MarketInsightApp(ctk.CTk):
                             data["score"], data["rsi"], data["volume_ratio"]
                         ),
                         font=app_font(size=12, weight="bold"),
-                        text_color=(palette_color("#787878"), palette_color("#BBBBBB"))
+                        text_color=(palette_color(palette_color("#787878")), palette_color(palette_color("#BBBBBB")))
                     ).pack(side="left", padx=(10, 0))
                     ctk.CTkButton(
                         info, text="View on {} ↗".format(self.settings.get("selected_platform", "platform")),
@@ -3264,7 +3295,7 @@ class MarketInsightApp(ctk.CTk):
             data = market_context.get(symbol)
             if data:
                 label.configure(text="{:.2f}  ({:+.2f}%)".format(data["price"], data["change"]))
-                tone = (palette_color("#818181"), palette_color("#B2B2B2")) if symbol == "^VIX" else ((palette_color("#828282"), palette_color("#BFBFBF")) if data["change"] >= 0 else (palette_color("#838383"), palette_color("#AFAFAF")))
+                tone = (palette_color(palette_color("#818181")), palette_color(palette_color("#B2B2B2"))) if symbol == "^VIX" else ((palette_color(palette_color("#828282")), palette_color(palette_color("#BFBFBF"))) if data["change"] >= 0 else (palette_color(palette_color("#838383")), palette_color(palette_color("#AFAFAF"))))
                 label.configure(text_color=tone)
             else:
                 label.configure(text="Not available")
@@ -3291,20 +3322,20 @@ class MarketInsightApp(ctk.CTk):
         self._refresh_results_view()
         errors = ["{}: {}".format(symbol, data["error"]) for symbol, data in output.items() if "error" in data]
         if errors:
-            issue = ctk.CTkFrame(self.results_text, corner_radius=12, fg_color=(palette_color("#E9E9E9"), palette_color("#343434")))
+            issue = ctk.CTkFrame(self.results_text, corner_radius=12, fg_color=(palette_color(palette_color("#E9E9E9")), palette_color(palette_color("#343434"))))
             issue.pack(fill="x", padx=5, pady=6)
             ctk.CTkLabel(issue, text="Stocks we couldn't check", font=app_font(size=15, weight="bold"),
-                         text_color=(palette_color("#838383"), palette_color("#AFAFAF"))).pack(anchor="w", padx=12, pady=(8, 2))
+                         text_color=(palette_color(palette_color("#838383")), palette_color(palette_color("#AFAFAF")))).pack(anchor="w", padx=12, pady=(8, 2))
             error_details = ctk.CTkLabel(issue, text="\n".join(errors[:12]),
                                          font=app_font(size=13, weight="bold"), justify="left",
-                                         text_color=(palette_color("#808080"), palette_color("#AFAFAF")))
+                                         text_color=(palette_color(palette_color("#808080")), palette_color(palette_color("#AFAFAF"))))
             error_details.pack(anchor="w", fill="x", padx=12, pady=(0, 10))
             self._fit_text_to_width(error_details, issue, 28)
         self.status.configure(text=f"Scan complete · {len(valid)} symbols")
         self.scan_info.configure(
             text=f"Last scan: {datetime.now().strftime('%H:%M')}",
-            fg_color=(palette_color("#595959"), palette_color("#3D3D3D")),
-            text_color=(palette_color("#E4E4E4"), palette_color("#E4E4E4"))
+            fg_color=(palette_color(palette_color("#595959")), palette_color(palette_color("#3D3D3D"))),
+            text_color=(palette_color(palette_color("#E4E4E4")), palette_color(palette_color("#E4E4E4")))
         )
         if valid:
             self._update_calculator(valid[0][0], valid[0][1])
