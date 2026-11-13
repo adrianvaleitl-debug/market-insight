@@ -2462,7 +2462,7 @@ class MarketInsightApp(ctk.CTk):
 
         local_data = self.card(
             page, "Your local data",
-            "Watchlists, preferences, alerts, journal entries, plans and research notes are stored on this device. Export anything you want to keep before deleting."
+            "Watchlists, preferences, alerts, journal entries, plans and research notes are stored on this device. Export anything you want to keep first. CSV exports and backups saved elsewhere are not removed by this control."
         )
         ctk.CTkLabel(
             local_data,
@@ -2979,7 +2979,7 @@ class MarketInsightApp(ctk.CTk):
         from tkinter import messagebox
         if not messagebox.askyesno(
             "Delete all Market Insight data",
-            "This permanently deletes local settings, watchlists, scans, alerts, journal entries, plans and notes. It also attempts to remove saved Alpaca API credentials from Windows Credential Manager. Back up or export anything you want to keep first. This cannot be undone.\n\nContinue?",
+            "This permanently deletes local settings, watchlists, scans, alerts, journal entries, plans and notes. It also attempts to remove saved Alpaca API credentials from Windows Credential Manager. Back up or export anything you want to keep first. CSV exports and backups saved outside the app data folder are not deleted. This cannot be undone.\n\nContinue?",
             parent=self
         ):
             return
@@ -3011,7 +3011,7 @@ class MarketInsightApp(ctk.CTk):
         else:
             messagebox.showinfo(
                 "Local data deleted",
-                "Market Insight settings and local research data were deleted. Saved Alpaca credentials were removed where present.",
+                "Market Insight settings and local research data were deleted. Saved Alpaca credentials were removed where present. Exports and backups stored elsewhere were not deleted.",
                 parent=self
             )
         self.destroy()
