@@ -1,7 +1,7 @@
 import{useEffect,useState,type FormEvent}from"react";import{ArrowUpRight,Check,ChevronDown,Plus,Search,Sparkles,X}from"lucide-react";import"./styles.css";
 type Item={id:string;title:string;detail:string;done:boolean;created:string;amount?:number};
 const nav=["Overview","Watchlist","Research","Risk","Market hours"],keys=["watchlist","research","risk"],store="adrianvale.market-insight.v1";
-export default function App(){const[page,setPage]=useState(nav[0]),[data,setData]=useState<Record<string,Item[]>>(()=>{try{return JSON.parse(localStorage.getItem(store)||"{}")}catch{return{}}}),[search,setSearch]=useState(""),[modal,setModal]=useState(false),[title,setTitle]=useState(""),[detail,setDetail]=useState(""),[amount,setAmount]=useState(""),[toast,setToast]=useState("");
+export default function App(){const[page,setPage]=useState(nav[0]),[data,setData]=useState<Record<string,Item[]>>(()=>{try{return JSON.parse(localStorage.getItem(store)||"{}")}catch{return{}}}),[search,setSearch]=useState(""),[modal,setModal]=useState(false),[title,setTitle]=useState(""),[detail,setDetail]=useState(""),[amount,setAmount]=useState(""),[toast,setToast]=useState(""),[theme,setTheme]=useState<"classy"|"royal">(()=>localStorage.getItem("adrianvale.theme")==="royal"?"royal":"classy");
 useEffect(()=>{localStorage.setItem(store,JSON.stringify(data))},[data]);useEffect(()=>{document.documentElement.dataset.theme=theme;localStorage.setItem("adrianvale.theme",theme)},[theme]);
 const pageKey=keys.find(k=>k.replace(/ /g,"").toLowerCase()===page.replace(/ /g,"").toLowerCase())||keys[0],items=(data[pageKey]||[]).filter(x=>(x.title+" "+x.detail).toLowerCase().includes(search.toLowerCase()));
 const all=Object.values(data).flat(),done=all.filter(x=>x.done).length;
