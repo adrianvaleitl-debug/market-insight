@@ -3,7 +3,7 @@ import { Activity, ArrowDownRight, ArrowUpRight, BarChart3, CalendarDays, Check,
 import "./styles.css";
 
 type Row = { id:string; created:string; done?:boolean; [key:string]:string|number|boolean|undefined };
-const APP = "Market Insight";
+const APP: string = "Market Insight";
 const NAV = ["Overview","Watchlist","Scanner","Trade planner","Alerts","Journal","Market hours","Settings"] as string[];
 const FIELDS = {"Watchlist":[["symbol","Ticker symbol","text"],["name","Company or asset","text"],["market","Market","select","US|UK|Europe|Crypto|Other"],["thesis","Why you're watching","textarea"]],"Scanner":[["symbol","Ticker symbol","text"],["price","Reference price","number"],["change","Change (%)","number"],["volume","Volume","number"]],"Trade planner":[["symbol","Ticker symbol","text"],["side","Direction","select","Long|Short"],["account","Account size (£)","number"],["risk","Risk (%)","number"],["entry","Entry price","number"],["stop","Stop price","number"],["target","Target price","number"]],"Alerts":[["symbol","Ticker symbol","text"],["condition","Condition","select","Above|Below"],["target","Target price","number"],["notes","Reason","text"]],"Journal":[["symbol","Ticker symbol","text"],["side","Direction","select","Long|Short"],["entry","Entry price","number"],["exit","Exit price","number"],["size","Position size","number"],["notes","Trade notes","textarea"]]} as Record<string, [string,string,string,string?][]>;
 const STORE = "adrianvale.rebuild." + APP.toLowerCase().replace(/ /g,"-") + ".v2";
@@ -81,6 +81,6 @@ export default function App(){
  {toast?<div className="toast"><CheckCircle2 size={15}/>{toast}</div>:null}</div>;
 }
 function Metric({label,value,hint,icon}:{label:string;value:string;hint:string;icon:any}){return <div className="metric-card"><div className="metric-top"><span>{label}</span><i>{icon}</i></div><strong>{value}</strong><small>{hint}</small></div>}
-function SectionTitle({title,action,onAction}:{title:string;action:string;onAction:()=>void}){return <div className="section-title"><h3>{title}</h3><button onClick={onAction}>{action} <ArrowUpRight size={13}/></button></div>}
+function SectionTitle({title,action,onAction=()=>{}}:{title:string;action:string;onAction?:()=>void}){return <div className="section-title"><h3>{title}</h3><button onClick={onAction}>{action} <ArrowUpRight size={13}/></button></div>}
 function EyeIcon(){return <Activity/>}
 function UsersIcon(){return <Wallet/>}
