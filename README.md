@@ -34,7 +34,7 @@ Watchlists, scan snapshots, alerts, plans and journal entries are stored locally
 ## Technology
 React 18 · TypeScript · Vite · Tauri 2 · Rust · reqwest
 
-Website: https://adrianvaleitl-debug.github.io/
+Website: https://adrianvaleitl-debug.github.io/Adrian-Vales-Projects/
 
 ## MarketView 2.9.0
 
