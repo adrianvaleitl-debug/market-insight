@@ -61,10 +61,18 @@ async fn get_market_quote(symbol: String) -> Result<MarketQuote, String> {
     })
 }
 
+#[tauri::command]
+fn open_external_url(url: String) -> Result<(), String> {
+    if url.len() > 2048 || !url.starts_with("https://") || url.chars().any(char::is_control) {
+        return Err("Only valid HTTPS links can be opened.".to_string());
+    }
+    open::that(url).map_err(|error| format!("The system could not open the trading platform: {error}"))
+}
+
 #[cfg_attr(mobile,tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![get_market_quote])
+        .invoke_handler(tauri::generate_handler![get_market_quote, open_external_url])
         .run(tauri::generate_context!())
         .expect("error while running Market Insight");
 }
