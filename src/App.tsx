@@ -12,7 +12,7 @@ const NAV = ["Overview","Watchlist","Scanner","Scan history","Trade planner","Al
 const FIELDS = {"Watchlist":[["symbol","Ticker symbol","text"],["name","Company or asset","text"],["market","Market","select","US|UK|Europe|Crypto|Other"],["folder","Folder","select","Core|Growth|ETF|Other"],["thesis","Why you're watching","textarea"]],"Scanner":[["symbol","Ticker symbol","text"],["price","Reference price","number"],["change","Change (%)","number"],["volume","Volume","number"]],"Trade planner":[["symbol","Ticker symbol","text"],["side","Direction","select","Long|Short"],["account","Account size (£)","number"],["risk","Risk (%)","number"],["entry","Entry price","number"],["stop","Stop price","number"],["target","Target price","number"]],"Alerts":[["symbol","Ticker symbol","text"],["condition","Condition","select","Above|Below"],["target","Target price","number"],["notes","Reason","text"]],"Journal":[["symbol","Ticker symbol","text"],["side","Direction","select","Long|Short"],["entry","Entry price","number"],["exit","Exit price","number"],["size","Position size","number"],["notes","Trade notes","textarea"]],"Scan history":[["title","Snapshot","text"],["symbols","Symbols checked","number"],["averageScore","Average technical score","number"],["leaders","Leading symbols","text"]]} as Record<string, [string,string,string,string?][]>;
 const PREFS_STORE = "adrianvale.preferences." + APP.toLowerCase().replace(/ /g,"-");
 const THEME_STORE = PREFS_STORE + ".theme";
-const DEFAULT_PREFERENCES = {font:"royal" as "modern"|"royal",textSize:"normal" as "normal"|"large"|"larger",reduceMotion:false,highContrast:false,enhancedFocus:true,compactMode:false,confirmDeletes:true,showWelcomePanel:true,showMetrics:true,showRecordMetadata:true,showSectionDescriptions:true,showHints:true,confirmExports:true,stickyTopbar:true,showFooter:true,roundedPanels:true,subtleAnimations:true,showPersonalGreeting:true};
+const DEFAULT_PREFERENCES = {font:"royal" as "modern"|"royal",textSize:"normal" as "normal"|"large"|"larger",reduceMotion:false,highContrast:false,enhancedFocus:true,compactMode:false,confirmDeletes:true,showWelcomePanel:true,showMetrics:true,showRecordMetadata:true,showSectionDescriptions:true,showHints:true,confirmExports:true,stickyTopbar:true,showFooter:true,roundedPanels:true,subtleAnimations:true,showPersonalGreeting:true,settingsVersion:2};
 type AppPreferences = typeof DEFAULT_PREFERENCES;
 const STORE = "adrianvale.rebuild." + APP.toLowerCase().replace(/ /g,"-") + ".v2";
 const money = (n:number) => new Intl.NumberFormat("en-GB",{style:"currency",currency:"GBP",maximumFractionDigits:2}).format(n||0);
@@ -29,7 +29,7 @@ export default function App(){
  const [page,setPage]=useState("Overview");
  const [data,setData]=useState<Record<string,Row[]>>(initialData);
  const [theme,setTheme]=useState<"classy"|"royal">(()=>localStorage.getItem(THEME_STORE)==="royal"?"royal":"classy");
- const [preferences,setPreferences]=useState<AppPreferences>(()=>{try{return {...DEFAULT_PREFERENCES,...JSON.parse(localStorage.getItem(PREFS_STORE)||"{}")}}catch{return DEFAULT_PREFERENCES}});
+ const [preferences,setPreferences]=useState<AppPreferences>(()=>{try{const saved=JSON.parse(localStorage.getItem(PREFS_STORE)||"{}");return {...DEFAULT_PREFERENCES,...saved,font:saved.settingsVersion>=2?saved.font:"royal",settingsVersion:2}}catch{return DEFAULT_PREFERENCES}});
  const [displayName,setDisplayName]=useState(()=>localStorage.getItem(PREFS_STORE+".name")||"");
  const [query,setQuery]=useState("");
  const [modal,setModal]=useState(false);
