@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { Activity, ArrowDownRight, ArrowUpRight, BarChart3, CalendarDays, Check, CheckCircle2, ChevronRight, CircleDollarSign, Clock3, Download, FileText, Filter, LayoutDashboard, Menu, MoreHorizontal, Plus, Search, Settings2, ShieldCheck, Sparkles, Target, Trash2, TrendingUp, Wallet, X } from "lucide-react";
+import { Activity, ArrowDownRight, ArrowUpRight, BarChart3, CalendarDays, Check, CheckCircle2, ChevronRight, CircleDollarSign, Clock3, Download, FileText, LayoutDashboard, Menu, MoreHorizontal, Plus, Search, Settings2, ShieldCheck, Sparkles, Target, Trash2, TrendingUp, Wallet, X } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
 import { isAlertTriggered, positionSize, relativeStrengthIndex, rewardRisk, simpleMovingAverage, technicalScore } from "./domain";
 import "./styles.css";
