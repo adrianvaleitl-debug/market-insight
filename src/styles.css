@@ -272,3 +272,42 @@ body{
 :root[data-footer="false"] .app-footer{display:none}
 :root[data-rounded-panels="false"] .surface,:root[data-rounded-panels="false"] .welcome-banner,:root[data-rounded-panels="false"] .metric-card{border-radius:2px}
 :root[data-subtle-animations="false"] *, :root[data-subtle-animations="false"] *::before, :root[data-subtle-animations="false"] *::after{transition:none!important;animation:none!important}
+
+
+/* Readability pass — larger, consistent desktop typography */
+.sidebar nav button{font-size:13px;padding:12px 13px}
+.brand b{font-size:13px}.brand small{font-size:10px}
+.app-identity strong{font-size:15px}.app-identity small{font-size:10px}
+.nav-caption,.eyebrow{font-size:11px}
+.breadcrumb{font-size:10px}
+.searchbox input{font-size:13px;width:170px}
+.theme-switch{font-size:11px;padding:10px 13px}
+.page-heading h1{font-size:46px}
+.page-heading p{font-size:14px;line-height:1.6}
+.heading-date{font-size:12px}
+.banner-copy h2{font-size:30px}
+.banner-copy p{font-size:14px;line-height:1.6}
+.btn{font-size:12px;padding:11px 15px}
+.metric-top span{font-size:10px}.metric-card>strong{font-size:26px}.metric-card>small{font-size:12px}
+.surface h3,.section-title h3{font-size:17px}
+.section-title button{font-size:12px}
+.record-title{font-size:14px}.record-meta{font-size:11px}
+.section-toolbar h2{font-size:21px}.section-toolbar p{font-size:12px}
+.empty-state b{font-size:16px}.empty-state p{font-size:12px;line-height:1.7}
+.form-grid label{font-size:12px}.form-grid input,.form-grid select,.form-grid textarea,.timer-controls select{font-size:13px;padding:12px}
+.settings-field{font-size:13px}.settings-field small{font-size:11px}
+.settings-toggles label{font-size:13px}
+.muted{font-size:13px;line-height:1.75}
+.disclaimer{font-size:11px;line-height:1.7}
+.app-footer{font-size:11px}
+.settings-danger>b,.settings-danger b{font-size:13px}.settings-danger p{font-size:11px}
+.toast{font-size:13px}
+.record-actions>strong{font-size:13px}
+.quote-card-top b{font-size:14px}.quote-card-top span{font-size:10px}
+.quote-card>strong{font-size:23px}.quote-card>strong small{font-size:11px}
+.quote-up,.quote-down{font-size:12px}.quote-indicators{font-size:10px}.quote-indicators b{font-size:11px}
+.scanner-controls label,.scanner-controls>span{font-size:12px}.scanner-controls select{font-size:13px;padding:11px}
+.scanner-table th{font-size:10px}.scanner-table td{font-size:12px}
+.session-row b{font-size:14px}.session-row small{font-size:11px}
+.session-open,.session-closed{font-size:11px}
+@media(max-width:800px){.page-heading h1{font-size:36px}.page-heading p{font-size:13px}.searchbox input{width:100px}.breadcrumb{font-size:9px}}
