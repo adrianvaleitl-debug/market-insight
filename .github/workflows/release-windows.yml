@@ -43,13 +43,13 @@ jobs:
           $exe = Get-ChildItem -Path "src-tauri/target/release/bundle/nsis" -Filter "*.exe" | Select-Object -First 1
           $msi = Get-ChildItem -Path "src-tauri/target/release/bundle/msi" -Filter "*.msi" | Select-Object -First 1
           if (-not $exe -or -not $msi) { throw "Expected NSIS EXE and MSI installers were not produced." }
-          Copy-Item $exe.FullName "release-assets/MarketView-Setup-2.9.exe"
-          Copy-Item $msi.FullName "release-assets/MarketView-2.9.msi"
+          Copy-Item $exe.FullName "release-assets/MarketView-Setup-3.0.exe"
+          Copy-Item $msi.FullName "release-assets/MarketView-3.0.msi"
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: "V2.9"
-          name: "MarketView 2.9 — Windows"
+          tag_name: "V3.0"
+          name: "MarketView 3.0 — Windows"
           body: |
             New MarketView release with custom trading-app links, a first-launch investment-risk acknowledgement and royal-gold app identity.
           files: release-assets/*
