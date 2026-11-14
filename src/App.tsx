@@ -32,6 +32,7 @@ export default function App(){
  const [theme,setTheme]=useState<"classy"|"royal">(()=>localStorage.getItem(THEME_STORE)==="royal"?"royal":"classy");
  const [preferences,setPreferences]=useState<AppPreferences>(()=>{try{const saved=JSON.parse(localStorage.getItem(PREFS_STORE)||"{}");return {...DEFAULT_PREFERENCES,...saved,font:saved.settingsVersion>=2?saved.font:"royal",settingsVersion:2}}catch{return DEFAULT_PREFERENCES}});
  const [displayName,setDisplayName]=useState(()=>localStorage.getItem(PREFS_STORE+".name")||"");
+ // Keep onboarding visible until the complete name is explicitly confirmed.
  const [nameConfirmed,setNameConfirmed]=useState(()=>((localStorage.getItem(PREFS_STORE+".name")||"").trim().length>1));
  const [query,setQuery]=useState("");
  const [modal,setModal]=useState(false);
