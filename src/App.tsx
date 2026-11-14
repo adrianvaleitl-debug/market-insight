@@ -6,6 +6,7 @@ import "./styles.css";
 
 type MarketQuote = {symbol:string;currentPrice:number;previousClose:number;changePercent:number;closes:number[];highs:number[];lows:number[];volumes:number[];currency:string;marketState:string};
 type Row = { id:string; created:string; done?:boolean; [key:string]:string|number|boolean|undefined };
+// Keep official website and community destinations aligned with the Adrian Vale hub.
 const APP: string = "MarketView";
 const DISPLAY_APP = "MarketView";
 const NAV = ["Overview","Watchlist","Scanner","Scan history","Trade planner","Alerts","Journal","Market hours","Settings"] as string[];
