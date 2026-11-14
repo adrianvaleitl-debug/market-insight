@@ -261,3 +261,14 @@ body{
 :root[data-compact="true"] .surface{padding:13px}:root[data-compact="true"] .record{padding:8px 1px}:root[data-compact="true"] .metric-card{padding:12px 13px}:root[data-compact="true"] .content{padding-top:27px;padding-bottom:18px}
 
 :root[data-welcome-panel="false"] .welcome-banner{display:none}
+
+/* Personalisation defaults and display controls */
+:root[data-font="royal"]{font-family:"Cormorant Garamond",Georgia,serif}
+:root[data-metrics="false"] .metric-grid{display:none}
+:root[data-record-metadata="false"] .record-meta{display:none}
+:root[data-section-descriptions="false"] .section-toolbar p{display:none}
+:root[data-hints="false"] .empty-state p{display:none}
+:root[data-sticky-topbar="false"] .topbar{position:static;backdrop-filter:none}
+:root[data-footer="false"] .app-footer{display:none}
+:root[data-rounded-panels="false"] .surface,:root[data-rounded-panels="false"] .welcome-banner,:root[data-rounded-panels="false"] .metric-card{border-radius:2px}
+:root[data-subtle-animations="false"] *, :root[data-subtle-animations="false"] *::before, :root[data-subtle-animations="false"] *::after{transition:none!important;animation:none!important}
