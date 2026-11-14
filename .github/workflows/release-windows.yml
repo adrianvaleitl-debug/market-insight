@@ -47,13 +47,13 @@ jobs:
           $exe = Get-ChildItem -Path "src-tauri/target/release/bundle/nsis" -Filter "*.exe" | Select-Object -First 1
           $msi = Get-ChildItem -Path "src-tauri/target/release/bundle/msi" -Filter "*.msi" | Select-Object -First 1
           if (-not $exe -or -not $msi) { throw "Expected NSIS EXE and MSI installers were not produced." }
-          Copy-Item $exe.FullName "release-assets/MarketView-Setup-3.1.exe"
-          Copy-Item $msi.FullName "release-assets/MarketView-3.1.msi"
+          Copy-Item $exe.FullName "release-assets/MarketView-Setup-3.2.exe"
+          Copy-Item $msi.FullName "release-assets/MarketView-3.2.msi"
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: "V3.1"
-          name: "MarketView 3.1 — Windows"
+          tag_name: "V3.2"
+          name: "MarketView 3.2 — Windows"
           body: |
             New MarketView 3.1 release with personalised greetings, expanded workspace settings and the royal typography default.
           files: release-assets/*
