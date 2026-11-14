@@ -259,3 +259,5 @@ body{
 
 /* Optional compact workspace density; default layout remains unchanged. */
 :root[data-compact="true"] .surface{padding:13px}:root[data-compact="true"] .record{padding:8px 1px}:root[data-compact="true"] .metric-card{padding:12px 13px}:root[data-compact="true"] .content{padding-top:27px;padding-bottom:18px}
+
+:root[data-welcome-panel="false"] .welcome-banner{display:none}
