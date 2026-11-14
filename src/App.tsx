@@ -24,6 +24,7 @@ const emptyData = () => Object.fromEntries(Object.keys(FIELDS).map(k=>[k,[]])) a
 const STARTER_SYMBOLS = ["AAPL","MSFT","NVDA","AMZN","GOOGL","META","AVGO","TSLA","BRK-B","JPM","WMT","LLY","V","XOM","MA","COST","NFLX","ORCL","PG","JNJ","HD","ABBV","BAC","KO","CRM","CVX","MRK","AMD","PEP","ACN","TMO","CSCO","MCD","LIN","ABT","WFC","DHR","DIS","QCOM","TXN","CAT","GE","NOW","AMAT","IBM","INTU","VZ","PM","SPY","QQQ"];
 const initialData = ():Record<string,Row[]> => {try{const saved=localStorage.getItem(STORE);if(saved)return {...emptyData(),...JSON.parse(saved)};}catch{}const base=emptyData();base.Watchlist=STARTER_SYMBOLS.map((symbol,i)=>({id:"starter-"+symbol,created:new Date().toISOString(),symbol,name:symbol,market:"US",folder:symbol==="SPY"||symbol==="QQQ"?"ETF":i<12?"Growth":"Core",thesis:"Starter watchlist symbol. Add your own research notes."}));return base};
 
+// Build trigger: release settings, accessibility and legal information
 export default function App(){
  const [page,setPage]=useState("Overview");
  const [data,setData]=useState<Record<string,Row[]>>(initialData);
